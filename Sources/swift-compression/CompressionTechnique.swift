@@ -1,0 +1,45 @@
+//
+//  CompressionTechnique.swift
+//
+//
+//  Created by Evan Anderson on 12/9/24.
+//
+
+import Foundation
+
+public enum CompressionTechnique {
+    case aac
+    case arithmeticCoding
+    case brotli
+    case bzip2
+    case deflate
+    case huffmanCoding
+    case hevc
+    case jpeg
+    case jpeg2000
+    case lz4
+    case lempelZivWelch
+    case mp3
+    case mpeg
+    case runLengthEncoding(minRun: Int)
+    case snappy
+    case zstd
+
+    func compress(data: Data) -> CompressionResult {
+        switch self {
+            case .deflate: return Deflate.compress(data: data)
+            case .huffmanCoding: return Huffman.compress(data: data)
+            case .runLengthEncoding(let minRun): return RunLengthEncoding.compress(minRun: minRun, data: data)
+            default: return CompressionResult(data: data, frequencyTable: nil)
+        }
+    }
+
+    func decompress(data: Data) -> Data {
+        switch self {
+            case .deflate: return Deflate.decompress(data: data)
+            case .huffmanCoding: return Huffman.decompress(data: data)
+            case .runLengthEncoding(_): return RunLengthEncoding.decompress(data: data)
+            default: return data
+        }
+    }
+}
