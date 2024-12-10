@@ -14,15 +14,19 @@ public enum CompressionTechnique {
     case bzip2
     case deflate
     case huffmanCoding
-    case hevc
+    case h264
+    case h265
     case jpeg
     case jpeg2000
     case lz4
-    case lempelZivWelch
+    case lz77
+    case lz78
+    case lzw
     case mp3
     case mpeg
     case runLengthEncoding(minRun: Int)
     case snappy
+    case snappyFramed
     case zstd
 
     func compress(data: Data) -> CompressionResult {
@@ -30,6 +34,7 @@ public enum CompressionTechnique {
             case .deflate: return Deflate.compress(data: data)
             case .huffmanCoding: return Huffman.compress(data: data)
             case .runLengthEncoding(let minRun): return RunLengthEncoding.compress(minRun: minRun, data: data)
+            case .snappy: return Snappy.compress(data: data)
             default: return CompressionResult(data: data, frequencyTable: nil)
         }
     }
@@ -39,6 +44,7 @@ public enum CompressionTechnique {
             case .deflate: return Deflate.decompress(data: data)
             case .huffmanCoding: return Huffman.decompress(data: data)
             case .runLengthEncoding(_): return RunLengthEncoding.decompress(data: data)
+            case .snappy: return Snappy.decompress(data: data)
             default: return data
         }
     }

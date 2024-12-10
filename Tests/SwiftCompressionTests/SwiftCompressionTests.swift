@@ -64,3 +64,8 @@ extension SwiftCompressionTests {
         print("\([UInt8](builder.data))")
     }
 }
+
+extension SwiftCompressionTests {
+    @Test func decompressSnappy() {
+    }
+}

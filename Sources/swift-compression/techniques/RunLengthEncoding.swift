@@ -7,6 +7,7 @@
 
 import Foundation
 
+// https://en.wikipedia.org/wiki/Run-length_encoding
 enum RunLengthEncoding {
 }
 
