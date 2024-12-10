@@ -67,5 +67,15 @@ extension SwiftCompressionTests {
 
 extension SwiftCompressionTests {
     @Test func decompressSnappy() {
+        var string:String = "51 f0 42 57 69 6b 69 70 65 64 69 61 20 69 73 20"
+        string += "61 20 66 72 65 65 2c 20 77 65 62 2d 62 61 73 65"
+        string += "64 2c 20 63 6f 6c 6c 61 62 6f 72 61 74 69 76 65"
+        string += "2c 20 6d 75 6c 74 69 6c 69 6e 67 75 61 6c 20 65"
+        string += "6e 63 79 63 6c 6f"
+        string.removeAll(where: { $0.isWhitespace })
+        let hex = string.hexadecimal
+        let data:Data = Data(hex)
+        var decompressed:Data = Snappy.decompress(data: data)
+        //print([UInt8](decompressed).hexadecimal())
     }
 }

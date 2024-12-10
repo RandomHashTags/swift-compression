@@ -25,11 +25,14 @@ public enum CompressionTechnique {
     case mp3
     case mpeg
     case runLengthEncoding(minRun: Int)
+    /// AKA Zippy
     case snappy
+    /// AKA Zippy Framed
     case snappyFramed
     case zstd
 
     func compress(data: Data) -> CompressionResult {
+        guard !data.isEmpty else { return CompressionResult(data: data) }
         switch self {
             case .deflate: return Deflate.compress(data: data)
             case .huffmanCoding: return Huffman.compress(data: data)
@@ -40,6 +43,7 @@ public enum CompressionTechnique {
     }
 
     func decompress(data: Data) -> Data {
+        guard !data.isEmpty else { return data }
         switch self {
             case .deflate: return Deflate.decompress(data: data)
             case .huffmanCoding: return Huffman.decompress(data: data)
