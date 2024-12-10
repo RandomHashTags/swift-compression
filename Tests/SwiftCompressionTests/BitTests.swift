@@ -1,5 +1,5 @@
 //
-//  swift_compressionTests.swift
+//  BitTests.swift
 //
 //
 //  Created by Evan Anderson on 12/9/24.
@@ -7,7 +7,7 @@
 
 import Foundation
 import Testing
-@testable import swift_compression
+@testable import SwiftCompression
 
 struct BitTests {
     @Test func uint8Bits() {
