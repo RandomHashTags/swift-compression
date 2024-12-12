@@ -8,11 +8,12 @@
 import Foundation
 
 // https://en.wikipedia.org/wiki/Run-length_encoding
-enum RunLengthEncoding {
+public enum RunLengthEncoding {
 }
 
 // MARK: Compress Data
-extension RunLengthEncoding {
+public extension RunLengthEncoding {
+    @inlinable
     static func compress(minRun: Int, includeCountForMinRun: Bool = true, data: Data) -> CompressionResult {
         let closure:(inout Data, Int, UInt8) -> Void
         if includeCountForMinRun {
@@ -32,7 +33,7 @@ extension RunLengthEncoding {
         }
         return compress(minRun: minRun, data: data, closure: closure)
     }
-    private static func compress(minRun: Int, data: Data, closure: (inout Data, Int, UInt8) -> Void) -> CompressionResult {
+    static func compress(minRun: Int, data: Data, closure: (inout Data, Int, UInt8) -> Void) -> CompressionResult {
         var compressed:Data = Data()
         compressed.reserveCapacity(data.count)
         var run:Int = 0, runByte:UInt8 = data[0]
@@ -59,7 +60,8 @@ extension RunLengthEncoding {
 }
 
 // MARK: Decompress Data
-extension RunLengthEncoding {
+public extension RunLengthEncoding {
+    @inlinable
     static func decompress(data: Data) -> Data {
         var decompressed:Data = Data()
         data.withUnsafeBytes { p in

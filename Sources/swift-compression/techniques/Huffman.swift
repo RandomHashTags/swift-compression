@@ -7,11 +7,12 @@
 
 import Foundation
 
-enum Huffman { // TODO: finish
+public enum Huffman { // TODO: finish
 }
 
 // MARK: Compress Data
-extension Huffman {
+public extension Huffman {
+    @inlinable
     static func compress(data: Data) -> CompressionResult {
         var priorities:[Int:Int] = Dictionary(minimumCapacity: 255)
         for i in 0..<data.count {
@@ -37,6 +38,7 @@ extension Huffman {
 
 // MARK: Decompress Data
 extension Huffman {
+    @inlinable
     static func decompress(data: Data) -> Data {
         return data
     }

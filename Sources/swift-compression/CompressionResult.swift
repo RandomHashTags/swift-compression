@@ -7,11 +7,11 @@
 
 import Foundation
 
-struct CompressionResult {
-    let data:Data
-    let frequencyTable:[String:String]?
+public struct CompressionResult {
+    public let data:Data
+    public let frequencyTable:[String:String]?
 
-    init(data: Data, frequencyTable: [String:String]? = nil) {
+    public init(data: Data, frequencyTable: [String:String]? = nil) {
         self.data = data
         self.frequencyTable = frequencyTable
     }

@@ -30,7 +30,8 @@ public enum CompressionTechnique {
     /// AKA Zippy Framed
     case snappyFramed
     case zstd
-
+    
+    @inlinable
     func compress(data: Data) -> CompressionResult {
         guard !data.isEmpty else { return CompressionResult(data: data) }
         switch self {
@@ -38,10 +39,11 @@ public enum CompressionTechnique {
             case .huffmanCoding: return Huffman.compress(data: data)
             case .runLengthEncoding(let minRun): return RunLengthEncoding.compress(minRun: minRun, data: data)
             case .snappy: return Snappy.compress(data: data)
-            default: return CompressionResult(data: data, frequencyTable: nil)
+            default: return CompressionResult(data: data)
         }
     }
 
+    @inlinable
     func decompress(data: Data) -> Data {
         guard !data.isEmpty else { return data }
         switch self {

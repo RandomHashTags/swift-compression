@@ -7,7 +7,7 @@
 
 import Foundation
 
-enum Deflate {
+public enum Deflate {
     struct Block {
         let lastBlock:Bool
         let encoding:(Bool, Bool)
@@ -40,14 +40,16 @@ enum Deflate {
 }
 
 // MARK: Compress Data
-extension Deflate {
+public extension Deflate {
+    @inlinable
     static func compress(data: Data) -> CompressionResult {
         return CompressionResult(data: data)
     }
 }
 
 // MARK: Decompress Data
-extension Deflate {
+public extension Deflate {
+    @inlinable
     static func decompress(data: Data) -> Data {
         return data
     }
