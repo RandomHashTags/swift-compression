@@ -7,7 +7,7 @@
 
 import Foundation
 
-public enum Deflate {
+public enum Deflate { // TODO: finish
     struct Block {
         let lastBlock:Bool
         let encoding:(Bool, Bool)

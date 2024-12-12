@@ -8,11 +8,11 @@
 import Foundation
 
 // https://en.wikipedia.org/wiki/Snappy_(compression)
-public enum Snappy { // TODO: finish
+public enum Snappy {
 }
 
 // MARK: Compress data
-public extension Snappy {
+public extension Snappy { // TODO: finish
     @inlinable
     static func compress(data: Data) -> CompressionResult {
         var compressed:Data = Data()
@@ -70,7 +70,7 @@ public extension Snappy {
         if length >= 60 {
             var bytes:UInt8 = length-59
             totalLength = 0
-            compressed.withUnsafeBytes { (p:UnsafeRawBufferPointer)in
+            compressed.withUnsafeBytes { (p:UnsafeRawBufferPointer) in
                 while bytes != 0 {
                     totalLength += Int(p[index])
                     bytes -= 1
