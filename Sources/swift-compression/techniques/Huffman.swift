@@ -7,11 +7,14 @@
 
 import Foundation
 
-public enum Huffman { // TODO: finish
+public extension CompressionTechnique {
+    enum Huffman { // TODO: finish
+    }
 }
 
+
 // MARK: Compress Data
-public extension Huffman {
+public extension CompressionTechnique.Huffman {
     @inlinable
     static func compress(data: Data) -> CompressionResult {
         var priorities:[Int:Int] = Dictionary(minimumCapacity: 255)
@@ -37,54 +40,9 @@ public extension Huffman {
 }
 
 // MARK: Decompress Data
-extension Huffman {
+extension CompressionTechnique.Huffman {
     @inlinable
     static func decompress(data: Data) -> Data {
         return data
-    }
-}
-
-extension Huffman {
-    struct DataBuilder {
-        var data:Data = Data()
-        var bitBuilder:IntBitBuilder = IntBitBuilder()
-
-        mutating func write(bits: [Bool]) {
-            bitBuilder.write(bits: bits, to: &data)
-        }
-        mutating func finalize() {
-            bitBuilder.flush(into: &data)
-        }
-    }
-    struct IntBitBuilder {
-        var bits:[Bool] = Array(repeating: false, count: 8)
-        var index:Int = 0
-
-        mutating func write(bits: [Bool], to data: inout Data) {
-            var wrote:Int = 0
-            while wrote != bits.count {
-                let available_bits:Int = min(8 - index, max(0, bits.count - wrote))
-                if available_bits > 0 {
-                    for i in 0..<available_bits {
-                        self.bits[index + i] = bits[wrote + i]
-                    }
-                    index += available_bits
-                    if index == 8 {
-                        data.append(UInt8(fromBits: self.bits)!)
-                        index = 0
-                    }
-                }
-                wrote += available_bits
-            }
-        }
-        mutating func flush(into data: inout Data) {
-            if index != 8 {
-                while index != 8 {
-                    bits[index] = false
-                    index += 1
-                }
-                data.append(UInt8(fromBits: bits)!)
-            }
-        }
     }
 }

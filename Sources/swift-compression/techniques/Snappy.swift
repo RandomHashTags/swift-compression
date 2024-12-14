@@ -8,11 +8,13 @@
 import Foundation
 
 // https://en.wikipedia.org/wiki/Snappy_(compression)
-public enum Snappy {
+public extension CompressionTechnique {
+    enum Snappy {
+    }
 }
 
 // MARK: Compress data
-public extension Snappy { // TODO: finish
+public extension CompressionTechnique.Snappy { // TODO: finish
     @inlinable
     static func compress(data: Data) -> CompressionResult {
         var compressed:Data = Data()
@@ -22,7 +24,7 @@ public extension Snappy { // TODO: finish
 }
 
 // MARK: Decompress data
-public extension Snappy {
+public extension CompressionTechnique.Snappy {
     @inlinable
     static func decompress(data: Data) -> Data {
         var decompressed:Data = Data()
@@ -45,7 +47,7 @@ public extension Snappy {
 }
 
 // MARK: Literal
-public extension Snappy {
+extension CompressionTechnique.Snappy {
     @inlinable
     static func decompressLiteral(
         flagBits: Bits8,
@@ -85,7 +87,7 @@ public extension Snappy {
 }
 
 // MARK: Copy
-extension Snappy {
+extension CompressionTechnique.Snappy {
     @inlinable
     static func decompressCopy1(
         flagBits: Bits8,

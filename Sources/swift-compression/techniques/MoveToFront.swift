@@ -8,11 +8,13 @@
 import Foundation
 
 // https://en.wikipedia.org/wiki/Move-to-front_transform
-public enum MoveToFront { // TODO: finish
+public extension CompressionTechnique {
+    enum MoveToFront { // TODO: finish
+    }
 }
 
 // MARK: Transform data
-public extension MoveToFront {
+public extension CompressionTechnique.MoveToFront {
     @inlinable
     static func transform(data: Data) -> Data {
         var sequence:[UInt8] = []
@@ -26,7 +28,7 @@ public extension MoveToFront {
     }
 }
 
-extension MoveToFront {
+extension CompressionTechnique.MoveToFront {
     struct Record {
     }
 }

@@ -20,18 +20,21 @@ public extension LZ77 {
 }
 
 extension LZ77 {
+    typealias KeyType = Key<UInt8, UInt8>
+
     static func compressTokens(data: Data, windowSize: Int, bufferSize: Int) -> [Token] {
-        var compressed:[Token] = []
-        var startingPositions:[Key:Int] = [:]
+        var compressed:[Token] = []    
+        var startingPositions:[KeyType:Int] = [:]
         var index:Int = 0
         while index < data.count {
             let windowStarts:Int = max(0, index - windowSize)
             var distance:Int = 0, length:Int = 0
             var next:UInt8 = data[index]
             let lookAhead:Data = data[index..<min(index + bufferSize, data.count)]
-            if let match:Int = startingPositions[Key(lookAhead[0], lookAhead[1])] {
+            let key:KeyType = Key(chars: (lookAhead[0], lookAhead[1]))
+            if let match:Int = startingPositions[key] {
                 distance = index - match
-                length = 2
+                length = key.count
                 if index + length < data.count {
                     next = data[index + length]
                 }
@@ -41,7 +44,7 @@ extension LZ77 {
             let search:Data = data[windowStarts..<index]
             for i in windowStarts..<index {
                 let keyData:Data = search[i..<min(i + 2, search.count)]
-                let key:Key = Key(keyData[0], keyData[1])
+                let key:KeyType = Key(chars: (keyData[0], keyData[1]))
                 startingPositions[key] = i
             }
             index += length + 1
@@ -51,13 +54,28 @@ extension LZ77 {
 }
 
 extension LZ77 {
-    struct Key : Hashable {
-        let first:UInt8
-        let second:UInt8
+    struct Key<each T : FixedWidthInteger> : Hashable {
+        static func == (left: Self, right: Self) -> Bool {
+            for (l, r) in repeat (each left.chars, each right.chars) {
+                if l != r { return false }
+            }
+            return true
+        }
 
-        init(_ first: UInt8, _ second: UInt8) {
-            self.first = first
-            self.second = second
+        let chars:(repeat each T)
+
+        var count : Int {
+            var i:Int = 0
+            for _ in repeat (each chars) {
+                i += 1
+            }
+            return i
+        }
+
+        func hash(into hasher: inout Hasher) {
+            for i in repeat (each chars) {
+                hasher.combine(i)
+            }
         }
     }
 }
