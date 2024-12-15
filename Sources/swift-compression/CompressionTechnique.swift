@@ -7,6 +7,7 @@
 
 import Foundation
 
+// MARK: CompressionTechnique
 public enum CompressionTechnique {
     // audio
     case aac
@@ -26,6 +27,7 @@ public enum CompressionTechnique {
     case lzw
     /// Move-to-front transform
     case mtf
+    case protobuf(version: Int, dataTypes: [Protobuf.DataType])
     case runLength(minRun: Int)
     /// AKA Zippy
     case snappy
@@ -90,6 +92,7 @@ public enum CompressionTechnique {
     }
 }
 
+// MARK: DataBuilder
 public extension CompressionTechnique {
     struct DataBuilder {
         public var data:Data

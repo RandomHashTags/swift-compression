@@ -57,7 +57,7 @@ public extension CompressionTechnique.JSON {
             for value in dic.values {
                 encode(value)
             }
-            compressed[0] = 91 // ]
+            compressed[0] = 91 // [
             compressed.append(93) // ]
         } else if let array:[Any] = object as? [Any] {
             for value in array {
