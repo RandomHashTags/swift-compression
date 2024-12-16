@@ -30,7 +30,6 @@ extension DiagnosticMsg : FixItMessage {
 @main
 struct SwiftCompressionMacros : CompilerPlugin {
     let providingMacros:[any Macro.Type] = [
-        ProtocolBuffer.self
     ]
 }
 

@@ -27,7 +27,6 @@ public enum CompressionTechnique {
     case lzw
     /// Move-to-front transform
     case mtf
-    case protobuf(version: Int, dataTypes: [Protobuf.DataType])
     case runLength(minRun: Int)
     /// AKA Zippy
     case snappy
