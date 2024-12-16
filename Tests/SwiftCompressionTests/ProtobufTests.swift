@@ -5,6 +5,8 @@
 //  Created by Evan Anderson on 12/14/24.
 //
 
+#if swift(>=6.0)
+
 import Foundation
 import Testing
 @testable import SwiftCompression
@@ -56,3 +58,5 @@ struct ProtobufExample1 : Hashable, ProtobufProtocol {
         }
     }
 }
+
+#endif

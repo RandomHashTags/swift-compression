@@ -5,6 +5,8 @@
 //  Created by Evan Anderson on 12/14/24.
 //
 
+#if swift(>=6.0)
+
 import Foundation
 import Testing
 @testable import SwiftCompression
@@ -19,3 +21,5 @@ struct DataBuilderTests {
         #expect(builder.data == Data([175, 128]))
     }
 }
+
+#endif

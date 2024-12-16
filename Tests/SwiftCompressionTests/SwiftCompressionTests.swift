@@ -5,6 +5,8 @@
 //  Created by Evan Anderson on 12/9/24.
 //
 
+#if swift(>=6.0)
+
 import Foundation
 import Testing
 @testable import SwiftCompression
@@ -73,3 +75,5 @@ extension SwiftCompressionTests {
         #expect(String(data: decompressed, encoding: .utf8) == "Wikipedia is a free, web-based, collaborative, multilingual encyclopedia project.")
     }
 }
+
+#endif
