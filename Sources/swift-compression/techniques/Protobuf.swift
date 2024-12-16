@@ -29,6 +29,8 @@ public extension CompressionTechnique {
                             case .int32:  return decodeInt32(index: &index, data: data)
                             case .int64:  return decodeInt64(index: &index, data: data)
                             case .string: return decodeString(index: &index, data: data)
+                            case .uint32: return decodeUInt32(index: &index, data: data)
+                            case .uint64: return decodeUInt64(index: &index, data: data)
                             default:      return nil
                         }
                     default: return nil
@@ -103,6 +105,8 @@ public extension ProtobufProtocol {
                     case .int32:  CompressionTechnique.Protobuf.encodeInt32(value as! Int32, into: &data)
                     case .int64:  CompressionTechnique.Protobuf.encodeInt64(value as! Int64, into: &data)
                     case .string: CompressionTechnique.Protobuf.encodeString(value as! String, into: &data)
+                    case .uint32: CompressionTechnique.Protobuf.encodeUInt32(value as! UInt32, into: &data)
+                    case .uint64: CompressionTechnique.Protobuf.encodeUInt64(value as! UInt64, into: &data)
                     default: break
                 }
             }
@@ -140,6 +144,16 @@ extension CompressionTechnique.Protobuf {
 
     @inlinable
     static func encodeInt64(_ int: Int64, into data: inout [UInt8]) {
+        encodeVarInt(int: int, into: &data)
+    }
+
+    @inlinable
+    static func encodeUInt32(_ int: UInt32, into data: inout [UInt8]) {
+        encodeVarInt(int: int, into: &data)
+    }
+    
+    @inlinable
+    static func encodeUInt64(_ int: UInt64, into data: inout [UInt8]) {
         encodeVarInt(int: int, into: &data)
     }
 
@@ -228,5 +242,15 @@ extension CompressionTechnique.Protobuf {
     @inlinable
     static func decodeInt64(index: inout Int, data: [UInt8]) -> Int64 {
         return Int64(decodeVarInt(index: &index, data: data))
+    }
+
+    @inlinable
+    static func decodeUInt32(index: inout Int, data: [UInt8]) -> UInt32 {
+        return UInt32(decodeVarInt(index: &index, data: data))
+    }
+
+    @inlinable
+    static func decodeUInt64(index: inout Int, data: [UInt8]) -> UInt64 {
+        return decodeVarInt(index: &index, data: data)
     }
 }

@@ -28,6 +28,9 @@ let package = Package(
         ),
         .target(
             name: "SwiftCompression",
+            dependencies: [
+                "SwiftCompressionMacros"
+            ],
             path: "Sources/swift-compression"
         ),
         .testTarget(

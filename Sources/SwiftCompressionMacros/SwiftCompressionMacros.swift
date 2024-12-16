@@ -7,6 +7,7 @@
 
 import SwiftCompilerPlugin
 import SwiftDiagnostics
+import SwiftSyntax
 import SwiftSyntaxMacros
 
 // MARK: ErrorDiagnostic
@@ -29,5 +30,20 @@ extension DiagnosticMsg : FixItMessage {
 @main
 struct SwiftCompressionMacros : CompilerPlugin {
     let providingMacros:[any Macro.Type] = [
+        ProtocolBuffer.self
     ]
+}
+
+// MARK: SwiftSyntax Misc
+extension SyntaxProtocol {
+    var functionCall : FunctionCallExprSyntax? { self.as(FunctionCallExprSyntax.self) }
+    var stringLiteral : StringLiteralExprSyntax? { self.as(StringLiteralExprSyntax.self) }
+    var booleanLiteral : BooleanLiteralExprSyntax? { self.as(BooleanLiteralExprSyntax.self) }
+    var memberAccess : MemberAccessExprSyntax? { self.as(MemberAccessExprSyntax.self) }
+    var array : ArrayExprSyntax? { self.as(ArrayExprSyntax.self) }
+    var dictionary : DictionaryExprSyntax? { self.as(DictionaryExprSyntax.self) }
+}
+
+extension StringLiteralExprSyntax {
+    var string : String { "\(segments)" }
 }

@@ -7,7 +7,10 @@
 
 #if compiler(>=6.0)
 
+#if canImport(Foundation)
 import Foundation
+#endif
+
 import Testing
 @testable import SwiftCompression
 
@@ -43,6 +46,7 @@ struct SwiftCompressionTests {
         #expect(compressed == expected_result)
     }
 
+    #if canImport(Foundation)
     @Test func decompressRunLengthEncoding() {
         let string:String = "AAAAABBBBBCCCCC"
         let data:[UInt8] = [UInt8](string.data(using: .utf8)!)
@@ -51,6 +55,7 @@ struct SwiftCompressionTests {
         #expect(decompressed == data)
         #expect(string == String(data: Data(decompressed), encoding: .utf8))
     }
+    #endif
 }
 
 extension SwiftCompressionTests {
@@ -60,6 +65,7 @@ extension SwiftCompressionTests {
     }
 }
 
+#if canImport(Foundation)
 extension SwiftCompressionTests {
     @Test func decompressSnappy() {
         var string:String = "51 f0 42 57 69 6b 69 70 65 64 69 61 20 69 73 20"
@@ -75,5 +81,6 @@ extension SwiftCompressionTests {
         #expect(String(data: Data(decompressed), encoding: .utf8) == "Wikipedia is a free, web-based, collaborative, multilingual encyclopedia project.")
     }
 }
+#endif
 
 #endif

@@ -5,6 +5,11 @@
 //  Created by Evan Anderson on 12/9/24.
 //
 
+@attached(member, names: arbitrary)
+public macro ProtocolBuffer(
+    content: [String:CompressionTechnique.Protobuf.DataType]
+) = #externalMacro(module: "SwiftCompressionMacros", type: "ProtocolBuffer")
+
 // MARK: [UInt8]
 public extension Array where Element == UInt8 {
     @inlinable
