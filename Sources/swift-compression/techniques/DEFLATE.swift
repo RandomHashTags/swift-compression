@@ -5,8 +5,6 @@
 //  Created by Evan Anderson on 12/9/24.
 //
 
-import Foundation
-
 public extension CompressionTechnique {
     enum Deflate { // TODO: finish
         struct Block {
@@ -44,7 +42,7 @@ public extension CompressionTechnique {
 // MARK: Compress Data
 public extension CompressionTechnique.Deflate {
     @inlinable
-    static func compress(data: Data) -> CompressionResult {
+    static func compress(data: [UInt8]) -> CompressionResult {
         return CompressionResult(data: data)
     }
 }
@@ -52,7 +50,7 @@ public extension CompressionTechnique.Deflate {
 // MARK: Decompress Data
 public extension CompressionTechnique.Deflate {
     @inlinable
-    static func decompress(data: Data) -> Data {
+    static func decompress(data: [UInt8]) -> [UInt8] {
         return data
     }
 }

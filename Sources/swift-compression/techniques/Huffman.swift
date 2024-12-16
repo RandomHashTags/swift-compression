@@ -5,8 +5,6 @@
 //  Created by Evan Anderson on 12/9/24.
 //
 
-import Foundation
-
 public extension CompressionTechnique {
     enum Huffman { // TODO: finish
     }
@@ -16,7 +14,7 @@ public extension CompressionTechnique {
 // MARK: Compress Data
 public extension CompressionTechnique.Huffman {
     @inlinable
-    static func compress(data: Data) -> CompressionResult {
+    static func compress(data: [UInt8]) -> CompressionResult {
         var priorities:[Int:Int] = Dictionary(minimumCapacity: 255)
         for i in 0..<data.count {
             let char:UInt8 = data[i]
@@ -27,7 +25,7 @@ public extension CompressionTechnique.Huffman {
             }
         }
         let sorted:[Dictionary<Int, Int>.Element] = priorities.sorted(by: { $0.value >= $1.value })
-        var compressed:Data = Data()
+        var compressed:[UInt8] = []
         compressed.reserveCapacity(data.count)
         var alignment:Int = 0
         for (char, freq) in sorted {
@@ -42,7 +40,7 @@ public extension CompressionTechnique.Huffman {
 // MARK: Decompress Data
 extension CompressionTechnique.Huffman {
     @inlinable
-    static func decompress(data: Data) -> Data {
+    static func decompress(data: [UInt8]) -> [UInt8] {
         return data
     }
 }

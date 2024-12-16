@@ -5,7 +5,9 @@
 //  Created by Evan Anderson on 12/14/24.
 //
 
+#if canImport(Foundation)
 import Foundation
+#endif
 
 // MARK: Protobuf
 public extension CompressionTechnique {
@@ -19,7 +21,7 @@ public extension CompressionTechnique {
             case i32
 
             @inlinable
-            func decode(dataType: DataType, index: inout Int, data: Data) -> Any? {
+            func decode(dataType: DataType, index: inout Int, data: [UInt8]) -> Any? {
                 switch self {
                     case .varint:
                         switch dataType {
@@ -34,7 +36,7 @@ public extension CompressionTechnique {
             }
 
             @inlinable
-            func skip(index: inout Int, data: Data) {
+            func skip(index: inout Int, data: [UInt8]) {
                 switch self {
                     case .varint: index += Int(decodeVarInt(index: &index, data: data))
                     case .i64:    index += 8
@@ -83,15 +85,15 @@ public protocol ProtobufProtocol {
     func value(forKey key: String) -> Any?
     mutating func setValue(forKey key: String, value: Any)
 
-    func serialize(reserveCapacity: Int) -> Data
-    static func deserialize(data: Data) -> Self
+    func serialize(reserveCapacity: Int) -> [UInt8]
+    static func deserialize(data: [UInt8]) -> Self
 }
 
 // MARK: Serialize
 public extension ProtobufProtocol {
     @inlinable
-    func serialize(reserveCapacity: Int = 1024) -> Data {
-        var data:Data = Data()
+    func serialize(reserveCapacity: Int = 1024) -> [UInt8] {
+        var data:[UInt8] = []
         data.reserveCapacity(reserveCapacity)
         for (index, (key, dataType)) in Self.values.enumerated() {
             CompressionTechnique.Protobuf.encodeFieldTag(number: index+1, wireType: .varint, into: &data)
@@ -111,7 +113,7 @@ public extension ProtobufProtocol {
 
 extension CompressionTechnique.Protobuf {
     @inlinable
-    static func encodeVarInt<T: FixedWidthInteger>(int: T, into data: inout Data) {
+    static func encodeVarInt<T: FixedWidthInteger>(int: T, into data: inout [UInt8]) {
         var int:UInt64 = UInt64(int)
         while int > 0x7F {
             data.append(UInt8((int & 0x7F) | 0x80))
@@ -121,37 +123,39 @@ extension CompressionTechnique.Protobuf {
     }
 
     @inlinable
-    static func encodeFieldTag(number: Int, wireType: CompressionTechnique.Protobuf.WireType, into data: inout Data) {
+    static func encodeFieldTag(number: Int, wireType: CompressionTechnique.Protobuf.WireType, into data: inout [UInt8]) {
         let tag:Int = (number << 3) | wireType.rawValue
         encodeVarInt(int: tag, into: &data)
     }
 
     @inlinable
-    static func encodeBool(_ bool: Bool, into data: inout Data) {
+    static func encodeBool(_ bool: Bool, into data: inout [UInt8]) {
         encodeVarInt(int: bool ? 1 : 0, into: &data)
     }
 
     @inlinable
-    static func encodeInt32(_ int: Int32, into data: inout Data) {
+    static func encodeInt32(_ int: Int32, into data: inout [UInt8]) {
         encodeVarInt(int: int, into: &data)
     }
 
     @inlinable
-    static func encodeInt64(_ int: Int64, into data: inout Data) {
+    static func encodeInt64(_ int: Int64, into data: inout [UInt8]) {
         encodeVarInt(int: int, into: &data)
     }
 
+    #if canImport(Foundation)
     @inlinable
-    static func encodeString(_ string: String, into data: inout Data) {
+    static func encodeString(_ string: String, into data: inout [UInt8]) {
         guard let utf8:Data = string.data(using: .utf8) else { return }
         encodeVarInt(int: utf8.count, into: &data)
-        data.append(utf8)
+        data.append(contentsOf: utf8)
     }
+    #endif
 }
 
 // MARK: Deserialize
 public extension ProtobufProtocol {
-    static func deserialize(data: Data) -> Self {
+    static func deserialize(data: [UInt8]) -> Self {
         var value:Self = Self()
         var index:Int = 0
         while index < data.count {
@@ -169,7 +173,7 @@ public extension ProtobufProtocol {
 
 extension CompressionTechnique.Protobuf {
     @inlinable
-    static func decodeVarInt(index: inout Int, data: Data) -> UInt64 {
+    static func decodeVarInt(index: inout Int, data: [UInt8]) -> UInt64 {
         var result:UInt64 = 0, shift:UInt64 = 0
         while index < data.count {
             let byte:UInt8 = data[index]
@@ -184,7 +188,7 @@ extension CompressionTechnique.Protobuf {
     }
 
     @inlinable
-    static func decodeFieldTag(index: inout Int, data: Data) -> (Int, CompressionTechnique.Protobuf.WireType)? {
+    static func decodeFieldTag(index: inout Int, data: [UInt8]) -> (Int, CompressionTechnique.Protobuf.WireType)? {
         let tag:UInt64 = decodeVarInt(index: &index, data: data)
         let number:Int = Int(tag >> 3)
         guard let wireType:CompressionTechnique.Protobuf.WireType = .init(rawValue: Int(tag & 0x07)) else {
@@ -194,33 +198,35 @@ extension CompressionTechnique.Protobuf {
     }
 
     @inlinable
-    static func decodeLengthDelimited(index: inout Int, data: Data) -> Data {
+    static func decodeLengthDelimited(index: inout Int, data: [UInt8]) -> [UInt8] {
         let length:Int = Int(decodeVarInt(index: &index, data: data))
-        let bytes:Data = data[index..<index + length]
+        let bytes:ArraySlice<UInt8> = data[index..<index + length]
         index += length
-        return bytes
+        return [UInt8](bytes)
     }
 }
 
 extension CompressionTechnique.Protobuf {
+    #if canImport(Foundation)
     @inlinable
-    static func decodeString(index: inout Int, data: Data) -> String? {
-        let bytes:Data = decodeLengthDelimited(index: &index, data: data)
-        return String(data: bytes, encoding: .utf8)
+    static func decodeString(index: inout Int, data: [UInt8]) -> String? {
+        let bytes:[UInt8] = decodeLengthDelimited(index: &index, data: data)
+        return String(data: Data(bytes), encoding: .utf8)
     }
+    #endif
 
     @inlinable
-    static func decodeBool(index: inout Int, data: Data) -> Bool {
+    static func decodeBool(index: inout Int, data: [UInt8]) -> Bool {
         return Int32(decodeVarInt(index: &index, data: data)) != 0
     }
     
     @inlinable
-    static func decodeInt32(index: inout Int, data: Data) -> Int32 {
+    static func decodeInt32(index: inout Int, data: [UInt8]) -> Int32 {
         return Int32(decodeVarInt(index: &index, data: data))
     }
 
     @inlinable
-    static func decodeInt64(index: inout Int, data: Data) -> Int64 {
+    static func decodeInt64(index: inout Int, data: [UInt8]) -> Int64 {
         return Int64(decodeVarInt(index: &index, data: data))
     }
 }

@@ -5,8 +5,6 @@
 //  Created by Evan Anderson on 12/12/24.
 //
 
-import Foundation
-
 public enum LZ77 { // TODO: finish
     typealias Token = (distance: Int, length: Int, next: UInt8)
 }
@@ -14,7 +12,7 @@ public enum LZ77 { // TODO: finish
 // MARK: Compress data
 public extension LZ77 {
     @inlinable
-    static func compress(data: Data, windowSize: Int, bufferSize: Int) -> CompressionResult {
+    static func compress(data: [UInt8], windowSize: Int, bufferSize: Int) -> CompressionResult {
         return CompressionResult(data: data)
     }
 }
@@ -22,7 +20,7 @@ public extension LZ77 {
 extension LZ77 {
     typealias KeyType = Key<UInt8, UInt8>
 
-    static func compressTokens(data: Data, windowSize: Int, bufferSize: Int) -> [Token] {
+    static func compressTokens(data: [UInt8], windowSize: Int, bufferSize: Int) -> [Token] {
         var compressed:[Token] = []    
         var startingPositions:[KeyType:Int] = [:]
         var index:Int = 0
@@ -30,7 +28,7 @@ extension LZ77 {
             let windowStarts:Int = max(0, index - windowSize)
             var distance:Int = 0, length:Int = 0
             var next:UInt8 = data[index]
-            let lookAhead:Data = data[index..<min(index + bufferSize, data.count)]
+            let lookAhead:ArraySlice<UInt8> = data[index..<min(index + bufferSize, data.count)]
             let key:KeyType = Key(chars: (lookAhead[0], lookAhead[1]))
             if let match:Int = startingPositions[key] {
                 distance = index - match
@@ -41,9 +39,9 @@ extension LZ77 {
             }
             compressed.append((distance, length, next))
 
-            let search:Data = data[windowStarts..<index]
+            let search:ArraySlice<UInt8> = data[windowStarts..<index]
             for i in windowStarts..<index {
-                let keyData:Data = search[i..<min(i + 2, search.count)]
+                let keyData:ArraySlice<UInt8> = search[i..<min(i + 2, search.count)]
                 let key:KeyType = Key(chars: (keyData[0], keyData[1]))
                 startingPositions[key] = i
             }
@@ -83,7 +81,7 @@ extension LZ77 {
 // MARK: Decompress data
 public extension LZ77 {
     @inlinable
-    static func decompress(data: Data) -> Data {
+    static func decompress(data: [UInt8]) -> [UInt8] {
         return data
     }
 }

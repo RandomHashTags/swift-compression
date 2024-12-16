@@ -5,13 +5,11 @@
 //  Created by Evan Anderson on 12/9/24.
 //
 
-import Foundation
-
 public struct CompressionResult {
-    public let data:Data
-    public let frequencyTable:[String:String]?
+    public var data:[UInt8]
+    public var frequencyTable:[String:String]?
 
-    public init(data: Data, frequencyTable: [String:String]? = nil) {
+    public init(data: [UInt8], frequencyTable: [String:String]? = nil) {
         self.data = data
         self.frequencyTable = frequencyTable
     }

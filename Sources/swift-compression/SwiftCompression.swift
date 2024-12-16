@@ -5,31 +5,47 @@
 //  Created by Evan Anderson on 12/9/24.
 //
 
-import Foundation
-
-// MARK: Data
-public extension Data {
+// MARK: [UInt8]
+public extension Array where Element == UInt8 {
     @inlinable
     func compress(technique: CompressionTechnique) -> CompressionResult {
         return technique.compress(data: self)
     }
 
     @inlinable
-    func decompress(technique: CompressionTechnique) -> Data {
+    func decompress(technique: CompressionTechnique) -> [UInt8] {
         return technique.decompress(data: self)
     }
 }
 
-// MARK: Encodable
+// MARK: Stream
+// TODO: support
+
+
+// MARK: Foundation
+#if canImport(Foundation)
+import Foundation
+
+public extension Data {
+    @inlinable
+    func compress(technique: CompressionTechnique) -> CompressionResult {
+        return technique.compress(data: [UInt8](self))
+    }
+
+    @inlinable
+    func decompress(technique: CompressionTechnique) -> [UInt8] {
+        return technique.decompress(data: [UInt8](self))
+    }
+}
+
 public extension Encodable {
     @inlinable
     func compress(technique: CompressionTechnique) -> CompressionResult? {
         guard let data:Data = try? JSONEncoder().encode(self) else { return nil }
-        return technique.compress(data: data)
+        return technique.compress(data: [UInt8](data))
     }
 }
 
-// MARK: StringProtocol
 public extension StringProtocol {
     @inlinable
     func compress(technique: CompressionTechnique, encoding: String.Encoding = .utf8) -> CompressionResult? {
@@ -37,19 +53,4 @@ public extension StringProtocol {
         return data.compress(technique: technique)
     }
 }
-
-// MARK: [UInt8]
-public extension Sequence where Element == UInt8 {
-    @inlinable
-    func compress(technique: CompressionTechnique) -> CompressionResult {
-        return technique.compress(data: Data(self))
-    }
-
-    @inlinable
-    func decompress(technique: CompressionTechnique) -> Data {
-        return technique.decompress(data: Data(self))
-    }
-}
-
-// MARK: Stream
-// TODO: support
+#endif

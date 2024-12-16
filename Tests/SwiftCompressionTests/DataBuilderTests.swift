@@ -5,7 +5,7 @@
 //  Created by Evan Anderson on 12/14/24.
 //
 
-#if swift(>=6.0)
+#if compiler(>=6.0)
 
 import Foundation
 import Testing
@@ -18,7 +18,7 @@ struct DataBuilderTests {
         builder.write(bits: [true, false, true, false])
         builder.write(bits: [true, true, true, true, true])
         builder.finalize()
-        #expect(builder.data == Data([175, 128]))
+        #expect(builder.data == [175, 128])
     }
 }
 

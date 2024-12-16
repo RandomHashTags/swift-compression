@@ -5,7 +5,7 @@
 //  Created by Evan Anderson on 12/14/24.
 //
 
-#if swift(>=6.0)
+#if compiler(>=6.0)
 
 import Foundation
 import Testing
@@ -14,7 +14,7 @@ import Testing
 struct ProtobufTests {
     @Test func protobuf() {
         let example1:ProtobufExample1 = ProtobufExample1(id: 9, name: "HOOPLA", isTrue: true)
-        let data:Data = example1.serialize()
+        let data:[UInt8] = example1.serialize()
 
         let result:ProtobufExample1 = ProtobufExample1.deserialize(data: data)
         #expect(example1 == result)

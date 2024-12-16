@@ -5,10 +5,10 @@
 //  Created by Evan Anderson on 12/9/24.
 //
 
-import Foundation
-
 // MARK: CompressionTechnique
 public enum CompressionTechnique {
+    case multiple(techniques: [CompressionTechnique])
+
     // audio
     case aac
     case mp3
@@ -65,9 +65,17 @@ public enum CompressionTechnique {
     case mpeg
     
     @inlinable
-    public func compress(data: Data) -> CompressionResult {
+    public func compress(data: [UInt8]) -> CompressionResult {
         guard !data.isEmpty else { return CompressionResult(data: data) }
         switch self {
+            case .multiple(let techniques):
+                var result:CompressionResult = CompressionResult(data: data)
+                for technique in techniques {
+                    let compressed:CompressionResult = technique.compress(data: result.data)
+                    result.data = compressed.data
+                    result.frequencyTable = compressed.frequencyTable
+                }
+                return result
             case .deflate: return Deflate.compress(data: data)
             case .huffman: return Huffman.compress(data: data)
             case .json: return JSON.compress(data: data)
@@ -79,9 +87,15 @@ public enum CompressionTechnique {
     }
 
     @inlinable
-    public func decompress(data: Data) -> Data {
+    public func decompress(data: [UInt8]) -> [UInt8] {
         guard !data.isEmpty else { return data }
         switch self {
+            case .multiple(let techniques):
+                var data:[UInt8] = data
+                for technique in techniques {
+                    data = technique.decompress(data: data)
+                }
+                return data
             case .deflate: return Deflate.decompress(data: data)
             case .huffman: return Huffman.decompress(data: data)
             case .json: return JSON.decompress(data: data)
@@ -95,10 +109,10 @@ public enum CompressionTechnique {
 // MARK: DataBuilder
 public extension CompressionTechnique {
     struct DataBuilder {
-        public var data:Data
+        public var data:[UInt8]
         var bitBuilder:IntBitBuilder
 
-        public init(data: Data = Data(), bitBuilder: IntBitBuilder = IntBitBuilder()) {
+        public init(data: [UInt8] = [], bitBuilder: IntBitBuilder = IntBitBuilder()) {
             self.data = data
             self.bitBuilder = bitBuilder
         }
@@ -147,7 +161,7 @@ public extension CompressionTechnique {
             }
         }
 
-        public mutating func write(bits: [Bool], to data: inout Data) {
+        public mutating func write(bits: [Bool], to data: inout [UInt8]) {
             var wrote:Int = 0
             while wrote != bits.count {
                 let available_bits:Int = min(8 - index, max(0, bits.count - wrote))
@@ -164,7 +178,7 @@ public extension CompressionTechnique {
                 wrote += available_bits
             }
         }
-        public mutating func flush(into data: inout Data) {
+        public mutating func flush(into data: inout [UInt8]) {
             if index != 8 {
                 while index != 8 {
                     self[index] = false

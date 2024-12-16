@@ -5,8 +5,6 @@
 //  Created by Evan Anderson on 12/9/24.
 //
 
-import Foundation
-
 // https://en.wikipedia.org/wiki/Run-length_encoding
 public extension CompressionTechnique {
     enum RunLengthEncoding {
@@ -16,8 +14,8 @@ public extension CompressionTechnique {
 // MARK: Compress Data
 public extension CompressionTechnique.RunLengthEncoding {
     @inlinable
-    static func compress(minRun: Int, includeCountForMinRun: Bool = true, data: Data) -> CompressionResult {
-        let closure:(inout Data, Int, UInt8) -> Void
+    static func compress(minRun: Int, includeCountForMinRun: Bool = true, data: [UInt8]) -> CompressionResult {
+        let closure:(inout [UInt8], Int, UInt8) -> Void
         if includeCountForMinRun {
             closure = { compressed, run, runByte in
                 compressed.append(UInt8(191 + run))
@@ -35,8 +33,8 @@ public extension CompressionTechnique.RunLengthEncoding {
         }
         return compress(minRun: minRun, data: data, closure: closure)
     }
-    static func compress(minRun: Int, data: Data, closure: (inout Data, Int, UInt8) -> Void) -> CompressionResult {
-        var compressed:Data = Data()
+    static func compress(minRun: Int, data: [UInt8], closure: (inout [UInt8], Int, UInt8) -> Void) -> CompressionResult {
+        var compressed:[UInt8] = []
         compressed.reserveCapacity(data.count)
         var run:Int = 0, runByte:UInt8 = data[0]
         data.withUnsafeBytes { p in
@@ -64,8 +62,8 @@ public extension CompressionTechnique.RunLengthEncoding {
 // MARK: Decompress Data
 public extension CompressionTechnique.RunLengthEncoding {
     @inlinable
-    static func decompress(data: Data) -> Data {
-        var decompressed:Data = Data()
+    static func decompress(data: [UInt8]) -> [UInt8] {
+        var decompressed:[UInt8] = []
         data.withUnsafeBytes { p in
             var index:Int = 0, run:UInt8 = 0, character:UInt8 = 0
             while index < p.count {

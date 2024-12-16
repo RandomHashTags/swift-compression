@@ -5,8 +5,6 @@
 //  Created by Evan Anderson on 12/9/24.
 //
 
-import Foundation
-
 // https://en.wikipedia.org/wiki/Snappy_(compression)
 public extension CompressionTechnique {
     enum Snappy {
@@ -16,8 +14,8 @@ public extension CompressionTechnique {
 // MARK: Compress data
 public extension CompressionTechnique.Snappy { // TODO: finish
     @inlinable
-    static func compress(data: Data) -> CompressionResult {
-        var compressed:Data = Data()
+    static func compress(data: [UInt8]) -> CompressionResult {
+        var compressed:[UInt8] = []
         compressed.reserveCapacity(data.count)
         return CompressionResult(data: compressed)
     }
@@ -26,8 +24,8 @@ public extension CompressionTechnique.Snappy { // TODO: finish
 // MARK: Decompress data
 public extension CompressionTechnique.Snappy {
     @inlinable
-    static func decompress(data: Data) -> Data {
-        var decompressed:Data = Data()
+    static func decompress(data: [UInt8]) -> [UInt8] {
+        var decompressed:[UInt8] = []
         decompressed.reserveCapacity(data.count)
         let totalSize:Int = Int(data[0])
         var index:Int = 1
@@ -52,8 +50,8 @@ extension CompressionTechnique.Snappy {
     static func decompressLiteral(
         flagBits: Bits8,
         index: inout Int,
-        compressed: Data,
-        into data: inout Data
+        compressed: [UInt8],
+        into data: inout [UInt8]
     ) {
         let length:Int = parseLiteralLength(flagBits: flagBits, index: &index, compressed: compressed)
         compressed.withUnsafeBytes { (p:UnsafeRawBufferPointer) in
@@ -65,7 +63,7 @@ extension CompressionTechnique.Snappy {
     }
 
     @inlinable
-    static func parseLiteralLength(flagBits: Bits8, index: inout Int, compressed: Data) -> Int {
+    static func parseLiteralLength(flagBits: Bits8, index: inout Int, compressed: [UInt8]) -> Int {
         let length:UInt8 = UInt8(fromBits: (false, false, flagBits.0, flagBits.1, flagBits.2, flagBits.3, flagBits.4, flagBits.5))
         index += 1
         var totalLength:Int
@@ -92,12 +90,12 @@ extension CompressionTechnique.Snappy {
     static func decompressCopy1(
         flagBits: Bits8,
         index: inout Int,
-        compressed: Data,
-        into data: inout Data
+        compressed: [UInt8],
+        into data: inout [UInt8]
     ) {
         var bytes:UInt8 = 4 + UInt8(fromBits: (flagBits.3, flagBits.4, flagBits.5))
-        let nextBits:Bits8 = compressed[index+1].bitsTuple
-        let offset:UInt16 = UInt16(fromBits: (flagBits.0, flagBits.1, flagBits.2, nextBits.0, nextBits.1, nextBits.2, nextBits.3, nextBits.4, nextBits.5, nextBits.6, nextBits.7))
+        let bits:Bits8 = compressed[index+1].bitsTuple
+        let offset:UInt16 = UInt16(fromBits: (flagBits.0, flagBits.1, flagBits.2, bits.0, bits.1, bits.2, bits.3, bits.4, bits.5, bits.6, bits.7))
         var begins:Int = index - Int(offset)
         compressed.withUnsafeBytes { (p:UnsafeRawBufferPointer) in
             while bytes != 0 {
@@ -112,13 +110,13 @@ extension CompressionTechnique.Snappy {
     static func decompressCopy2(
         flagBits: Bits8,
         index: inout Int,
-        compressed: Data,
-        into data: inout Data
+        compressed: [UInt8],
+        into data: inout [UInt8]
     ) {
-        let nextBits:Bits8 = compressed[index+1].bitsTuple, finalBits:Bits8 = compressed[index+2].bitsTuple
+        let bits0:Bits8 = compressed[index+1].bitsTuple, bits1:Bits8 = compressed[index+2].bitsTuple
         let offset:UInt16 = UInt16(fromBits: (
-            nextBits.0, nextBits.1, nextBits.2, nextBits.3, nextBits.4, nextBits.5, nextBits.6, nextBits.7,
-            finalBits.0, finalBits.1, finalBits.2, finalBits.3, finalBits.4, finalBits.5, finalBits.6, finalBits.7
+            bits0.0, bits0.1, bits0.2, bits0.3, bits0.4, bits0.5, bits0.6, bits0.7,
+            bits1.0, bits1.1, bits1.2, bits1.3, bits1.4, bits1.5, bits1.6, bits1.7
         ))
         decompressCopyN(flagBits: flagBits, index: &index, compressed: compressed, into: &data, offset: offset, readBytes: 3)
     }
@@ -126,16 +124,16 @@ extension CompressionTechnique.Snappy {
     static func decompressCopy4(
         flagBits: Bits8,
         index: inout Int,
-        compressed: Data,
-        into data: inout Data
+        compressed: [UInt8],
+        into data: inout [UInt8]
     ) {
-        let secondBits:Bits8 = compressed[index+1].bitsTuple
-        let thirdBits:Bits8 = compressed[index+2].bitsTuple
-        let finalBits:Bits8 = compressed[index+3].bitsTuple
+        let bits0:Bits8 = compressed[index+1].bitsTuple
+        let bits1:Bits8 = compressed[index+2].bitsTuple
+        let bits2:Bits8 = compressed[index+3].bitsTuple
         let offset:UInt32 = UInt32(fromBits: (
-            secondBits.0, secondBits.1, secondBits.2, secondBits.3, secondBits.4, secondBits.5, secondBits.6, secondBits.7,
-            thirdBits.0, thirdBits.1, thirdBits.2, thirdBits.3, thirdBits.4, thirdBits.5, thirdBits.6, thirdBits.7,
-            finalBits.0, finalBits.1, finalBits.2, finalBits.3, finalBits.4, finalBits.5, finalBits.6, finalBits.7
+            bits0.0, bits0.1, bits0.2, bits0.3, bits0.4, bits0.5, bits0.6, bits0.7,
+            bits1.0, bits1.1, bits1.2, bits1.3, bits1.4, bits1.5, bits1.6, bits1.7,
+            bits2.0, bits2.1, bits2.2, bits2.3, bits2.4, bits2.5, bits2.6, bits2.7
         ))
         decompressCopyN(flagBits: flagBits, index: &index, compressed: compressed, into: &data, offset: offset, readBytes: 5)
     }
@@ -143,8 +141,8 @@ extension CompressionTechnique.Snappy {
     static func decompressCopyN<T: FixedWidthInteger>(
         flagBits: Bits8,
         index: inout Int,
-        compressed: Data,
-        into data: inout Data,
+        compressed: [UInt8],
+        into data: inout [UInt8],
         offset: T,
         readBytes: Int
     ) {

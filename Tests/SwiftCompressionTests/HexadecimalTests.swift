@@ -5,7 +5,7 @@
 //  Created by Evan Anderson on 12/10/24.
 //
 
-#if swift(>=6.0)
+#if compiler(>=6.0)
 
 import Foundation
 import Testing

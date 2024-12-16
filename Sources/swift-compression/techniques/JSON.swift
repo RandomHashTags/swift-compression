@@ -5,19 +5,22 @@
 //  Created by Evan Anderson on 12/14/24.
 //
 
+#if canImport(Foundation)
 import Foundation
+#endif
 
 public extension CompressionTechnique {
     enum JSON { // TODO: finish
     }
 }
 
+#if canImport(Foundation)
 // MARK: Compress encodable
 public extension CompressionTechnique.JSON {
     @inlinable
     static func compress<T: Encodable>(encodable: T) -> CompressionResult? {
         guard let data:Data = try? JSONEncoder().encode(encodable) else { return nil }
-        var compressed:Data = Data()
+        var compressed:[UInt8] = []
         compressed.reserveCapacity(data.count)
         guard let object:Any = try? JSONSerialization.jsonObject(with: data) else { return nil }
         let quotationMark:UInt8 = 34, comma:UInt8 = 44
@@ -37,7 +40,7 @@ public extension CompressionTechnique.JSON {
                 var builder:CompressionTechnique.DataBuilder = CompressionTechnique.DataBuilder()
                 builder.write(bits: int.bits)
                 builder.finalize()
-                compressed.append(builder.data)
+                compressed.append(contentsOf: builder.data)
             } else if let dic:[String:Any] = value as? [String:Any] {
                 compressed.append(comma)
                 for value in dic.values {
@@ -71,6 +74,7 @@ public extension CompressionTechnique.JSON {
         return compress(data: compressed)
     }
 }
+#endif
 
 // MARK: Compress encoded
 public extension CompressionTechnique.JSON {
@@ -83,7 +87,7 @@ public extension CompressionTechnique.JSON {
 // MARK: Compress data
 public extension CompressionTechnique.JSON {
     @inlinable
-    static func compress(data: Data) -> CompressionResult {
+    static func compress(data: [UInt8]) -> CompressionResult {
         return CompressionResult(data: data)
     }
 }
@@ -91,7 +95,7 @@ public extension CompressionTechnique.JSON {
 // MARK: Decompress encodable
 public extension CompressionTechnique.JSON {
     @inlinable
-    static func decompress<T: Decodable>(data: Data) -> T? {
+    static func decompress<T: Decodable>(data: [UInt8]) -> T? {
         return nil
     }
 }
@@ -99,7 +103,7 @@ public extension CompressionTechnique.JSON {
 // MARK: Decompress data
 public extension CompressionTechnique.JSON {
     @inlinable
-    static func decompress(data: Data) -> Data {
+    static func decompress(data: [UInt8]) -> [UInt8] {
         return data
     }
 }

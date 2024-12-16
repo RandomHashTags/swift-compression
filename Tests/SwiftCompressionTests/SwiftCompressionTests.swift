@@ -5,7 +5,7 @@
 //  Created by Evan Anderson on 12/9/24.
 //
 
-#if swift(>=6.0)
+#if compiler(>=6.0)
 
 import Foundation
 import Testing
@@ -13,9 +13,9 @@ import Testing
 
 struct SwiftCompressionTests {
     @Test func compressRunLengthEncoding() {
-        var data:Data = "AAAAABBBBBCCCCC".data(using: .utf8)!
-        var compressed:Data = CompressionTechnique.RunLengthEncoding.compress(minRun: 3, data: data).data
-        var expected_result:Data = Data([196, 65, 196, 66, 196, 67])
+        var data:[UInt8] = [UInt8]("AAAAABBBBBCCCCC".data(using: .utf8)!)
+        var compressed:[UInt8] = CompressionTechnique.RunLengthEncoding.compress(minRun: 3, data: data).data
+        var expected_result:[UInt8] = [196, 65, 196, 66, 196, 67]
         #expect(compressed == expected_result)
 
         compressed = CompressionTechnique.RunLengthEncoding.compress(minRun: 5, data: data).data
@@ -28,35 +28,35 @@ struct SwiftCompressionTests {
         expected_result = data
         #expect(compressed == expected_result)
 
-        data = String(repeating: "A", count: 66).data(using: .utf8)!
+        data = [UInt8](String(repeating: "A", count: 66).data(using: .utf8)!)
         compressed = CompressionTechnique.RunLengthEncoding.compress(minRun: 3, data: data).data
-        expected_result = Data([255, 65, 193, 65])
+        expected_result = [255, 65, 193, 65]
         #expect(compressed == expected_result)
 
-        data = Data([190, 191, 192])
+        data = [190, 191, 192]
         compressed = CompressionTechnique.RunLengthEncoding.compress(minRun: 3, includeCountForMinRun: false, data: data).data
-        expected_result = Data([190, 191, 192, 192])
+        expected_result = [190, 191, 192, 192]
         #expect(compressed == expected_result)
 
         compressed = CompressionTechnique.RunLengthEncoding.compress(minRun: 3, data: data).data
-        expected_result = Data([192, 190, 192, 191, 192, 192])
+        expected_result = [192, 190, 192, 191, 192, 192]
         #expect(compressed == expected_result)
     }
 
     @Test func decompressRunLengthEncoding() {
         let string:String = "AAAAABBBBBCCCCC"
-        let data:Data = string.data(using: .utf8)!
-        var compressed:Data = CompressionTechnique.RunLengthEncoding.compress(minRun: 3, data: data).data
-        var decompressed:Data = CompressionTechnique.RunLengthEncoding.decompress(data: compressed)
+        let data:[UInt8] = [UInt8](string.data(using: .utf8)!)
+        var compressed:[UInt8] = CompressionTechnique.RunLengthEncoding.compress(minRun: 3, data: data).data
+        var decompressed:[UInt8] = CompressionTechnique.RunLengthEncoding.decompress(data: compressed)
         #expect(decompressed == data)
-        #expect(string == String(data: decompressed, encoding: .utf8))
+        #expect(string == String(data: Data(decompressed), encoding: .utf8))
     }
 }
 
 extension SwiftCompressionTests {
     @Test func compressHuffman() {
-        //let data:Data = "aaaaaaaaaabbbbbCCCCC0000000000defghijklm".data(using: .utf8)!
-        //var compressed:Data = Huffman.compress(data: data).data
+        //let data:[UInt8] = [UInt8]("aaaaaaaaaabbbbbCCCCC0000000000defghijklm".data(using: .utf8)!)
+        //var compressed:[Unt8] = Huffman.compress(data: data).data
     }
 }
 
@@ -70,9 +70,9 @@ extension SwiftCompressionTests {
         string += "2e"
         string.removeAll(where: { $0.isWhitespace })
         let hex = string.hexadecimal
-        let data:Data = Data(hex)
-        let decompressed:Data = CompressionTechnique.Snappy.decompress(data: data)
-        #expect(String(data: decompressed, encoding: .utf8) == "Wikipedia is a free, web-based, collaborative, multilingual encyclopedia project.")
+        let data:[UInt8] = [UInt8](hex)
+        let decompressed:[UInt8] = CompressionTechnique.Snappy.decompress(data: data)
+        #expect(String(data: Data(decompressed), encoding: .utf8) == "Wikipedia is a free, web-based, collaborative, multilingual encyclopedia project.")
     }
 }
 
