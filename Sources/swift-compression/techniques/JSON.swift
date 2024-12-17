@@ -18,7 +18,7 @@ public extension CompressionTechnique {
 // MARK: Compress encodable
 public extension CompressionTechnique.JSON {
     @inlinable
-    static func compress<T: Encodable>(encodable: T) -> CompressionResult? {
+    static func compress<T: Encodable>(encodable: T) -> CompressionResult<[UInt8]>? {
         guard let data:Data = try? JSONEncoder().encode(encodable) else { return nil }
         var compressed:[UInt8] = []
         compressed.reserveCapacity(data.count)
@@ -79,7 +79,7 @@ public extension CompressionTechnique.JSON {
 // MARK: Compress encoded
 public extension CompressionTechnique.JSON {
     @inlinable
-    static func compress<T: StringProtocol>(encoded: T) -> CompressionResult? {
+    static func compress<T: StringProtocol>(encoded: T) -> CompressionResult<[UInt8]>? {
         return nil
     }
 }
@@ -87,7 +87,7 @@ public extension CompressionTechnique.JSON {
 // MARK: Compress data
 public extension CompressionTechnique.JSON {
     @inlinable
-    static func compress(data: [UInt8]) -> CompressionResult {
+    static func compress(data: [UInt8]) -> CompressionResult<[UInt8]> {
         return CompressionResult(data: data)
     }
 }

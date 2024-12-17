@@ -14,7 +14,7 @@ public extension CompressionTechnique {
 // MARK: Compress Data
 public extension CompressionTechnique.Huffman {
     @inlinable
-    static func compress(data: [UInt8]) -> CompressionResult {
+    static func compress(data: [UInt8]) -> CompressionResult<[UInt8]> {
         var priorities:[Int:Int] = Dictionary(minimumCapacity: 255)
         for i in 0..<data.count {
             let char:UInt8 = data[i]

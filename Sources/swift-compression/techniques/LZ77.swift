@@ -12,7 +12,7 @@ public enum LZ77 { // TODO: finish
 // MARK: Compress data
 public extension LZ77 {
     @inlinable
-    static func compress(data: [UInt8], windowSize: Int, bufferSize: Int) -> CompressionResult {
+    static func compress(data: [UInt8], windowSize: Int, bufferSize: Int) -> CompressionResult<[UInt8]> {
         return CompressionResult(data: data)
     }
 }

@@ -27,7 +27,7 @@ public enum CompressionTechnique {
     case lzw
     /// Move-to-front transform
     case mtf
-    case runLength(minRun: Int)
+    case runLength(minRun: Int, alwaysIncludeRunCount: Bool)
     /// AKA Zippy
     case snappy
     /// AKA Zippy Framed
@@ -64,13 +64,13 @@ public enum CompressionTechnique {
     case mpeg
     
     @inlinable
-    public func compress(data: [UInt8]) -> CompressionResult {
+    public func compress(data: [UInt8]) -> CompressionResult<[UInt8]> {
         guard !data.isEmpty else { return CompressionResult(data: data) }
         switch self {
             case .multiple(let techniques):
                 var result:CompressionResult = CompressionResult(data: data)
                 for technique in techniques {
-                    let compressed:CompressionResult = technique.compress(data: result.data)
+                    let compressed:CompressionResult<[UInt8]> = technique.compress(data: result.data)
                     result.data = compressed.data
                     result.frequencyTable = compressed.frequencyTable
                 }
@@ -79,9 +79,21 @@ public enum CompressionTechnique {
             case .huffman: return Huffman.compress(data: data)
             case .json: return JSON.compress(data: data)
             case .lz77(let windowSize, let bufferSize): return LZ77.compress(data: data, windowSize: windowSize, bufferSize: bufferSize)
-            case .runLength(let minRun): return RunLengthEncoding.compress(minRun: minRun, data: data)
-            case .snappy: return Snappy.compress(data: data)
+            case .runLength(let minRun, let alwaysIncludeRunCount):
+                return CompressionResult(data: RunLengthEncoding.compress(data: data, minRun: minRun, alwaysIncludeRunCount: alwaysIncludeRunCount))
+            case .snappy:
+                return CompressionResult(data: Snappy.compress(data: data))
             default: return CompressionResult(data: data)
+        }
+    }
+
+    @inlinable
+    public func compress(data: [UInt8]) -> CompressionResult<AsyncStream<UInt8>> {
+        switch self {
+            case .runLength(let minRun, let alwaysIncludeRunCount):
+                return CompressionResult(data: RunLengthEncoding.compress(data: data, minRun: minRun, alwaysIncludeRunCount: alwaysIncludeRunCount))
+            default:
+                return CompressionResult(data: AsyncStream { $0.finish() })
         }
     }
 
@@ -98,9 +110,19 @@ public enum CompressionTechnique {
             case .deflate: return Deflate.decompress(data: data)
             case .huffman: return Huffman.decompress(data: data)
             case .json: return JSON.decompress(data: data)
-            case .runLength(_): return RunLengthEncoding.decompress(data: data)
+            case .runLength(_, _): return RunLengthEncoding.decompress(data: data)
             case .snappy: return Snappy.decompress(data: data)
             default: return data
+        }
+    }
+    
+    @inlinable
+    public func decompress(data: [UInt8]) -> AsyncStream<UInt8> {
+        guard !data.isEmpty else { return AsyncStream { $0.finish() } }
+        switch self {
+            case .runLength(_, _): return RunLengthEncoding.decompress(data: data)
+            case .snappy: return Snappy.decompress(data: data)
+            default: return AsyncStream { $0.finish() }
         }
     }
 }

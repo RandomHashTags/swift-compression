@@ -7,50 +7,46 @@
 
 // MARK: [UInt8]
 public extension Array where Element == UInt8 {
+    /// Compress a copy of this data using the specified technique(s).
+    /// - Returns: The `CompressionResult`.
     @inlinable
-    func compress(technique: CompressionTechnique) -> CompressionResult {
+    func compressed(using technique: CompressionTechnique) -> CompressionResult<[UInt8]> {
         return technique.compress(data: self)
     }
 
+    /// Decompress this data using the specified technique(s).
+    /// - Returns: The decompressed data.
     @inlinable
-    func decompress(technique: CompressionTechnique) -> [UInt8] {
+    func decompressed(using technique: CompressionTechnique) -> [UInt8] {
         return technique.decompress(data: self)
     }
 }
 
-// MARK: Stream
-// TODO: support
-
-
-// MARK: Foundation
 #if canImport(Foundation)
+// MARK: Foundation
 import Foundation
 
 public extension Data {
+    /// Compress a copy of this data using the specified technique(s).
+    /// - Returns: The `CompressionResult`.
     @inlinable
-    func compress(technique: CompressionTechnique) -> CompressionResult {
+    func compressed(using technique: CompressionTechnique) -> CompressionResult<[UInt8]> {
         return technique.compress(data: [UInt8](self))
     }
 
+    /// Decompress this data using the specified technique(s).
+    /// - Returns: The decompressed data.
     @inlinable
-    func decompress(technique: CompressionTechnique) -> [UInt8] {
-        return technique.decompress(data: [UInt8](self))
-    }
-}
-
-public extension Encodable {
-    @inlinable
-    func compress(technique: CompressionTechnique) -> CompressionResult? {
-        guard let data:Data = try? JSONEncoder().encode(self) else { return nil }
-        return technique.compress(data: [UInt8](data))
+    func decompressed(using technique: CompressionTechnique) -> Data {
+        return Data(technique.decompress(data: [UInt8](self)))
     }
 }
 
 public extension StringProtocol {
     @inlinable
-    func compress(technique: CompressionTechnique, encoding: String.Encoding = .utf8) -> CompressionResult? {
+    func compressed(using technique: CompressionTechnique, encoding: String.Encoding = .utf8) -> CompressionResult<[UInt8]>? {
         guard let data:Data = self.data(using: encoding) else { return nil }
-        return data.compress(technique: technique)
+        return data.compressed(using: technique)
     }
 }
 #endif
