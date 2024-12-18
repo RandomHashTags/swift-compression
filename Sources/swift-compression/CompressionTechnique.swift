@@ -128,33 +128,66 @@ public enum CompressionTechnique {
     }
 }
 
-// MARK: DataBuilder
+// MARK: Stream & Data Builder
 public extension CompressionTechnique {
+    struct StreamBuilder {
+        public var stream:AsyncStream<UInt8>.Continuation
+        public var bitBuilder:IntBitBuilder
+
+        public init(stream: AsyncStream<UInt8>.Continuation, bitBuilder: IntBitBuilder = IntBitBuilder()) {
+            self.stream = stream
+            self.bitBuilder = bitBuilder
+        }
+
+        @inlinable
+        public mutating func write(bit: Bool) {
+            if let wrote:UInt8 = bitBuilder.write(bit: bit) {
+                stream.yield(wrote)
+            }
+        }
+        @inlinable
+        public mutating func finalize() {
+            bitBuilder.flush(into: stream)
+        }
+    }
     struct DataBuilder {
         public var data:[UInt8]
-        var bitBuilder:IntBitBuilder
+        public var bitBuilder:IntBitBuilder
 
         public init(data: [UInt8] = [], bitBuilder: IntBitBuilder = IntBitBuilder()) {
             self.data = data
             self.bitBuilder = bitBuilder
         }
 
-        public mutating func write(bits: [Bool]) {
-            bitBuilder.write(bits: bits, to: &data)
+        @inlinable
+        public mutating func write(bit: Bool) {
+            if let wrote:UInt8 = bitBuilder.write(bit: bit) {
+                data.append(wrote)
+            }
         }
+        @inlinable
+        public mutating func write(bits: [Bool]) {
+            bitBuilder.write(bits: bits, closure: { data.append($0) })
+        }
+        
+        @inlinable
         public mutating func finalize() {
             bitBuilder.flush(into: &data)
         }
     }
+}
+
+// MARK: IntBitBuilder
+public extension CompressionTechnique {
     struct IntBitBuilder {
         public var bits:Bits8 = (false, false, false, false, false, false, false, false)
-        var index:Int = 0
+        public var index:UInt8 = 0
 
         public init() {
         }
 
         @inlinable
-        subscript(_ index: Int) -> Bool {
+        subscript(_ index: UInt8) -> Bool {
             get {
                 switch index {
                     case 0: return bits.0
@@ -183,31 +216,79 @@ public extension CompressionTechnique {
             }
         }
 
-        public mutating func write(bits: [Bool], to data: inout [UInt8]) {
-            var wrote:Int = 0
-            while wrote != bits.count {
-                let available_bits:Int = min(8 - index, max(0, bits.count - wrote))
-                if available_bits > 0 {
-                    for i in 0..<available_bits {
-                        self[index + i] = bits[wrote + i]
-                    }
-                    index += available_bits
-                    if index == 8 {
-                        data.append(UInt8(fromBits: self.bits))
-                        index = 0
-                    }
+        @inlinable
+        public mutating func write(bit: Bool) -> UInt8? {
+            self[index] = bit
+            index += 1
+            let result:UInt8?
+            if index == 8 {
+                result = UInt8(fromBits: self.bits)
+                index = 0
+            } else {
+                result = nil
+            }
+            return result
+        }
+
+        @inlinable
+        public mutating func write(bits: [Bool], closure: (UInt8) -> Void) {
+            let available_bits:UInt8 = UInt8(min(Int(8 - index), bits.count))
+            for i in 0..<available_bits {
+                self[index + i] = bits[Int(i)]
+            }
+            index += available_bits
+            guard index == 8 else { return }
+            
+            closure(UInt8(fromBits: self.bits))
+            index = 0
+
+            var remaining:Int = bits.count - Int(available_bits)
+            let blocks:Int = remaining / 8, offset:Int = blocks * 8
+            remaining -= offset
+            for block in 0..<blocks {
+                let blockIndex:Int = block * 8
+                closure(UInt8(fromBits: (
+                    bits[blockIndex],
+                    bits[blockIndex + 1],
+                    bits[blockIndex + 2],
+                    bits[blockIndex + 3],
+                    bits[blockIndex + 4],
+                    bits[blockIndex + 5],
+                    bits[blockIndex + 6],
+                    bits[blockIndex + 7]
+                )))
+            }
+            if remaining != 0 {
+                let last_bits:UInt8 = UInt8(remaining)
+                for i in 0..<last_bits {
+                    self[index + i] = bits[offset + Int(i)]
                 }
-                wrote += available_bits
+                index += last_bits
             }
         }
-        public mutating func flush(into data: inout [UInt8]) {
-            if index != 8 {
-                while index != 8 {
-                    self[index] = false
-                    index += 1
-                }
-                data.append(UInt8(fromBits: bits))
+
+        @inlinable
+        public mutating func flush() -> (byte: UInt8, bitsFilled: UInt8)? {
+            guard index != 8 else { return nil }
+            let filled:UInt8 = 8 - index
+            while index != 8 {
+                self[index] = false
+                index += 1
             }
+            index = 0
+            return (UInt8(fromBits: bits), filled)
+        }
+
+        @inlinable
+        public mutating func flush(into data: inout [UInt8]) {
+            guard let wrote:UInt8 = flush()?.byte else { return }
+            data.append(wrote)
+        }
+
+        @inlinable
+        public mutating func flush(into stream: AsyncStream<UInt8>.Continuation) {
+            guard let wrote:UInt8 = flush()?.byte else { return }
+            stream.yield(wrote)
         }
     }
 }

@@ -5,6 +5,7 @@
 //  Created by Evan Anderson on 12/9/24.
 //
 
+// https://en.wikipedia.org/wiki/Deflate
 public extension CompressionTechnique {
     enum Deflate { // TODO: finish
         struct Block {

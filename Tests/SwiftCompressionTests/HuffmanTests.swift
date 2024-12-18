@@ -20,10 +20,8 @@ struct HuffmanTests {
         var string:String = "ruh roh raggy!"
         var data:[UInt8] = [UInt8](string.data(using: .utf8)!)
         var result:CompressionResult = CompressionTechnique.Huffman.compress(data: data)
-        //print("data=\(data)")
-        //print("compressed=\(result.data)")
         var decompressed:[UInt8] = CompressionTechnique.huffman(rootNode: result.rootNode).decompress(data: result.data)
-        //print("decompressed=\(decompressed) (\(String(data: Data(decompressed), encoding: .utf8)!))")
+        print("data=\(data)\ncompressed=\(result.data)\ndecompressed=\(decompressed) (\(String(data: Data(decompressed), encoding: .utf8)!))")
     }
     #endif
 }

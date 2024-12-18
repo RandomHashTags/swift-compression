@@ -20,8 +20,11 @@ public extension CompressionTechnique.Huffman {
     @inlinable
     static func compress(data: [UInt8]) -> CompressionResult<[UInt8]> {
         return compress(data: data) { frequencies, codes, root in
-            var compressed:[UInt8] = []
-            translate(data: data, codes: codes, closure: { compressed.append($0) })
+            var compressed:[UInt8] = [0]
+            translate(data: data, codes: codes, closure: { compressed.append($0) }, finalClosure: {
+                compressed[0] = $1
+                compressed.append($0)
+            })
             return CompressionResult(data: compressed, rootNode: root, frequencyTable: frequencies)
         } ?? CompressionResult(data: data)
     }
@@ -31,7 +34,8 @@ public extension CompressionTechnique.Huffman {
         return compress(data: data) { frequencies, codes, root in
             return CompressionResult(
                 data: AsyncStream(bufferingPolicy: limit) { continuation in
-                    translate(data: data, codes: codes, closure: { continuation.yield($0) })
+                    // TODO: fix finalClosure
+                    translate(data: data, codes: codes, closure: { continuation.yield($0) }, finalClosure: { byte, _ in continuation.yield(byte) })
                     continuation.finish()
                 },
                 rootNode: root, frequencyTable: frequencies)
@@ -51,13 +55,19 @@ public extension CompressionTechnique.Huffman {
     }
 
     @inlinable
-    static func translate(data: [UInt8], codes: [UInt8:String], closure: (UInt8) -> Void) {
+    static func translate(data: [UInt8], codes: [UInt8:String], closure: (UInt8) -> Void, finalClosure: (UInt8, UInt8) -> Void) {
+        var builder:CompressionTechnique.IntBitBuilder = .init()
         for byte in data {
             if let tree:String = codes[byte] {
                 for char in tree {
-                    closure(char == "1" ? 1 : 0)
+                    if let wrote:UInt8 = builder.write(bit: char == "1") {
+                        closure(wrote)
+                    }
                 }
             }
+        }
+        if let (byte, bitsFilled):(UInt8, UInt8) = builder.flush() {
+            finalClosure(byte, bitsFilled)
         }
     }
 }
@@ -81,12 +91,31 @@ public extension CompressionTechnique.Huffman {
 
     @inlinable
     static func decompress(data: [UInt8], root: Node?, closure: (UInt8) -> Void) {
+        let countMinusOne:Int = data.count-1
         var node:Node? = root
-        for bit in data {
-            if bit == 0 {
-                node = node?.left
-            } else {
+        var index:Int = 1
+        while index < countMinusOne {
+            let bits:[Bool] = data[index].bits
+            for bit in 0..<8 {
+                if bits[bit] {
+                    node = node?.right
+                } else {
+                    node = node?.left
+                }
+                if let char:UInt8 = node?.character {
+                    closure(char)
+                    node = root
+                }
+            }
+            index += 1
+        }
+        let validBitsInLastByte:UInt8 = data[0]
+        let lastBits:[Bool] = data[countMinusOne].bits
+        for bit in 0..<validBitsInLastByte {
+            if lastBits[Int(bit)] {
                 node = node?.right
+            } else {
+                node = node?.left
             }
             if let char:UInt8 = node?.character {
                 closure(char)
