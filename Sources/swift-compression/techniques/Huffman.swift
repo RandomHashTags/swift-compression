@@ -5,6 +5,10 @@
 //  Created by Evan Anderson on 12/9/24.
 //
 
+#if canImport(Foundation)
+import Foundation
+#endif
+
 // https://en.wikipedia.org/wiki/Huffman_coding
 public extension CompressionTechnique {
     enum Huffman {
@@ -23,13 +27,13 @@ public extension CompressionTechnique.Huffman {
     }
 
     @inlinable
-    static func compress(data: [UInt8]) -> (AsyncStream<UInt8>, Node?) {
+    static func compress(data: [UInt8], bufferingPolicy limit: AsyncStream<UInt8>.Continuation.BufferingPolicy = .unbounded) -> (AsyncStream<UInt8>, Node?) {
         return compress(data: data) { codes, root in
-            (AsyncStream { continuation in
+            (AsyncStream(bufferingPolicy: limit) { continuation in
                 translate(data: data, codes: codes, closure: { continuation.yield($0) })
                 continuation.finish()
             }, root)
-        } ?? (AsyncStream { $0.finish() }, nil)
+        } ?? (AsyncStream(bufferingPolicy: limit) { $0.finish() }, nil)
     }
 
     @inlinable
@@ -66,8 +70,8 @@ extension CompressionTechnique.Huffman {
     }
 
     @inlinable
-    static func decompress(data: [UInt8], root: Node?) -> AsyncStream<UInt8> {
-        return AsyncStream { continuation in
+    static func decompress(data: [UInt8], root: Node?, bufferingPolicy limit: AsyncStream<UInt8>.Continuation.BufferingPolicy = .unbounded) -> AsyncStream<UInt8> {
+        return AsyncStream(bufferingPolicy: limit) { continuation in
             decompress(data: data, root: root) { continuation.yield($0) }
             continuation.finish()
         }
@@ -85,6 +89,19 @@ extension CompressionTechnique.Huffman {
             if let char:UInt8 = node?.character {
                 closure(char)
                 node = root
+            }
+        }
+    }
+
+    @inlinable
+    static func decompress(data: [UInt8], codes: [[Bool]:UInt8], closure: (UInt8) -> Void) {
+        var code:[Bool] = []
+        code.reserveCapacity(3)
+        for bit in data {
+            code.append(bit == 1)
+            if let char:UInt8 = codes[code] {
+                closure(char)
+                code.removeAll(keepingCapacity: true)
             }
         }
     }
@@ -211,3 +228,55 @@ extension CompressionTechnique.Huffman {
         }
     }
 }
+
+// MARK: [UInt8]
+public extension Array where Element == UInt8 {
+    /// Compresses this data using the Huffman coding technique.
+    /// - Returns: `self`.
+    @discardableResult
+    @inlinable
+    mutating func decompressHuffmanCoding(root: CompressionTechnique.Huffman.Node?) -> Self {
+        self = CompressionTechnique.Huffman.decompress(data: self, root: root)
+        return self
+    }
+
+    /// Compress a copy of this data using the Huffman coding technique.
+    /// - Returns: The compressed data.
+    @inlinable
+    func decompressedHuffmanCoding(root: CompressionTechnique.Huffman.Node?) -> [UInt8] {
+        return CompressionTechnique.Huffman.decompress(data: self, root: root)
+    }
+}
+
+// MARK: AsyncStream
+public extension Array where Element == UInt8 {
+    /// Compress this data to a stream using the Huffman coding technique.
+    /// - Parameters:
+    ///   - root: The root Huffman coding node.
+    ///   - bufferingPolicy: A `Continuation.BufferingPolicy` value to set the stream's buffering behavior. By default, the stream buffers an unlimited number of elements. You can also set the policy to buffer a specified number of oldest or newest elements.
+    /// - Returns: An `AsyncStream<UInt8>` that decompresses the data.
+    @inlinable
+    func decompressHuffmanCoding(
+        root: CompressionTechnique.Huffman.Node?,
+        bufferingPolicy limit: AsyncStream<UInt8>.Continuation.BufferingPolicy = .unbounded
+    ) -> AsyncStream<UInt8> {
+        return CompressionTechnique.Huffman.decompress(data: self, root: root, bufferingPolicy: limit)
+    }
+}
+
+#if canImport(Foundation)
+public extension Data {
+    /// Compress this data into a stream using the Run-length encoding technique.
+    /// - Parameters:
+    ///   - root: The root Huffman coding node.
+    ///   - bufferingPolicy: A `Continuation.BufferingPolicy` value to set the stream's buffering behavior. By default, the stream buffers an unlimited number of elements. You can also set the policy to buffer a specified number of oldest or newest elements.
+    /// - Returns: An `AsyncStream<UInt8>` that compresses the data.
+    @inlinable
+    func decompressHuffmanCoding(
+        root: CompressionTechnique.Huffman.Node?,
+        bufferingPolicy limit: AsyncStream<UInt8>.Continuation.BufferingPolicy = .unbounded
+    ) -> AsyncStream<UInt8> {
+        return CompressionTechnique.Huffman.decompress(data: [UInt8](self), root: root, bufferingPolicy: limit)
+    }
+}
+#endif
