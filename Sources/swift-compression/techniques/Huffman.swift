@@ -19,25 +19,27 @@ public extension CompressionTechnique {
 public extension CompressionTechnique.Huffman {
     @inlinable
     static func compress(data: [UInt8]) -> CompressionResult<[UInt8]> {
-        return compress(data: data) { codes, root in
+        return compress(data: data) { frequencies, codes, root in
             var compressed:[UInt8] = []
             translate(data: data, codes: codes, closure: { compressed.append($0) })
-            return CompressionResult(data: compressed, rootNode: root)
+            return CompressionResult(data: compressed, rootNode: root, frequencyTable: frequencies)
         } ?? CompressionResult(data: data)
     }
 
     @inlinable
-    static func compress(data: [UInt8], bufferingPolicy limit: AsyncStream<UInt8>.Continuation.BufferingPolicy = .unbounded) -> (AsyncStream<UInt8>, Node?) {
-        return compress(data: data) { codes, root in
-            (AsyncStream(bufferingPolicy: limit) { continuation in
-                translate(data: data, codes: codes, closure: { continuation.yield($0) })
-                continuation.finish()
-            }, root)
-        } ?? (AsyncStream(bufferingPolicy: limit) { $0.finish() }, nil)
+    static func compress(data: [UInt8], bufferingPolicy limit: AsyncStream<UInt8>.Continuation.BufferingPolicy = .unbounded) -> CompressionResult<AsyncStream<UInt8>> {
+        return compress(data: data) { frequencies, codes, root in
+            return CompressionResult(
+                data: AsyncStream(bufferingPolicy: limit) { continuation in
+                    translate(data: data, codes: codes, closure: { continuation.yield($0) })
+                    continuation.finish()
+                },
+                rootNode: root, frequencyTable: frequencies)
+        } ?? CompressionResult(data: AsyncStream(bufferingPolicy: limit) { $0.finish() })
     }
 
     @inlinable
-    static func compress<T>(data: [UInt8], closure: ([UInt8:String], Node) -> T) -> T? {
+    static func compress<T>(data: [UInt8], closure: ([Int], [UInt8:String], Node) -> T) -> T? {
         var frequencies:[Int] = Array(repeating: 0, count: Int(UInt8.max-1))
         for byte in data {
             frequencies[Int(byte)] += 1
@@ -45,7 +47,7 @@ public extension CompressionTechnique.Huffman {
         guard let root:Node = buildTree(frequencies: frequencies) else { return nil }
         var codes:[UInt8:String] = [:]
         generateCodes(root: root, codes: &codes)
-        return closure(codes, root)
+        return closure(frequencies, codes, root)
     }
 
     @inlinable
@@ -61,7 +63,7 @@ public extension CompressionTechnique.Huffman {
 }
 
 // MARK: Decompress
-extension CompressionTechnique.Huffman {
+public extension CompressionTechnique.Huffman {
     @inlinable
     static func decompress(data: [UInt8], root: Node?) -> [UInt8] {
         var result:[UInt8] = []
@@ -91,6 +93,26 @@ extension CompressionTechnique.Huffman {
                 node = root
             }
         }
+    }
+}
+
+public extension CompressionTechnique.Huffman {
+    @inlinable
+    static func decompress(data: [UInt8], frequencyTable: [Int]) -> [UInt8] {
+        guard let root:Node = buildTree(frequencies: frequencyTable) else { return data }
+        return decompress(data: data, root: root)
+    }
+
+    @inlinable
+    static func decompress(data: [UInt8], frequencyTable: [Int], bufferingPolicy limit: AsyncStream<UInt8>.Continuation.BufferingPolicy = .unbounded) -> AsyncStream<UInt8> {
+        guard let root:Node = buildTree(frequencies: frequencyTable) else { return AsyncStream(bufferingPolicy: limit) { $0.finish() } }
+        return decompress(data: data, root: root, bufferingPolicy: limit)
+    }
+    
+    @inlinable
+    static func decompress(data: [UInt8], frequencyTable: [Int], closure: (UInt8) -> Void) {
+        guard let root:Node = buildTree(frequencies: frequencyTable) else { return }
+        decompress(data: data, root: root, closure: closure)
     }
 
     @inlinable
@@ -146,13 +168,13 @@ public extension CompressionTechnique.Huffman {
         }
 
         @inlinable
-        public mutating func push(_ element: T) {
+        mutating func push(_ element: T) {
             heap.append(element)
             siftUp(from: heap.count - 1)
         }
 
         @inlinable
-        public mutating func pop() -> T? {
+        mutating func pop() -> T? {
             guard !heap.isEmpty else { return nil }
             if heap.count == 1 {
                 return heap.removeLast()
@@ -164,7 +186,7 @@ public extension CompressionTechnique.Huffman {
         }
 
         @inlinable
-        public mutating func siftUp(from index: Int) {
+        mutating func siftUp(from index: Int) {
             var index:Int = index
             while index > 0 {
                 let parentIndex:Int = (index - 1) / 2
@@ -175,7 +197,7 @@ public extension CompressionTechnique.Huffman {
         }
 
         @inlinable
-        public mutating func siftDown(from index: Int) {
+        mutating func siftDown(from index: Int) {
             let element:T = heap[index], count:Int = heap.count
             var index:Int = index
             while true {
@@ -202,7 +224,7 @@ public extension CompressionTechnique.Huffman {
 // MARK: Logic
 extension CompressionTechnique.Huffman {
     @inlinable
-    public static func buildTree(frequencies: [Int]) -> Node? {
+    static func buildTree(frequencies: [Int]) -> Node? {
         var queue:PriorityQueue<Node> = .init()
         for (char, freq) in frequencies.enumerated() {
             if freq != 0 {
@@ -218,7 +240,7 @@ extension CompressionTechnique.Huffman {
     }
 
     @inlinable
-    public static func generateCodes(root: Node?, code: String = "", codes: inout [UInt8:String]) {
+    static func generateCodes(root: Node?, code: String = "", codes: inout [UInt8:String]) {
         guard let root:Node = root else { return }
         if let char:UInt8 = root.character {
             codes[char] = code

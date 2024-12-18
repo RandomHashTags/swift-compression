@@ -89,8 +89,7 @@ public enum CompressionTechnique {
     public func compress(data: [UInt8]) -> CompressionResult<AsyncStream<UInt8>> {
         switch self {
             case .huffman(_):
-                let (stream, root):(AsyncStream<UInt8>, Huffman.Node?) = Huffman.compress(data: data)
-                return CompressionResult(data: stream, rootNode: root)
+                return Huffman.compress(data: data)
             case .runLength(let minRun, let alwaysIncludeRunCount):
                 return CompressionResult(data: RunLengthEncoding.compress(data: data, minRun: minRun, alwaysIncludeRunCount: alwaysIncludeRunCount))
             default:
