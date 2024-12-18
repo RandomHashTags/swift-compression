@@ -7,10 +7,10 @@
 
 public struct CompressionResult<T> {
     public var data:T
-    public var frequencyTable:[String:String]?
+    public var rootNode:CompressionTechnique.Huffman.Node?
 
-    public init(data: T, frequencyTable: [String:String]? = nil) {
+    public init(data: T, rootNode: CompressionTechnique.Huffman.Node? = nil) {
         self.data = data
-        self.frequencyTable = frequencyTable
+        self.rootNode = rootNode
     }
 }

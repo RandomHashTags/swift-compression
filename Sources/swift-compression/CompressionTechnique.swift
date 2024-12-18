@@ -19,7 +19,7 @@ public enum CompressionTechnique {
     /// Burrows–Wheeler transform
     case bwt
     case deflate
-    case huffman
+    case huffman(rootNode: Huffman.Node?)
     case json
     case lz4
     case lz77(windowSize: Int, bufferSize: Int)
@@ -72,24 +72,25 @@ public enum CompressionTechnique {
                 for technique in techniques {
                     let compressed:CompressionResult<[UInt8]> = technique.compress(data: result.data)
                     result.data = compressed.data
-                    result.frequencyTable = compressed.frequencyTable
+                    result.rootNode = compressed.rootNode
                 }
                 return result
-            case .deflate: return Deflate.compress(data: data)
-            case .huffman: return Huffman.compress(data: data)
-            case .json: return JSON.compress(data: data)
-            case .lz77(let windowSize, let bufferSize): return LZ77.compress(data: data, windowSize: windowSize, bufferSize: bufferSize)
-            case .runLength(let minRun, let alwaysIncludeRunCount):
-                return CompressionResult(data: RunLengthEncoding.compress(data: data, minRun: minRun, alwaysIncludeRunCount: alwaysIncludeRunCount))
-            case .snappy:
-                return CompressionResult(data: Snappy.compress(data: data))
-            default: return CompressionResult(data: data)
+            case .deflate:                                          return Deflate.compress(data: data)
+            case .huffman(_):                                       return Huffman.compress(data: data)
+            case .json:                                             return JSON.compress(data: data)
+            case .lz77(let windowSize, let bufferSize):             return LZ77.compress(data: data, windowSize: windowSize, bufferSize: bufferSize)
+            case .runLength(let minRun, let alwaysIncludeRunCount): return CompressionResult(data: RunLengthEncoding.compress(data: data, minRun: minRun, alwaysIncludeRunCount: alwaysIncludeRunCount))
+            case .snappy:                                           return CompressionResult(data: Snappy.compress(data: data))
+            default:                                                return CompressionResult(data: data)
         }
     }
 
     @inlinable
     public func compress(data: [UInt8]) -> CompressionResult<AsyncStream<UInt8>> {
         switch self {
+            case .huffman(_):
+                let (stream, root):(AsyncStream<UInt8>, Huffman.Node?) = Huffman.compress(data: data)
+                return CompressionResult(data: stream, rootNode: root)
             case .runLength(let minRun, let alwaysIncludeRunCount):
                 return CompressionResult(data: RunLengthEncoding.compress(data: data, minRun: minRun, alwaysIncludeRunCount: alwaysIncludeRunCount))
             default:
@@ -108,7 +109,7 @@ public enum CompressionTechnique {
                 }
                 return data
             case .deflate: return Deflate.decompress(data: data)
-            case .huffman: return Huffman.decompress(data: data)
+            case .huffman(let root): return Huffman.decompress(data: data, root: root)
             case .json: return JSON.decompress(data: data)
             case .runLength(_, _): return RunLengthEncoding.decompress(data: data)
             case .snappy: return Snappy.decompress(data: data)
@@ -117,11 +118,12 @@ public enum CompressionTechnique {
     }
     
     @inlinable
-    public func decompress(data: [UInt8]) -> AsyncStream<UInt8> {
+    public func decompress(data: [UInt8], bufferingPolicy limit: AsyncStream<UInt8>.Continuation.BufferingPolicy = .unbounded) -> AsyncStream<UInt8> {
         guard !data.isEmpty else { return AsyncStream { $0.finish() } }
         switch self {
-            case .runLength(_, _): return RunLengthEncoding.decompress(data: data)
-            case .snappy: return Snappy.decompress(data: data)
+            case .huffman(let root): return Huffman.decompress(data: data, root: root)
+            case .runLength(_, _): return RunLengthEncoding.decompress(data: data, bufferingPolicy: limit)
+            case .snappy: return Snappy.decompress(data: data, bufferingPolicy: limit)
             default: return AsyncStream { $0.finish() }
         }
     }
