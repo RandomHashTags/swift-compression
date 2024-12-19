@@ -70,6 +70,7 @@ public extension CompressionTechnique {
     /// Compress a sequence of bytes using the given technique.
     /// - Parameters:
     ///   - data: The sequence of bytes to compress.
+    /// - Complexity: Varies by technique; minimum of O(_n_) where _n_ is the length of `data`.
     @inlinable
     func compress<S: Sequence<UInt8>>(data: S) -> CompressionResult<[UInt8]>? {
         switch self {
@@ -96,6 +97,7 @@ public extension CompressionTechnique {
     /// Compress a sequence of bytes into a stream using the given technique.
     /// - Parameters:
     ///   - data: The sequence of bytes to compress.
+    /// - Complexity: Varies by technique; minimum of O(_n_) where _n_ is the length of `data`.
     @inlinable
     func compress(data: [UInt8]) -> CompressionResult<AsyncStream<UInt8>>? {
         switch self {
@@ -114,6 +116,7 @@ public extension CompressionTechnique {
     /// Decompress a sequence of bytes using the given technique.
     /// - Parameters:
     ///   - data: The sequence of bytes to decompress.
+    /// - Complexity: O(_n_) where _n_ is the length of `data`.
     @inlinable
     func decompress(data: [UInt8]) -> [UInt8] {
         guard !data.isEmpty else { return data }
@@ -138,6 +141,7 @@ public extension CompressionTechnique {
     /// - Parameters:
     ///   - data: The sequence of bytes to decompress.
     ///   - bufferingPolicy: A strategy that handles exhaustion of a buffer’s capacity.
+    /// - Complexity: O(_n_) where _n_ is the length of `data`.
     @inlinable
     func decompress(
         data: [UInt8],
@@ -158,6 +162,7 @@ public extension CompressionTechnique {
     /// - Parameters:
     ///   - data: A sequence of raw bytes.
     /// - Returns: A universal frequency table.
+    /// - Complexity: O(_n_) where _n_ is the length of `data`.
     @inlinable
     static func buildFrequencyTable<S: Sequence<UInt8>>(data: S) -> [Int] {
         var table:[Int] = Array(repeating: 0, count: 255)
@@ -171,6 +176,7 @@ public extension CompressionTechnique {
     /// - Parameters:
     ///   - data: A sequence of raw bytes.
     /// - Returns: A lookup frequency table.
+    /// - Complexity: O(_n_) where _n_ is the length of `data`.
     @inlinable
     static func buildFrequencyTable<S: Sequence<UInt8>>(data: S) -> [UInt8:Int] {
         var table:[UInt8:Int] = [:]
@@ -184,6 +190,7 @@ public extension CompressionTechnique {
     /// - Parameters:
     ///   - chars: A frequency table that represents how many times a character is present.
     /// - Returns: A universal frequency table.
+    /// - Complexity: O(_n_) where _n_ is the sum of the `Character` utf8 lengths in `chars`.
     @inlinable
     static func buildFrequencyTable(chars: [Character:Int]) -> [Int] {
         var table:[Int] = Array(repeating: 0, count: 255)
@@ -207,12 +214,15 @@ public extension CompressionTechnique {
             self.bitBuilder = bitBuilder
         }
 
+        /// - Complexity: O(1).
         @inlinable
         public mutating func write(bit: Bool) {
             if let wrote:UInt8 = bitBuilder.write(bit: bit) {
                 stream.yield(wrote)
             }
         }
+
+        /// - Complexity: O(1).
         @inlinable
         public mutating func finalize() {
             bitBuilder.flush(into: stream)
@@ -254,6 +264,7 @@ public extension CompressionTechnique {
         public init() {
         }
 
+        /// - Complexity: O(1)
         @inlinable
         subscript(_ index: UInt8) -> Bool {
             get {
@@ -284,6 +295,7 @@ public extension CompressionTechnique {
             }
         }
 
+        /// - Complexity: O(1)
         @inlinable
         public mutating func write(bit: Bool) -> UInt8? {
             self[index] = bit
@@ -291,7 +303,7 @@ public extension CompressionTechnique {
             let result:UInt8?
             if index == 8 {
                 result = UInt8(fromBits: self.bits)
-                index = 0
+                clear()
             } else {
                 result = nil
             }
@@ -308,7 +320,7 @@ public extension CompressionTechnique {
             guard index == 8 else { return }
 
             closure(UInt8(fromBits: self.bits))
-            index = 0
+            clear()
 
             var remaining:Int = bits.count - Int(available_bits)
             let blocks:Int = remaining / 8, offset:Int = blocks * 8
@@ -335,28 +347,34 @@ public extension CompressionTechnique {
             }
         }
 
+        /// - Complexity: O(1). 
         @inlinable
         public mutating func flush() -> (lastByte: UInt8, bitsFilled: UInt8)? {
             guard index != 0 else { return nil }
-            let filled:UInt8 = 8 - index
-            while index != 8 {
-                self[index] = false
-                index += 1
-            }
-            index = 0
-            return (UInt8(fromBits: bits), filled)
+            defer { clear() }
+            return (UInt8(fromBits: bits), 8 - index)
         }
 
+        /// - Complexity: O(1).
         @inlinable
         public mutating func flush(into data: inout [UInt8]) {
             guard let wrote:UInt8 = flush()?.lastByte else { return }
             data.append(wrote)
         }
 
+        /// - Complexity: O(1).
         @inlinable
         public mutating func flush(into stream: AsyncStream<UInt8>.Continuation) {
             guard let wrote:UInt8 = flush()?.lastByte else { return }
             stream.yield(wrote)
+        }
+        
+        /// Assigns the `index` to zero and assigns all bits to `false`.
+        /// - Complexity: O(1).
+        @inlinable
+        public mutating func clear() {
+            index = 0
+            bits = (false, false, false, false, false, false, false, false)
         }
     }
 }

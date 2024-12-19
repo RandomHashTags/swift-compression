@@ -25,6 +25,7 @@ public extension CompressionTechnique.Snappy { // TODO: finish
 
 // MARK: Decompress
 public extension CompressionTechnique.Snappy {
+    /// - Complexity: O(_n_) where _n_ is the length of `data`.
     @inlinable
     static func decompress(data: [UInt8]) -> [UInt8] {
         var decompressed:[UInt8] = []
@@ -44,6 +45,7 @@ public extension CompressionTechnique.Snappy {
         return decompressed
     }
 
+    /// - Complexity: O(_n_) where _n_ is the length of `data`.
     @inlinable
     static func decompress(data: [UInt8], bufferingPolicy limit: AsyncStream<UInt8>.Continuation.BufferingPolicy = .unbounded) -> AsyncStream<UInt8> {
         return AsyncStream(bufferingPolicy: limit) { continuation in
@@ -66,6 +68,7 @@ public extension CompressionTechnique.Snappy {
 
 // MARK: Literal
 extension CompressionTechnique.Snappy {
+    /// - Complexity: O(_n_) where _n_ is the length of the literal.
     @inlinable
     static func decompressLiteral(
         flagBits: Bits8,
@@ -82,6 +85,7 @@ extension CompressionTechnique.Snappy {
         }
     }
 
+    /// - Complexity: O(1)?.
     @inlinable
     static func parseLiteralLength(flagBits: Bits8, index: inout Int, compressed: [UInt8]) -> Int {
         let length:UInt8 = UInt8(fromBits: (false, false, flagBits.0, flagBits.1, flagBits.2, flagBits.3, flagBits.4, flagBits.5))
@@ -106,6 +110,7 @@ extension CompressionTechnique.Snappy {
 
 // MARK: Copy
 extension CompressionTechnique.Snappy {
+    /// - Complexity: O(_n_) where _n_ is `4` plus the `UInt8` created from the `flagBits`.
     @inlinable
     static func decompressCopy1(
         flagBits: Bits8,
@@ -126,6 +131,8 @@ extension CompressionTechnique.Snappy {
         }
         index += 2
     }
+
+    /// - Complexity: O(_n_) where _n_ is the `UInt8` created from the `flagBits`.
     @inlinable
     static func decompressCopy2(
         flagBits: Bits8,
@@ -140,6 +147,8 @@ extension CompressionTechnique.Snappy {
         ))
         decompressCopyN(flagBits: flagBits, index: &index, compressed: compressed, offset: offset, readBytes: 3, closure: closure)
     }
+
+    /// - Complexity: O(_n_) where _n_ is the `UInt8` created from the `flagBits`.
     @inlinable
     static func decompressCopy4(
         flagBits: Bits8,
@@ -157,6 +166,8 @@ extension CompressionTechnique.Snappy {
         ))
         decompressCopyN(flagBits: flagBits, index: &index, compressed: compressed, offset: offset, readBytes: 5, closure: closure)
     }
+
+    /// - Complexity: O(_n_) where _n_ is the `UInt8` created from the `flagBits`.
     @inlinable
     static func decompressCopyN<T: FixedWidthInteger>(
         flagBits: Bits8,

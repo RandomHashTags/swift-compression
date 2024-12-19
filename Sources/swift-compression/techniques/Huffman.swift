@@ -71,6 +71,7 @@ public extension CompressionTechnique.Huffman {
         return closure(frequencies, codes, root)
     }
 
+    /// - Complexity: O(_n_ + _m_) where _n_ is the length of `data` and _m_ is the sum of the code lengths.
     @inlinable
     static func translate<T: Sequence<UInt8>>(data: T, codes: [UInt8:String], closure: (UInt8) -> Void) -> (lastByte: UInt8, bitsFilled: UInt8)? {
         var builder:CompressionTechnique.IntBitBuilder = .init()
@@ -93,6 +94,7 @@ public extension CompressionTechnique.Huffman {
     /// - Parameters:
     ///   - data: The sequence of bytes to decompress.
     ///   - root: The root Huffman Node.
+    /// - Complexity: O(_n_) where _n_ is the length of `data`.
     @inlinable
     static func decompress(data: [UInt8], root: Node?) -> [UInt8] {
         var result:[UInt8] = []
@@ -105,6 +107,7 @@ public extension CompressionTechnique.Huffman {
     ///   - data: The sequence of bytes to decompress.
     ///   - root: The root Huffman Node.
     ///   - bufferingPolicy: A strategy that handles exhaustion of a buffer’s capacity.
+    /// - Complexity: O(_n_) where _n_ is the length of `data`.
     @inlinable
     static func decompress(
         data: [UInt8],
@@ -117,6 +120,8 @@ public extension CompressionTechnique.Huffman {
         }
     }
 
+    /// Decompress a sequence of bytes using the Huffman Coding technique.
+    /// - Complexity: O(_n_) where _n_ is the length of `data`.
     @inlinable
     static func decompress(data: [UInt8], root: Node?, closure: (UInt8) -> Void) {
         let countMinusOne:Int = data.count-1
@@ -157,7 +162,8 @@ public extension CompressionTechnique.Huffman {
     /// Decompress a sequence of bytes using the Huffman Coding technique.
     /// - Parameters:
     ///   - data: The sequence of bytes to decompress.
-    ///   - frequencyType: A Huffman frequency table of characters.
+    ///   - frequencyTable: A Huffman frequency table of characters.
+    // /// - Complexity: O(_n_ + _m_) where _n_ is the length of `data` and _m_ is the length of `frequencyTable`. // TODO: FIX
     @inlinable
     static func decompress(data: [UInt8], frequencyTable: [Int]) -> [UInt8] {
         guard let root:Node = buildTree(frequencies: frequencyTable) else { return data }
@@ -167,8 +173,9 @@ public extension CompressionTechnique.Huffman {
     /// Decompress a sequence of bytes into a stream using the Huffman Coding technique.
     /// - Parameters:
     ///   - data: The sequence of bytes to decompress.
-    ///   - frequencyType: A Huffman frequency table of characters.
+    ///   - frequencyTable: A Huffman frequency table of characters.
     ///   - bufferingPolicy: A strategy that handles exhaustion of a buffer’s capacity.
+    // /// - Complexity: O(_n_ + _m_) where _n_ is the length of `data` and _m_ is the length of `frequencyTable`. // TODO: FIX
     @inlinable
     static func decompress(
         data: [UInt8],
@@ -238,6 +245,7 @@ public extension CompressionTechnique.Huffman {
             self.heap = heap
         }
 
+        /// - Complexity: O(_n_) where _n_ is the length of the sequence.
         @inlinable
         mutating func push(_ element: T) {
             heap.append(element)
@@ -256,6 +264,7 @@ public extension CompressionTechnique.Huffman {
             return root
         }
 
+        /// - Complexity: O(_n_) where _n_ is the distance between `0` and `index`.
         @inlinable
         mutating func siftUp(from index: Int) {
             var index:Int = index
@@ -294,6 +303,9 @@ public extension CompressionTechnique.Huffman {
 
 // MARK: Logic
 extension CompressionTechnique.Huffman {
+    /// Builds a Huffman tree.
+    /// - Parameters:
+    ///   - frequencies: A universal frequency table.
     /// - Returns: The root node of the Huffman tree.
     @inlinable
     static func buildTree(frequencies: [Int]) -> Node? {
@@ -312,6 +324,7 @@ extension CompressionTechnique.Huffman {
     }
 
     /// Generates the binary codes for a node.
+    /// - Complexity: O(1).
     @inlinable
     static func generateCodes(node: Node?, code: String = "", codes: inout [UInt8:String]) {
         guard let node:Node = node else { return }

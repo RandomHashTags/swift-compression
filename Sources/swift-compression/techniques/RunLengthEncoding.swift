@@ -25,6 +25,7 @@ public extension CompressionTechnique.RunLengthEncoding {
     ///   - reserveCapacity: Reserves enough space to store the specified number of elements.
     ///   - minRun: The minimum run count required to compress identical sequential bytes.
     ///   - alwaysIncludeRunCount: Whether or not to always include the run count in the result, regardless of run count.
+    /// - Complexity: O(_n_) where _n_ is the length of `data`.
     @inlinable
     static func compress<S: Sequence<UInt8>>(
         data: S,
@@ -60,6 +61,7 @@ public extension CompressionTechnique.RunLengthEncoding {
     ///   - minRun: The minimum run count required to compress identical sequential bytes.
     ///   - alwaysIncludeRunCount: Whether or not to always include the run count in the result, regardless of run count.
     ///   - bufferingPolicy: A strategy that handles exhaustion of a buffer’s capacity.
+    /// - Complexity: O(_n_) where _n_ is the length of `data`.
     @inlinable
     static func compress<S: Sequence<UInt8>>(
         data: S,
@@ -91,6 +93,11 @@ public extension CompressionTechnique.RunLengthEncoding {
         }
     }
 
+    /// - Parameters:
+    ///   - data: The sequence of bytes to compress.
+    ///   - minRun: The minimum run count required to compress identical sequential bytes.
+    ///   - closure: The logic to execute for a run.
+    /// - Complexity: O(_n_) where _n_ is the length of `data`.
     @inlinable
     static func compress<S: Sequence<UInt8>>(data: S, minRun: Int, closure: (_ run: Int, _ runByte: UInt8) -> Void) {
         var run:Int = 0, runByte:UInt8? = nil
@@ -126,6 +133,7 @@ public extension Array where Element == UInt8 {
     ///   - minRun: The minimum run count required to compress identical sequential bytes.
     ///   - alwaysIncludeRunCount: whether or not to always include the count of a byte, regardless of run count.
     /// - Returns: `self`.
+    /// - Complexity: O(_n_) where _n_ is the length of the sequence.
     @discardableResult
     @inlinable
     mutating func compressRLE(minRun: Int = 3, alwaysIncludeRunCount: Bool = false) -> Self {
@@ -138,6 +146,7 @@ public extension Array where Element == UInt8 {
     ///   - minRun: The minimum run count required to compress identical sequential bytes.
     ///   - alwaysIncludeRunCount: whether or not to always include the number of repeated bytes, regardless of run count.
     /// - Returns: The compressed data.
+    /// - Complexity: O(_n_) where _n_ is the length of the sequence.
     @inlinable
     func compressedRLE(minRun: Int = 3, alwaysIncludeRunCount: Bool = false) -> [UInt8] {
         return CompressionTechnique.RunLengthEncoding.compress(data: self, minRun: minRun, alwaysIncludeRunCount: alwaysIncludeRunCount)
@@ -152,6 +161,7 @@ public extension Array where Element == UInt8 {
     ///   - alwaysIncludeRunCount: whether or not to always include the number of repeated bytes, regardless of run count.
     ///   - bufferingPolicy: A `Continuation.BufferingPolicy` value to set the stream's buffering behavior. By default, the stream buffers an unlimited number of elements. You can also set the policy to buffer a specified number of oldest or newest elements.
     /// - Returns: An `AsyncStream<UInt8>` that compresses the data.
+    /// - Complexity: O(_n_) where _n_ is the length of the sequence.
     @inlinable
     func compressRLE(
         minRun: Int = 3,
@@ -170,6 +180,7 @@ public extension Data {
     ///   - alwaysIncludeRunCount: whether or not to always include the number of repeated bytes, regardless of run count.
     ///   - bufferingPolicy: A `Continuation.BufferingPolicy` value to set the stream's buffering behavior. By default, the stream buffers an unlimited number of elements. You can also set the policy to buffer a specified number of oldest or newest elements.
     /// - Returns: An `AsyncStream<UInt8>` that compresses the data.
+    /// - Complexity: O(_n_) where _n_ is the length of the sequence.
     @inlinable
     func compressRLE(
         minRun: Int = 3,
@@ -186,6 +197,7 @@ public extension CompressionTechnique.RunLengthEncoding {
     /// Decompress a sequence of bytes using the Run-length encoding compression technique.
     /// - Parameters:
     ///   - data: The sequence of bytes to decompress.
+    /// - Complexity: O(_n_) where _n_ is the length of `data`.
     @inlinable
     static func decompress(data: [UInt8]) -> [UInt8] {
         var decompressed:[UInt8] = []
@@ -197,6 +209,7 @@ public extension CompressionTechnique.RunLengthEncoding {
     /// - Parameters:
     ///   - data: The sequence of bytes to decompress.
     ///   - bufferingPolicy: A strategy that handles exhaustion of a buffer’s capacity.
+    /// - Complexity: O(_n_) where _n_ is the length of `data`.
     @inlinable
     static func decompress(
         data: [UInt8],
@@ -208,6 +221,10 @@ public extension CompressionTechnique.RunLengthEncoding {
         }
     }
 
+    /// - Parameters:
+    ///   - data: The sequence of bytes to decompress.
+    ///   - closure: The logic to execute for a run.
+    /// - Complexity: O(_n_) where _n_ is the length of `data`.
     @inlinable
     static func decompress(data: [UInt8], closure: (_ byte: UInt8) -> Void) {
         data.withUnsafeBytes { p in
@@ -232,8 +249,9 @@ public extension CompressionTechnique.RunLengthEncoding {
 
 // MARK: [UInt8]
 public extension Array where Element == UInt8 {
-    /// Compresses this data using the Run-length encoding technique.
+    /// Decompresses this data using the Run-length encoding technique.
     /// - Returns: `self`.
+    /// - Complexity: O(_n_) where _n_ is the length of the sequence.
     @discardableResult
     @inlinable
     mutating func decompressRLE() -> Self {
@@ -241,8 +259,9 @@ public extension Array where Element == UInt8 {
         return self
     }
 
-    /// Compress a copy of this data using the Run-length encoding technique.
+    /// Decompress a copy of this data using the Run-length encoding technique.
     /// - Returns: The compressed data.
+    /// - Complexity: O(_n_) where _n_ is the length of the sequence.
     @inlinable
     func decompressedRLE() -> [UInt8] {
         return CompressionTechnique.RunLengthEncoding.decompress(data: self)
@@ -251,10 +270,11 @@ public extension Array where Element == UInt8 {
 
 // MARK: AsyncStream
 public extension Array where Element == UInt8 {
-    /// Compress this data to a stream using the Run-length encoding technique.
+    /// Decompress this data to a stream using the Run-length encoding technique.
     /// - Parameters:
     ///   - bufferingPolicy: A `Continuation.BufferingPolicy` value to set the stream's buffering behavior. By default, the stream buffers an unlimited number of elements. You can also set the policy to buffer a specified number of oldest or newest elements.
     /// - Returns: An `AsyncStream<UInt8>` that decompresses the data.
+    /// - Complexity: O(_n_) where _n_ is the length of the sequence.
     @inlinable
     func decompressRLE(
         bufferingPolicy limit: AsyncStream<UInt8>.Continuation.BufferingPolicy = .unbounded
@@ -265,10 +285,11 @@ public extension Array where Element == UInt8 {
 
 #if canImport(Foundation)
 public extension Data {
-    /// Compress this data into a stream using the Run-length encoding technique.
+    /// Decompress this data into a stream using the Run-length encoding technique.
     /// - Parameters:
     ///   - bufferingPolicy: A `Continuation.BufferingPolicy` value to set the stream's buffering behavior. By default, the stream buffers an unlimited number of elements. You can also set the policy to buffer a specified number of oldest or newest elements.
     /// - Returns: An `AsyncStream<UInt8>` that compresses the data.
+    /// - Complexity: O(_n_) where _n_ is the length of the sequence.
     @inlinable
     func decompressRLE(
         bufferingPolicy limit: AsyncStream<UInt8>.Continuation.BufferingPolicy = .unbounded

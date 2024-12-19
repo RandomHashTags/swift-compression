@@ -157,6 +157,7 @@ public extension FixedWidthInteger {
 }
 
 public extension UInt8 {
+    /// - Complexity: O(1).
     var bitsTuple : Bits8 {
         var int:Self = self
         let v7:Bool = int & 0x01 == 1
@@ -176,6 +177,8 @@ public extension UInt8 {
         let v0:Bool = int & 0x01 == 1
         return (v0, v1, v2, v3, v4, v5, v6, v7)
     }
+    
+    /// - Complexity: O(1).
     var bitsTupleReverse : Bits8 {
         var int:Self = self
         let v7:Bool = int & 0x01 == 1

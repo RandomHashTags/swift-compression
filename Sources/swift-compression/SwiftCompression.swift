@@ -9,6 +9,7 @@
 public extension Sequence where Element == UInt8 {
     /// Compress a copy of this data using the specified technique(s).
     /// - Returns: The `CompressionResult`.
+    /// - Complexity: Varies by technique; minimum of O(_n_) where _n_ is the length of the sequence.
     @inlinable
     func compressed(using technique: CompressionTechnique) -> CompressionResult<[UInt8]>? {
         return technique.compress(data: self)
@@ -16,6 +17,7 @@ public extension Sequence where Element == UInt8 {
 
     /// Decompress this data using the specified technique(s).
     /// - Returns: The decompressed data.
+    /// - Complexity: Varies by technique; minimum of O(_n_) where _n_ is the length of the sequence.
     @inlinable
     func decompressed(using technique: CompressionTechnique) -> [UInt8] {
         return technique.decompress(data: [UInt8](self))
@@ -29,6 +31,7 @@ import Foundation
 public extension Data {
     /// Compress a copy of this data using the specified technique(s).
     /// - Returns: The `CompressionResult`.
+    /// - Complexity: Varies by technique; minimum of O(_n_) where _n_ is the length of the sequence.
     @inlinable
     func compressed(using technique: CompressionTechnique) -> CompressionResult<[UInt8]>? {
         return technique.compress(data: [UInt8](self))
@@ -36,6 +39,7 @@ public extension Data {
 
     /// Decompress this data using the specified technique(s).
     /// - Returns: The decompressed data.
+    /// - Complexity: Varies by technique; minimum of O(_n_) where _n_ is the length of the sequence.
     @inlinable
     func decompressed(using technique: CompressionTechnique) -> Data {
         return Data(technique.decompress(data: [UInt8](self)))
@@ -43,6 +47,7 @@ public extension Data {
 }
 
 public extension StringProtocol {
+    /// - Complexity: Varies by technique; minimum of O(_n_) where _n_ is the length of the sequence.
     @inlinable
     func compressed(using technique: CompressionTechnique, encoding: String.Encoding = .utf8) -> CompressionResult<[UInt8]>? {
         guard let data:Data = self.data(using: encoding) else { return nil }
