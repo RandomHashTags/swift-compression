@@ -83,6 +83,7 @@ public extension CompressionTechnique {
                 }
                 return result
             case .deflate:                                          return Deflate.compress(data: data)
+            case .dnacSBE:                                          return DNAC_SBE.compress(data: data)
             case .huffman(_):                                       return Huffman.compress(data: data)
             case .json:                                             return JSON.compress(data: data)
             case .lz77(let windowSize, let bufferSize):             return LZ77.compress(data: data, windowSize: windowSize, bufferSize: bufferSize)
@@ -124,6 +125,7 @@ public extension CompressionTechnique {
                 }
                 return data
             case .deflate: return Deflate.decompress(data: data)
+            case .dnacSBE: return DNAC_SBE.decompress(data: data)
             case .huffman(let root): return Huffman.decompress(data: data, root: root)
             case .json: return JSON.decompress(data: data)
             case .runLength(_, _): return RunLengthEncoding.decompress(data: data)
@@ -148,6 +150,49 @@ public extension CompressionTechnique {
             case .snappy: return Snappy.decompress(data: data, bufferingPolicy: limit)
             default: return AsyncStream { $0.finish() }
         }
+    }
+}
+
+public extension CompressionTechnique {
+    /// Creates a universal frequency table from a sequence of raw bytes.
+    /// - Parameters:
+    ///   - data: A sequence of raw bytes.
+    /// - Returns: A universal frequency table.
+    @inlinable
+    static func buildFrequencyTable<S: Sequence<UInt8>>(data: S) -> [Int] {
+        var table:[Int] = Array(repeating: 0, count: 255)
+        for byte in data {
+            table[Int(byte)] += 1
+        }
+        return table
+    }
+
+    /// Creates a lookup frequency table from a sequence of raw bytes.
+    /// - Parameters:
+    ///   - data: A sequence of raw bytes.
+    /// - Returns: A lookup frequency table.
+    @inlinable
+    static func buildFrequencyTable<S: Sequence<UInt8>>(data: S) -> [UInt8:Int] {
+        var table:[UInt8:Int] = [:]
+        for byte in data {
+            table[byte, default: 0] += 1
+        }
+        return table
+    }
+
+    /// Creates a universal frequency table from a character frequency dictionary.
+    /// - Parameters:
+    ///   - chars: A frequency table that represents how many times a character is present.
+    /// - Returns: A universal frequency table.
+    @inlinable
+    static func buildFrequencyTable(chars: [Character:Int]) -> [Int] {
+        var table:[Int] = Array(repeating: 0, count: 255)
+        for (char, freq) in chars {
+            for byte in char.utf8 {
+                table[Int(byte)] = freq
+            }
+        }
+        return table
     }
 }
 

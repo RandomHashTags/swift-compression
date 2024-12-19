@@ -293,21 +293,6 @@ public extension CompressionTechnique.Huffman {
 }
 
 // MARK: Logic
-public extension CompressionTechnique.Huffman {
-    /// - Parameters:
-    ///   - chars: A frequency table that represents how many times a character shows up.
-    /// - Returns: A Huffman frequency table.
-    @inlinable
-    static func buildFrequencyTable(chars: [Character:Int]) -> [Int] {
-        var table:[Int] = Array(repeating: 0, count: 255)
-        for (char, freq) in chars {
-            if let byte:UInt8 = char.asciiValue {
-                table[Int(byte)] = freq
-            }
-        }
-        return table
-    }
-}
 extension CompressionTechnique.Huffman {
     /// - Returns: The root node of the Huffman tree.
     @inlinable
