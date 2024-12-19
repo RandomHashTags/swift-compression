@@ -7,16 +7,12 @@
 
 #if compiler(>=6.0)
 
-#if canImport(Foundation)
-import Foundation
-#endif
-
 import Testing
 @testable import SwiftCompression
 
 struct SnappyTests {
-    #if canImport(Foundation)
     @Test func decompressSnappy() {
+        let expected_result:String = "Wikipedia is a free, web-based, collaborative, multilingual encyclopedia project."
         var string:String = "51 f0 42 57 69 6b 69 70 65 64 69 61 20 69 73 20"
         string += "61 20 66 72 65 65 2c 20 77 65 62 2d 62 61 73 65"
         string += "64 2c 20 63 6f 6c 6c 61 62 6f 72 61 74 69 76 65"
@@ -27,9 +23,8 @@ struct SnappyTests {
         let hex = string.hexadecimal
         let data:[UInt8] = [UInt8](hex)
         let decompressed:[UInt8] = CompressionTechnique.Snappy.decompress(data: data)
-        #expect(String(data: Data(decompressed), encoding: .utf8) == "Wikipedia is a free, web-based, collaborative, multilingual encyclopedia project.")
+        #expect(decompressed == [UInt8](expected_result.utf8))
     }
-    #endif
 }
 
 

@@ -5,19 +5,28 @@
 //  Created by Evan Anderson on 12/12/24.
 //
 
-public enum LZ77 { // TODO: finish
-    typealias Token = (distance: Int, length: Int, next: UInt8)
-}
-
-// MARK: Compress data
-public extension LZ77 {
-    @inlinable
-    static func compress(data: [UInt8], windowSize: Int, bufferSize: Int) -> CompressionResult<[UInt8]> {
-        return CompressionResult(data: data)
+public extension CompressionTechnique {
+    /// The LZ77 compression technique.
+    /// 
+    /// https://en.wikipedia.org/wiki/LZ77_and_LZ78
+    enum LZ77 { // TODO: finish
+        typealias Token = (distance: Int, length: Int, next: UInt8)
     }
 }
 
-extension LZ77 {
+// MARK: Compress
+public extension CompressionTechnique.LZ77 {
+    @inlinable
+    static func compress<S: Sequence<UInt8>>(
+        data: S,
+        windowSize: Int,
+        bufferSize: Int
+    ) -> CompressionResult<[UInt8]>? {
+        return nil
+    }
+}
+
+extension CompressionTechnique.LZ77 {
     typealias KeyType = Key<UInt8, UInt8>
 
     static func compressTokens(data: [UInt8], windowSize: Int, bufferSize: Int) -> [Token] {
@@ -51,7 +60,7 @@ extension LZ77 {
     }
 }
 
-extension LZ77 {
+extension CompressionTechnique.LZ77 {
     struct Key<each T : FixedWidthInteger> : Hashable {
         static func == (left: Self, right: Self) -> Bool {
             for (l, r) in repeat (each left.chars, each right.chars) {
@@ -78,8 +87,8 @@ extension LZ77 {
     }
 }
 
-// MARK: Decompress data
-public extension LZ77 {
+// MARK: Decompress
+public extension CompressionTechnique.LZ77 {
     @inlinable
     static func decompress(data: [UInt8]) -> [UInt8] {
         return data

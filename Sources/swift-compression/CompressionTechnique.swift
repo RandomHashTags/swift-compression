@@ -6,6 +6,7 @@
 //
 
 // MARK: CompressionTechnique
+/// A collection of well-known and useful compression and decompression techniques.
 public enum CompressionTechnique {
     case multiple(techniques: [CompressionTechnique])
 
@@ -61,18 +62,24 @@ public enum CompressionTechnique {
     // video
     case av1
     case dirac
-    case mpeg
-    
+    case mpeg    
+}
+
+// MARK: Compress
+public extension CompressionTechnique {
+    /// Compress a sequence of bytes using the given technique.
+    /// - Parameters:
+    ///   - data: The sequence of bytes to compress.
     @inlinable
-    public func compress(data: [UInt8]) -> CompressionResult<[UInt8]> {
-        guard !data.isEmpty else { return CompressionResult(data: data) }
+    func compress<S: Sequence<UInt8>>(data: S) -> CompressionResult<[UInt8]>? {
         switch self {
             case .multiple(let techniques):
-                var result:CompressionResult = CompressionResult(data: data)
+                var result:CompressionResult<[UInt8]> = CompressionResult(data: [UInt8](data))
                 for technique in techniques {
-                    let compressed:CompressionResult<[UInt8]> = technique.compress(data: result.data)
-                    result.data = compressed.data
-                    result.rootNode = compressed.rootNode
+                    if let compressed:CompressionResult<[UInt8]> = technique.compress(data: result.data) {
+                        result.data = compressed.data
+                        result.rootNode = compressed.rootNode
+                    }
                 }
                 return result
             case .deflate:                                          return Deflate.compress(data: data)
@@ -81,12 +88,15 @@ public enum CompressionTechnique {
             case .lz77(let windowSize, let bufferSize):             return LZ77.compress(data: data, windowSize: windowSize, bufferSize: bufferSize)
             case .runLength(let minRun, let alwaysIncludeRunCount): return CompressionResult(data: RunLengthEncoding.compress(data: data, minRun: minRun, alwaysIncludeRunCount: alwaysIncludeRunCount))
             case .snappy:                                           return CompressionResult(data: Snappy.compress(data: data))
-            default:                                                return CompressionResult(data: data)
+            default:                                                return nil
         }
     }
 
+    /// Compress a sequence of bytes into a stream using the given technique.
+    /// - Parameters:
+    ///   - data: The sequence of bytes to compress.
     @inlinable
-    public func compress(data: [UInt8]) -> CompressionResult<AsyncStream<UInt8>> {
+    func compress(data: [UInt8]) -> CompressionResult<AsyncStream<UInt8>>? {
         switch self {
             case .huffman(_):
                 return Huffman.compress(data: data)
@@ -96,9 +106,15 @@ public enum CompressionTechnique {
                 return CompressionResult(data: AsyncStream { $0.finish() })
         }
     }
+}
 
+// MARK: Decompress
+public extension CompressionTechnique {
+    /// Decompress a sequence of bytes using the given technique.
+    /// - Parameters:
+    ///   - data: The sequence of bytes to decompress.
     @inlinable
-    public func decompress(data: [UInt8]) -> [UInt8] {
+    func decompress(data: [UInt8]) -> [UInt8] {
         guard !data.isEmpty else { return data }
         switch self {
             case .multiple(let techniques):
@@ -116,8 +132,15 @@ public enum CompressionTechnique {
         }
     }
     
+    /// Decompress a sequence of bytes into a stream using the given technique.
+    /// - Parameters:
+    ///   - data: The sequence of bytes to decompress.
+    ///   - bufferingPolicy: A strategy that handles exhaustion of a buffer’s capacity.
     @inlinable
-    public func decompress(data: [UInt8], bufferingPolicy limit: AsyncStream<UInt8>.Continuation.BufferingPolicy = .unbounded) -> AsyncStream<UInt8> {
+    func decompress(
+        data: [UInt8],
+        bufferingPolicy limit: AsyncStream<UInt8>.Continuation.BufferingPolicy = .unbounded
+    ) -> AsyncStream<UInt8> {
         guard !data.isEmpty else { return AsyncStream { $0.finish() } }
         switch self {
             case .huffman(let root): return Huffman.decompress(data: data, root: root)
@@ -238,7 +261,7 @@ public extension CompressionTechnique {
             }
             index += available_bits
             guard index == 8 else { return }
-            
+
             closure(UInt8(fromBits: self.bits))
             index = 0
 
@@ -268,8 +291,8 @@ public extension CompressionTechnique {
         }
 
         @inlinable
-        public mutating func flush() -> (byte: UInt8, bitsFilled: UInt8)? {
-            guard index != 8 else { return nil }
+        public mutating func flush() -> (lastByte: UInt8, bitsFilled: UInt8)? {
+            guard index != 0 else { return nil }
             let filled:UInt8 = 8 - index
             while index != 8 {
                 self[index] = false
@@ -281,13 +304,13 @@ public extension CompressionTechnique {
 
         @inlinable
         public mutating func flush(into data: inout [UInt8]) {
-            guard let wrote:UInt8 = flush()?.byte else { return }
+            guard let wrote:UInt8 = flush()?.lastByte else { return }
             data.append(wrote)
         }
 
         @inlinable
         public mutating func flush(into stream: AsyncStream<UInt8>.Continuation) {
-            guard let wrote:UInt8 = flush()?.byte else { return }
+            guard let wrote:UInt8 = flush()?.lastByte else { return }
             stream.yield(wrote)
         }
     }

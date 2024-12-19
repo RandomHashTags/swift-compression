@@ -5,8 +5,10 @@
 //  Created by Evan Anderson on 12/9/24.
 //
 
-// https://en.wikipedia.org/wiki/Deflate
 public extension CompressionTechnique {
+    /// The Deflate compression technique.
+    /// 
+    /// https://en.wikipedia.org/wiki/Deflate
     enum Deflate { // TODO: finish
         struct Block {
             let lastBlock:Bool
@@ -40,15 +42,17 @@ public extension CompressionTechnique {
     }
 }
 
-// MARK: Compress Data
+// MARK: Compress
 public extension CompressionTechnique.Deflate {
     @inlinable
-    static func compress(data: [UInt8]) -> CompressionResult<[UInt8]> {
-        return CompressionResult(data: data)
+    static func compress<T: Sequence<UInt8>>(
+        data: T
+    ) -> CompressionResult<[UInt8]>? {
+        return nil
     }
 }
 
-// MARK: Decompress Data
+// MARK: Decompress
 public extension CompressionTechnique.Deflate {
     @inlinable
     static func decompress(data: [UInt8]) -> [UInt8] {

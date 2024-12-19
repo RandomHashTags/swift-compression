@@ -5,12 +5,12 @@
 //  Created by Evan Anderson on 12/9/24.
 //
 
-// MARK: [UInt8]
-public extension Array where Element == UInt8 {
+// MARK: Sequence
+public extension Sequence where Element == UInt8 {
     /// Compress a copy of this data using the specified technique(s).
     /// - Returns: The `CompressionResult`.
     @inlinable
-    func compressed(using technique: CompressionTechnique) -> CompressionResult<[UInt8]> {
+    func compressed(using technique: CompressionTechnique) -> CompressionResult<[UInt8]>? {
         return technique.compress(data: self)
     }
 
@@ -18,7 +18,7 @@ public extension Array where Element == UInt8 {
     /// - Returns: The decompressed data.
     @inlinable
     func decompressed(using technique: CompressionTechnique) -> [UInt8] {
-        return technique.decompress(data: self)
+        return technique.decompress(data: [UInt8](self))
     }
 }
 
@@ -30,7 +30,7 @@ public extension Data {
     /// Compress a copy of this data using the specified technique(s).
     /// - Returns: The `CompressionResult`.
     @inlinable
-    func compressed(using technique: CompressionTechnique) -> CompressionResult<[UInt8]> {
+    func compressed(using technique: CompressionTechnique) -> CompressionResult<[UInt8]>? {
         return technique.compress(data: [UInt8](self))
     }
 

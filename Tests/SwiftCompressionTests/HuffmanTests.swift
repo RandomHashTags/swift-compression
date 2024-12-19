@@ -7,23 +7,33 @@
 
 #if compiler(>=6.0)
 
-#if canImport(Foundation)
-import Foundation
-#endif
-
 import Testing
 @testable import SwiftCompression
 
 struct HuffmanTests {
-    #if canImport(Foundation)
+    static let scoobyDooString:String = "ruh roh raggy!"
+    static let scoobyDoo:[UInt8] = [UInt8](scoobyDooString.utf8)
+    static let scoobyDooCompressed:CompressionResult<[UInt8]> = CompressionTechnique.Huffman.compress(data: scoobyDoo)!
+    
     @Test func compressHuffman() {
-        var string:String = "ruh roh raggy!"
-        var data:[UInt8] = [UInt8](string.data(using: .utf8)!)
-        var result:CompressionResult = CompressionTechnique.Huffman.compress(data: data)
-        var decompressed:[UInt8] = CompressionTechnique.huffman(rootNode: result.rootNode).decompress(data: result.data)
-        print("data=\(data)\ncompressed=\(result.data)\ndecompressed=\(decompressed) (\(String(data: Data(decompressed), encoding: .utf8)!))")
+        let result:CompressionResult = Self.scoobyDooCompressed
+        #expect(result.data == [4, 31, 67, 180, 23, 253, 96])
+        #expect(result.validBitsInLastByte == 4)
     }
-    #endif
+
+    @Test func decompressHuffman() {
+        let result:CompressionResult = Self.scoobyDooCompressed
+        let decompressed:[UInt8] = CompressionTechnique.huffman(rootNode: result.rootNode).decompress(data: result.data)
+        #expect(result.validBitsInLastByte == 4)
+        #expect(decompressed == Self.scoobyDoo)
+    }
+
+    @Test func decompressHuffmanOnlyFrequencyTable() {
+        let result:CompressionResult = Self.scoobyDooCompressed
+        let table:[Int] = Self.scoobyDooString.huffmanFrequencyTable()
+        let decompressed:[UInt8] = CompressionTechnique.Huffman.decompress(data: result.data, frequencyTable: table)
+        #expect(decompressed == Self.scoobyDoo)
+    }
 }
 
 #endif

@@ -84,11 +84,11 @@ public extension CompressionTechnique.JSON {
     }
 }
 
-// MARK: Compress data
+// MARK: Compress
 public extension CompressionTechnique.JSON {
     @inlinable
-    static func compress(data: [UInt8]) -> CompressionResult<[UInt8]> {
-        return CompressionResult(data: data)
+    static func compress<S: Sequence<UInt8>>(data: S) -> CompressionResult<[UInt8]>? {
+        return nil
     }
 }
 
@@ -100,7 +100,7 @@ public extension CompressionTechnique.JSON {
     }
 }
 
-// MARK: Decompress data
+// MARK: Decompress
 public extension CompressionTechnique.JSON {
     @inlinable
     static func decompress(data: [UInt8]) -> [UInt8] {

@@ -9,53 +9,70 @@
 import Foundation
 #endif
 
-// https://en.wikipedia.org/wiki/Huffman_coding
 public extension CompressionTechnique {
+    /// The Huffman coding compression technique.
+    /// 
+    /// https://en.wikipedia.org/wiki/Huffman_coding
     enum Huffman {
     }
 }
 
 // MARK: Compress
 public extension CompressionTechnique.Huffman {
+    /// Compress a sequence of bytes using the Huffman Coding technique.
+    /// - Parameters:
+    ///   - data: The sequence of bytes to compress.
     @inlinable
-    static func compress(data: [UInt8]) -> CompressionResult<[UInt8]> {
+    static func compress<S: Sequence<UInt8>>(data: S) -> CompressionResult<[UInt8]>? {
         return compress(data: data) { frequencies, codes, root in
-            var compressed:[UInt8] = [0]
-            translate(data: data, codes: codes, closure: { compressed.append($0) }, finalClosure: {
-                compressed[0] = $1
-                compressed.append($0)
-            })
-            return CompressionResult(data: compressed, rootNode: root, frequencyTable: frequencies)
-        } ?? CompressionResult(data: data)
+            var compressed:[UInt8] = [8]
+            var vBitsInLastByte:UInt8 = 8
+            if let (lastByte, validBitsInLastByte):(UInt8, UInt8) = translate(data: data, codes: codes, closure: { compressed.append($0) }) {
+                compressed[0] = validBitsInLastByte
+                compressed.append(lastByte)
+                vBitsInLastByte = validBitsInLastByte
+            }
+            return CompressionResult(data: compressed, rootNode: root, frequencyTable: frequencies, validBitsInLastByte: vBitsInLastByte)
+        }
+    }
+
+    /// Compress a sequence of bytes to a stream using the Huffman Coding technique.
+    /// - Parameters:
+    ///   - data: The sequence of bytes to compress.
+    ///   - bufferingPolicy: A strategy that handles exhaustion of a buffer’s capacity.
+    @inlinable
+    static func compress<S: Sequence<UInt8>>(
+        data: S,
+        bufferingPolicy limit: AsyncStream<UInt8>.Continuation.BufferingPolicy = .unbounded
+    ) -> CompressionResult<AsyncStream<UInt8>>? {
+        // TODO: fix
+        return compress(data: data) { frequencies, codes, root in
+            var vBitsInLastByte:UInt8 = 8
+            let stream:AsyncStream<UInt8> = AsyncStream(bufferingPolicy: limit) { continuation in
+                if let (lastByte, validBitsInLastByte):(UInt8, UInt8) = translate(data: data, codes: codes, closure: { continuation.yield($0) }) {
+                    continuation.yield(lastByte)
+                    vBitsInLastByte = validBitsInLastByte
+                }
+                continuation.finish()
+            }
+            return CompressionResult(data: stream, rootNode: root, frequencyTable: frequencies, validBitsInLastByte: vBitsInLastByte)
+        }
     }
 
     @inlinable
-    static func compress(data: [UInt8], bufferingPolicy limit: AsyncStream<UInt8>.Continuation.BufferingPolicy = .unbounded) -> CompressionResult<AsyncStream<UInt8>> {
-        return compress(data: data) { frequencies, codes, root in
-            return CompressionResult(
-                data: AsyncStream(bufferingPolicy: limit) { continuation in
-                    // TODO: fix finalClosure
-                    translate(data: data, codes: codes, closure: { continuation.yield($0) }, finalClosure: { byte, _ in continuation.yield(byte) })
-                    continuation.finish()
-                },
-                rootNode: root, frequencyTable: frequencies)
-        } ?? CompressionResult(data: AsyncStream(bufferingPolicy: limit) { $0.finish() })
-    }
-
-    @inlinable
-    static func compress<T>(data: [UInt8], closure: ([Int], [UInt8:String], Node) -> T) -> T? {
+    static func compress<T, S: Sequence<UInt8>>(data: S, closure: ([Int], [UInt8:String], Node) -> T) -> T? {
         var frequencies:[Int] = Array(repeating: 0, count: Int(UInt8.max-1))
         for byte in data {
             frequencies[Int(byte)] += 1
         }
         guard let root:Node = buildTree(frequencies: frequencies) else { return nil }
         var codes:[UInt8:String] = [:]
-        generateCodes(root: root, codes: &codes)
+        generateCodes(node: root, codes: &codes)
         return closure(frequencies, codes, root)
     }
 
     @inlinable
-    static func translate(data: [UInt8], codes: [UInt8:String], closure: (UInt8) -> Void, finalClosure: (UInt8, UInt8) -> Void) {
+    static func translate<T: Sequence<UInt8>>(data: T, codes: [UInt8:String], closure: (UInt8) -> Void) -> (lastByte: UInt8, bitsFilled: UInt8)? {
         var builder:CompressionTechnique.IntBitBuilder = .init()
         for byte in data {
             if let tree:String = codes[byte] {
@@ -66,14 +83,16 @@ public extension CompressionTechnique.Huffman {
                 }
             }
         }
-        if let (byte, bitsFilled):(UInt8, UInt8) = builder.flush() {
-            finalClosure(byte, bitsFilled)
-        }
+        return builder.flush()
     }
 }
 
 // MARK: Decompress
 public extension CompressionTechnique.Huffman {
+    /// Decompress a sequence of bytes using the Huffman Coding technique.
+    /// - Parameters:
+    ///   - data: The sequence of bytes to decompress.
+    ///   - root: The root Huffman Node.
     @inlinable
     static func decompress(data: [UInt8], root: Node?) -> [UInt8] {
         var result:[UInt8] = []
@@ -81,8 +100,17 @@ public extension CompressionTechnique.Huffman {
         return result
     }
 
+    /// Decompress a sequence of bytes into a stream using the Huffman Coding technique.
+    /// - Parameters:
+    ///   - data: The sequence of bytes to decompress.
+    ///   - root: The root Huffman Node.
+    ///   - bufferingPolicy: A strategy that handles exhaustion of a buffer’s capacity.
     @inlinable
-    static func decompress(data: [UInt8], root: Node?, bufferingPolicy limit: AsyncStream<UInt8>.Continuation.BufferingPolicy = .unbounded) -> AsyncStream<UInt8> {
+    static func decompress(
+        data: [UInt8],
+        root: Node?,
+        bufferingPolicy limit: AsyncStream<UInt8>.Continuation.BufferingPolicy = .unbounded
+    ) -> AsyncStream<UInt8> {
         return AsyncStream(bufferingPolicy: limit) { continuation in
             decompress(data: data, root: root) { continuation.yield($0) }
             continuation.finish()
@@ -126,14 +154,27 @@ public extension CompressionTechnique.Huffman {
 }
 
 public extension CompressionTechnique.Huffman {
+    /// Decompress a sequence of bytes using the Huffman Coding technique.
+    /// - Parameters:
+    ///   - data: The sequence of bytes to decompress.
+    ///   - frequencyType: A Huffman frequency table of characters.
     @inlinable
     static func decompress(data: [UInt8], frequencyTable: [Int]) -> [UInt8] {
         guard let root:Node = buildTree(frequencies: frequencyTable) else { return data }
         return decompress(data: data, root: root)
     }
 
+    /// Decompress a sequence of bytes into a stream using the Huffman Coding technique.
+    /// - Parameters:
+    ///   - data: The sequence of bytes to decompress.
+    ///   - frequencyType: A Huffman frequency table of characters.
+    ///   - bufferingPolicy: A strategy that handles exhaustion of a buffer’s capacity.
     @inlinable
-    static func decompress(data: [UInt8], frequencyTable: [Int], bufferingPolicy limit: AsyncStream<UInt8>.Continuation.BufferingPolicy = .unbounded) -> AsyncStream<UInt8> {
+    static func decompress(
+        data: [UInt8],
+        frequencyTable: [Int],
+        bufferingPolicy limit: AsyncStream<UInt8>.Continuation.BufferingPolicy = .unbounded
+    ) -> AsyncStream<UInt8> {
         guard let root:Node = buildTree(frequencies: frequencyTable) else { return AsyncStream(bufferingPolicy: limit) { $0.finish() } }
         return decompress(data: data, root: root, bufferingPolicy: limit)
     }
@@ -160,6 +201,7 @@ public extension CompressionTechnique.Huffman {
 
 // MARK: Node
 public extension CompressionTechnique.Huffman {
+    /// A Huffman Node.
     final class Node : Comparable {
         public static func < (left: Node, right: Node) -> Bool {
             return left.frequency < right.frequency
@@ -251,7 +293,23 @@ public extension CompressionTechnique.Huffman {
 }
 
 // MARK: Logic
+public extension CompressionTechnique.Huffman {
+    /// - Parameters:
+    ///   - chars: A frequency table that represents how many times a character shows up.
+    /// - Returns: A Huffman frequency table.
+    @inlinable
+    static func buildFrequencyTable(chars: [Character:Int]) -> [Int] {
+        var table:[Int] = Array(repeating: 0, count: 255)
+        for (char, freq) in chars {
+            if let byte:UInt8 = char.asciiValue {
+                table[Int(byte)] = freq
+            }
+        }
+        return table
+    }
+}
 extension CompressionTechnique.Huffman {
+    /// - Returns: The root node of the Huffman tree.
     @inlinable
     static func buildTree(frequencies: [Int]) -> Node? {
         var queue:PriorityQueue<Node> = .init()
@@ -268,14 +326,15 @@ extension CompressionTechnique.Huffman {
         return queue.pop()
     }
 
+    /// Generates the binary codes for a node.
     @inlinable
-    static func generateCodes(root: Node?, code: String = "", codes: inout [UInt8:String]) {
-        guard let root:Node = root else { return }
-        if let char:UInt8 = root.character {
+    static func generateCodes(node: Node?, code: String = "", codes: inout [UInt8:String]) {
+        guard let node:Node = node else { return }
+        if let char:UInt8 = node.character {
             codes[char] = code
         } else {
-            generateCodes(root: root.left, code: code + "0", codes: &codes)
-            generateCodes(root: root.right, code: code + "1", codes: &codes)
+            generateCodes(node: node.left, code: code + "0", codes: &codes)
+            generateCodes(node: node.right, code: code + "1", codes: &codes)
         }
     }
 }
@@ -331,3 +390,18 @@ public extension Data {
     }
 }
 #endif
+
+// MARK: StringProtocol
+public extension StringProtocol {
+    /// - Returns: A Huffman frequency table for the characters.
+    @inlinable
+    func huffmanFrequencyTable() -> [Int] {
+        var table:[Int] = Array(repeating: 0, count: 255)
+        for char in self {
+            for byte in char.utf8 {
+                table[Int(byte)] += 1
+            }
+        }
+        return table
+    }
+}

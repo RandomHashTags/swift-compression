@@ -5,8 +5,12 @@
 //  Created by Evan Anderson on 12/9/24.
 //
 
-// https://en.wikipedia.org/wiki/Snappy_(compression)
 public extension CompressionTechnique {
+    /// The Snappy compression technique.
+    /// 
+    /// https://en.wikipedia.org/wiki/Snappy_(compression)
+    /// 
+    /// https://github.com/google/snappy
     enum Snappy {
     }
 }
@@ -14,10 +18,8 @@ public extension CompressionTechnique {
 // MARK: Compress
 public extension CompressionTechnique.Snappy { // TODO: finish
     @inlinable
-    static func compress(data: [UInt8]) -> [UInt8] {
-        var compressed:[UInt8] = []
-        compressed.reserveCapacity(data.count)
-        return compressed
+    static func compress<S: Sequence<UInt8>>(data: S) -> [UInt8] {
+        return []
     }
 }
 
