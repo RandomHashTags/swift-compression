@@ -74,6 +74,7 @@ public enum CompressionTechnique {
 // MARK: Compress
 public extension CompressionTechnique {
     /// Compress a sequence of bytes using the given technique.
+    /// 
     /// - Parameters:
     ///   - data: The sequence of bytes to compress.
     /// - Complexity: Varies by technique; minimum of O(_n_) where _n_ is the length of `data`.
@@ -102,6 +103,7 @@ public extension CompressionTechnique {
     }
 
     /// Compress a sequence of bytes into a stream using the given technique.
+    /// 
     /// - Parameters:
     ///   - data: The sequence of bytes to compress.
     /// - Complexity: Varies by technique; minimum of O(_n_) where _n_ is the length of `data`.
@@ -121,6 +123,7 @@ public extension CompressionTechnique {
 // MARK: Decompress
 public extension CompressionTechnique {
     /// Decompress a sequence of bytes using the given technique.
+    /// 
     /// - Parameters:
     ///   - data: The sequence of bytes to decompress.
     /// - Complexity: O(_n_) where _n_ is the length of `data`.
@@ -152,6 +155,7 @@ public extension CompressionTechnique {
     }
     
     /// Decompress a sequence of bytes into a stream using the given technique.
+    /// 
     /// - Parameters:
     ///   - data: The sequence of bytes to decompress.
     ///   - bufferingPolicy: A strategy that handles exhaustion of a buffer’s capacity.
@@ -180,6 +184,7 @@ public extension CompressionTechnique {
 
 public extension CompressionTechnique {
     /// Creates a universal frequency table from a sequence of raw bytes.
+    /// 
     /// - Parameters:
     ///   - data: A sequence of raw bytes.
     /// - Returns: A universal frequency table.
@@ -194,6 +199,7 @@ public extension CompressionTechnique {
     }
 
     /// Creates a lookup frequency table from a sequence of raw bytes.
+    /// 
     /// - Parameters:
     ///   - data: A sequence of raw bytes.
     /// - Returns: A lookup frequency table.
@@ -208,6 +214,7 @@ public extension CompressionTechnique {
     }
 
     /// Creates a universal frequency table from a character frequency dictionary.
+    /// 
     /// - Parameters:
     ///   - chars: A frequency table that represents how many times a character is present.
     /// - Returns: A universal frequency table.
@@ -392,6 +399,7 @@ public extension CompressionTechnique {
         }
         
         /// Assigns the `index` to zero and assigns all bits to `false`.
+        /// 
         /// - Complexity: O(1).
         @inlinable
         public mutating func clear() {

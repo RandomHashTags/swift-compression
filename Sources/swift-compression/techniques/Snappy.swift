@@ -189,36 +189,3 @@ extension CompressionTechnique.Snappy {
         index += readBytes
     }
 }
-
-// MARK: [UInt8]
-public extension Array where Element == UInt8 {
-    /// Compresses this data using the Snappy technique.
-    /// - Returns: `self`.
-    @discardableResult
-    @inlinable
-    mutating func decompressSnappy() -> Self {
-        self = CompressionTechnique.Snappy.decompress(data: self)
-        return self
-    }
-
-    /// Compress a copy of this data using the Snappy technique.
-    /// - Returns: The compressed data.
-    @inlinable
-    func decompressedSnappy() -> [UInt8] {
-        return CompressionTechnique.Snappy.decompress(data: self)
-    }
-}
-
-// MARK: AsyncStream
-public extension Array where Element == UInt8 {
-    /// Compress this data to a stream using the Snappy technique.
-    /// - Parameters:
-    ///   - bufferingPolicy: A strategy that handles exhaustion of a buffer’s capacity.
-    /// - Returns: An `AsyncStream<UInt8>` that decompresses the data.
-    @inlinable
-    func decompressSnappy(
-        bufferingPolicy limit: AsyncStream<UInt8>.Continuation.BufferingPolicy = .unbounded
-    ) -> AsyncStream<UInt8> {
-        return CompressionTechnique.Snappy.decompress(data: self, bufferingPolicy: limit)
-    }
-}

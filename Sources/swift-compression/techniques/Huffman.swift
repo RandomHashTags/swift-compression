@@ -338,58 +338,6 @@ extension CompressionTechnique.Huffman {
     }
 }
 
-// MARK: [UInt8]
-public extension Array where Element == UInt8 {
-    /// Compresses this data using the Huffman coding technique.
-    /// - Returns: `self`.
-    @discardableResult
-    @inlinable
-    mutating func decompressHuffmanCoding(root: CompressionTechnique.Huffman.Node?) -> Self {
-        self = CompressionTechnique.Huffman.decompress(data: self, root: root)
-        return self
-    }
-
-    /// Compress a copy of this data using the Huffman coding technique.
-    /// - Returns: The compressed data.
-    @inlinable
-    func decompressedHuffmanCoding(root: CompressionTechnique.Huffman.Node?) -> [UInt8] {
-        return CompressionTechnique.Huffman.decompress(data: self, root: root)
-    }
-}
-
-// MARK: AsyncStream
-public extension Array where Element == UInt8 {
-    /// Compress this data to a stream using the Huffman coding technique.
-    /// - Parameters:
-    ///   - root: The root Huffman coding node.
-    ///   - bufferingPolicy: A strategy that handles exhaustion of a buffer’s capacity.
-    /// - Returns: An `AsyncStream<UInt8>` that decompresses the data.
-    @inlinable
-    func decompressHuffmanCoding(
-        root: CompressionTechnique.Huffman.Node?,
-        bufferingPolicy limit: AsyncStream<UInt8>.Continuation.BufferingPolicy = .unbounded
-    ) -> AsyncStream<UInt8> {
-        return CompressionTechnique.Huffman.decompress(data: self, root: root, bufferingPolicy: limit)
-    }
-}
-
-#if canImport(Foundation)
-public extension Data {
-    /// Compress this data into a stream using the Run-length encoding technique.
-    /// - Parameters:
-    ///   - root: The root Huffman coding node.
-    ///   - bufferingPolicy: A strategy that handles exhaustion of a buffer’s capacity.
-    /// - Returns: An `AsyncStream<UInt8>` that compresses the data.
-    @inlinable
-    func decompressHuffmanCoding(
-        root: CompressionTechnique.Huffman.Node?,
-        bufferingPolicy limit: AsyncStream<UInt8>.Continuation.BufferingPolicy = .unbounded
-    ) -> AsyncStream<UInt8> {
-        return CompressionTechnique.Huffman.decompress(data: [UInt8](self), root: root, bufferingPolicy: limit)
-    }
-}
-#endif
-
 // MARK: StringProtocol
 public extension StringProtocol {
     /// - Returns: A Huffman frequency table for the characters.
