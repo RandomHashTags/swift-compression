@@ -11,6 +11,8 @@ import Testing
 @testable import SwiftCompression
 
 struct SnappyTests {
+
+    #if canImport(Foundation)
     @Test func decompressSnappy() {
         let expected_result:String = "Wikipedia is a free, web-based, collaborative, multilingual encyclopedia project."
         var string:String = "51 f0 42 57 69 6b 69 70 65 64 69 61 20 69 73 20"
@@ -25,6 +27,7 @@ struct SnappyTests {
         let decompressed:[UInt8] = CompressionTechnique.Snappy.decompress(data: data)
         #expect(decompressed == [UInt8](expected_result.utf8))
     }
+    #endif
 }
 
 

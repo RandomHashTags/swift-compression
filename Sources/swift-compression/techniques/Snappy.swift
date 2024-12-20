@@ -110,7 +110,7 @@ extension CompressionTechnique.Snappy {
 
 // MARK: Copy
 extension CompressionTechnique.Snappy {
-    /// - Complexity: O(_n_) where _n_ is `4` plus the `UInt8` created from the `flagBits`.
+    /// - Complexity: O(_n_) where _n_ is the `UInt8` created from the `flagBits`.
     @inlinable
     static func decompressCopy1(
         flagBits: Bits8,
@@ -213,7 +213,7 @@ public extension Array where Element == UInt8 {
 public extension Array where Element == UInt8 {
     /// Compress this data to a stream using the Snappy technique.
     /// - Parameters:
-    ///   - bufferingPolicy: A `Continuation.BufferingPolicy` value to set the stream's buffering behavior. By default, the stream buffers an unlimited number of elements. You can also set the policy to buffer a specified number of oldest or newest elements.
+    ///   - bufferingPolicy: A strategy that handles exhaustion of a buffer’s capacity.
     /// - Returns: An `AsyncStream<UInt8>` that decompresses the data.
     @inlinable
     func decompressSnappy(

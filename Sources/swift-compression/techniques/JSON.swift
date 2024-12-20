@@ -76,26 +76,10 @@ public extension CompressionTechnique.JSON {
 }
 #endif
 
-// MARK: Compress encoded
-public extension CompressionTechnique.JSON {
-    @inlinable
-    static func compress<T: StringProtocol>(encoded: T) -> CompressionResult<[UInt8]>? {
-        return nil
-    }
-}
-
 // MARK: Compress
 public extension CompressionTechnique.JSON {
     @inlinable
     static func compress<S: Sequence<UInt8>>(data: S) -> CompressionResult<[UInt8]>? {
-        return nil
-    }
-}
-
-// MARK: Decompress encodable
-public extension CompressionTechnique.JSON {
-    @inlinable
-    static func decompress<T: Decodable>(data: [UInt8]) -> T? {
         return nil
     }
 }

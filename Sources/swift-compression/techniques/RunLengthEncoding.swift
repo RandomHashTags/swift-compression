@@ -159,7 +159,7 @@ public extension Array where Element == UInt8 {
     /// - Parameters:
     ///   - minRun: The minimum run count required to compress identical sequential bytes.
     ///   - alwaysIncludeRunCount: whether or not to always include the number of repeated bytes, regardless of run count.
-    ///   - bufferingPolicy: A `Continuation.BufferingPolicy` value to set the stream's buffering behavior. By default, the stream buffers an unlimited number of elements. You can also set the policy to buffer a specified number of oldest or newest elements.
+    ///   - bufferingPolicy: A strategy that handles exhaustion of a buffer’s capacity.
     /// - Returns: An `AsyncStream<UInt8>` that compresses the data.
     /// - Complexity: O(_n_) where _n_ is the length of the sequence.
     @inlinable
@@ -178,7 +178,7 @@ public extension Data {
     /// - Parameters:
     ///   - minRun: The minimum run count required to compress identical sequential bytes.
     ///   - alwaysIncludeRunCount: whether or not to always include the number of repeated bytes, regardless of run count.
-    ///   - bufferingPolicy: A `Continuation.BufferingPolicy` value to set the stream's buffering behavior. By default, the stream buffers an unlimited number of elements. You can also set the policy to buffer a specified number of oldest or newest elements.
+    ///   - bufferingPolicy: A strategy that handles exhaustion of a buffer’s capacity.
     /// - Returns: An `AsyncStream<UInt8>` that compresses the data.
     /// - Complexity: O(_n_) where _n_ is the length of the sequence.
     @inlinable
@@ -272,7 +272,7 @@ public extension Array where Element == UInt8 {
 public extension Array where Element == UInt8 {
     /// Decompress this data to a stream using the Run-length encoding technique.
     /// - Parameters:
-    ///   - bufferingPolicy: A `Continuation.BufferingPolicy` value to set the stream's buffering behavior. By default, the stream buffers an unlimited number of elements. You can also set the policy to buffer a specified number of oldest or newest elements.
+    ///   - bufferingPolicy: A strategy that handles exhaustion of a buffer’s capacity.
     /// - Returns: An `AsyncStream<UInt8>` that decompresses the data.
     /// - Complexity: O(_n_) where _n_ is the length of the sequence.
     @inlinable
@@ -287,7 +287,7 @@ public extension Array where Element == UInt8 {
 public extension Data {
     /// Decompress this data into a stream using the Run-length encoding technique.
     /// - Parameters:
-    ///   - bufferingPolicy: A `Continuation.BufferingPolicy` value to set the stream's buffering behavior. By default, the stream buffers an unlimited number of elements. You can also set the policy to buffer a specified number of oldest or newest elements.
+    ///   - bufferingPolicy: A strategy that handles exhaustion of a buffer’s capacity.
     /// - Returns: An `AsyncStream<UInt8>` that compresses the data.
     /// - Complexity: O(_n_) where _n_ is the length of the sequence.
     @inlinable

@@ -54,7 +54,13 @@ public enum CompressionTechnique {
     case fibonacci
 
     // science
-    case dnacSBE
+    case dnaBinaryEncoding(baseBits: [UInt8:[Bool]] = [
+        65 : [false, false], // A
+        67 : [false, true],  // C
+        71 : [true, false],  // G
+        84 : [true, true]    // T
+    ])
+    case dnaSingleBlockEncoding
 
     // SSL
     case boringSSL
@@ -84,7 +90,8 @@ public extension CompressionTechnique {
                 }
                 return result
             case .deflate:                                          return Deflate.compress(data: data)
-            case .dnacSBE:                                          return DNAC_SBE.compress(data: data)
+            case .dnaBinaryEncoding(let baseBits):                  return DNABinaryEncoding.compress(data: data, baseBits: baseBits) 
+            case .dnaSingleBlockEncoding:                           return DNASingleBlockEncoding.compress(data: data)
             case .huffman(_):                                       return Huffman.compress(data: data)
             case .json:                                             return JSON.compress(data: data)
             case .lz77(let windowSize, let bufferSize):             return LZ77.compress(data: data, windowSize: windowSize, bufferSize: bufferSize)
@@ -128,7 +135,14 @@ public extension CompressionTechnique {
                 }
                 return data
             case .deflate: return Deflate.decompress(data: data)
-            case .dnacSBE: return DNAC_SBE.decompress(data: data)
+            case .dnaBinaryEncoding(let baseBits):
+                var reversed:[[Bool]:UInt8] = [:]
+                reversed.reserveCapacity(baseBits.count)
+                for (byte, bits) in baseBits {
+                    reversed[bits] = byte
+                }
+                return DNABinaryEncoding.decompress(data: data, baseBits: reversed)
+            case .dnaSingleBlockEncoding: return DNASingleBlockEncoding.decompress(data: data)
             case .huffman(let root): return Huffman.decompress(data: data, root: root)
             case .json: return JSON.decompress(data: data)
             case .runLength(_, _): return RunLengthEncoding.decompress(data: data)
@@ -150,6 +164,13 @@ public extension CompressionTechnique {
         guard !data.isEmpty else { return AsyncStream { $0.finish() } }
         switch self {
             case .huffman(let root): return Huffman.decompress(data: data, root: root)
+            case .dnaBinaryEncoding(let baseBits):
+                var reversed:[[Bool]:UInt8] = [:]
+                reversed.reserveCapacity(baseBits.count)
+                for (byte, bits) in baseBits {
+                    reversed[bits] = byte
+                }
+                return DNABinaryEncoding.decompress(data: data, baseBits: reversed, bufferingPolicy: limit)
             case .runLength(_, _): return RunLengthEncoding.decompress(data: data, bufferingPolicy: limit)
             case .snappy: return Snappy.decompress(data: data, bufferingPolicy: limit)
             default: return AsyncStream { $0.finish() }
@@ -295,6 +316,7 @@ public extension CompressionTechnique {
             }
         }
 
+        /// - Returns: The complete byte, if all 8 bits are filled.
         /// - Complexity: O(1)
         @inlinable
         public mutating func write(bit: Bool) -> UInt8? {
@@ -349,10 +371,10 @@ public extension CompressionTechnique {
 
         /// - Complexity: O(1). 
         @inlinable
-        public mutating func flush() -> (lastByte: UInt8, bitsFilled: UInt8)? {
+        public mutating func flush() -> (lastByte: UInt8, validBits: UInt8)? {
             guard index != 0 else { return nil }
             defer { clear() }
-            return (UInt8(fromBits: bits), 8 - index)
+            return (UInt8(fromBits: bits), index)
         }
 
         /// - Complexity: O(1).

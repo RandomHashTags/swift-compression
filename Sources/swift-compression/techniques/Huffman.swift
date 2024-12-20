@@ -73,7 +73,7 @@ public extension CompressionTechnique.Huffman {
 
     /// - Complexity: O(_n_ + _m_) where _n_ is the length of `data` and _m_ is the sum of the code lengths.
     @inlinable
-    static func translate<T: Sequence<UInt8>>(data: T, codes: [UInt8:String], closure: (UInt8) -> Void) -> (lastByte: UInt8, bitsFilled: UInt8)? {
+    static func translate<T: Sequence<UInt8>>(data: T, codes: [UInt8:String], closure: (UInt8) -> Void) -> (lastByte: UInt8, validBits: UInt8)? {
         var builder:CompressionTechnique.IntBitBuilder = .init()
         for byte in data {
             if let tree:String = codes[byte] {
@@ -307,6 +307,7 @@ extension CompressionTechnique.Huffman {
     /// - Parameters:
     ///   - frequencies: A universal frequency table.
     /// - Returns: The root node of the Huffman tree.
+    /// - Complexity: O(?)
     @inlinable
     static func buildTree(frequencies: [Int]) -> Node? {
         var queue:PriorityQueue<Node> = .init()
@@ -361,7 +362,7 @@ public extension Array where Element == UInt8 {
     /// Compress this data to a stream using the Huffman coding technique.
     /// - Parameters:
     ///   - root: The root Huffman coding node.
-    ///   - bufferingPolicy: A `Continuation.BufferingPolicy` value to set the stream's buffering behavior. By default, the stream buffers an unlimited number of elements. You can also set the policy to buffer a specified number of oldest or newest elements.
+    ///   - bufferingPolicy: A strategy that handles exhaustion of a buffer’s capacity.
     /// - Returns: An `AsyncStream<UInt8>` that decompresses the data.
     @inlinable
     func decompressHuffmanCoding(
@@ -377,7 +378,7 @@ public extension Data {
     /// Compress this data into a stream using the Run-length encoding technique.
     /// - Parameters:
     ///   - root: The root Huffman coding node.
-    ///   - bufferingPolicy: A `Continuation.BufferingPolicy` value to set the stream's buffering behavior. By default, the stream buffers an unlimited number of elements. You can also set the policy to buffer a specified number of oldest or newest elements.
+    ///   - bufferingPolicy: A strategy that handles exhaustion of a buffer’s capacity.
     /// - Returns: An `AsyncStream<UInt8>` that compresses the data.
     @inlinable
     func decompressHuffmanCoding(
