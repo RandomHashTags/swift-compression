@@ -79,7 +79,7 @@ public extension CompressionTechnique.DNABinaryEncoding {
         ],
         closure: (UInt8) -> Void
     ) -> UInt8? {
-        var bitWriter:CompressionTechnique.IntBitBuilder = .init()
+        var bitWriter:ByteBuilder = .init()
         for base in data {
             if let bits:[Bool] = baseBits[base] {
                 for bit in bits {

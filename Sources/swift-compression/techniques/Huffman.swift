@@ -74,7 +74,7 @@ public extension CompressionTechnique.Huffman {
     /// - Complexity: O(_n_ + _m_) where _n_ is the length of `data` and _m_ is the sum of the code lengths.
     @inlinable
     static func translate<T: Sequence<UInt8>>(data: T, codes: [UInt8:String], closure: (UInt8) -> Void) -> (lastByte: UInt8, validBits: UInt8)? {
-        var builder:CompressionTechnique.IntBitBuilder = .init()
+        var builder:ByteBuilder = .init()
         for byte in data {
             if let tree:String = codes[byte] {
                 for char in tree {
@@ -209,7 +209,7 @@ public extension CompressionTechnique.Huffman {
 // MARK: Node
 public extension CompressionTechnique.Huffman {
     /// A Huffman Node.
-    final class Node : Comparable {
+    final class Node : Comparable, Hashable {
         public static func < (left: Node, right: Node) -> Bool {
             return left.frequency < right.frequency
         }
@@ -232,6 +232,13 @@ public extension CompressionTechnique.Huffman {
             self.frequency = frequency
             self.left = left
             self.right = right
+        }
+
+        public func hash(into hasher: inout Hasher) {
+            hasher.combine(character)
+            hasher.combine(frequency)
+            hasher.combine(left)
+            hasher.combine(right)
         }
     }
 }
