@@ -19,6 +19,6 @@ extension Sequence where Element == UInt8 {
 extension Collection {
     @inlinable
     func get(_ index: Index) -> Element? {
-        return index < endIndex ? self[index] : nil
+        return index < endIndex && index >= startIndex ? self[index] : nil
     }
 }

@@ -5,8 +5,8 @@
 //  Created by Evan Anderson on 12/9/24.
 //
 
-// MARK: Sequence
-public extension Sequence where Element == UInt8 {
+// MARK: Collection
+public extension Collection where Element == UInt8 {
     /// Compress a copy of this data using the specified technique(s).
     /// 
     /// - Returns: The `CompressionResult`.

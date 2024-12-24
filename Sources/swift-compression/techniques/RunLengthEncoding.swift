@@ -20,6 +20,7 @@ public extension CompressionTechnique {
 // MARK: Compress
 public extension CompressionTechnique.RunLengthEncoding {
     /// Compress a sequence of bytes using the Run-length encoding technique.
+    /// 
     /// - Parameters:
     ///   - data: The sequence of bytes to compress.
     ///   - reserveCapacity: Reserves enough space to store the specified number of elements.
@@ -56,6 +57,7 @@ public extension CompressionTechnique.RunLengthEncoding {
     }
 
     /// Compress a sequence of bytes using the Run-length encoding technique.
+    /// 
     /// - Parameters:
     ///   - data: The sequence of bytes to compress.
     ///   - minRun: The minimum run count required to compress identical sequential bytes.
@@ -129,6 +131,7 @@ public extension CompressionTechnique.RunLengthEncoding {
 // MARK: Decompress
 public extension CompressionTechnique.RunLengthEncoding {
     /// Decompress a sequence of bytes using the Run-length encoding compression technique.
+    /// 
     /// - Parameters:
     ///   - data: The sequence of bytes to decompress.
     /// - Complexity: O(_n_) where _n_ is the length of `data`.
@@ -140,6 +143,7 @@ public extension CompressionTechnique.RunLengthEncoding {
     }
 
     /// Decompress a sequence of bytes into a stream using the Run-length encoding compression technique.
+    /// 
     /// - Parameters:
     ///   - data: The sequence of bytes to decompress.
     ///   - bufferingPolicy: A strategy that handles exhaustion of a buffer’s capacity.

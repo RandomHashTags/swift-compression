@@ -26,6 +26,13 @@ public extension FixedWidthInteger {
         return bits
     }
 
+    var bytes : [UInt8] {
+        return withUnsafeBytes(of: self, Array.init)
+    }
+    var reversedBytes : ReversedCollection<[UInt8]> {
+        return withUnsafeBytes(of: self, Array.init).reversed()
+    }
+
     init?(fromBits: [Bool]) {
         guard fromBits.count <= Self.bitWidth else { return nil }
         self = fromBits.reduce(0) { 2 * $0 + ($1 ? 1 : 0) }
@@ -42,6 +49,18 @@ public extension FixedWidthInteger {
     }
     init(fromBits: Bits6) {
         self = (fromBits.0 ? 32 : 0) + (fromBits.1 ? 16 : 0) + (fromBits.2 ? 8 : 0) + (fromBits.3 ? 4 : 0) + (fromBits.4 ? 2 : 0) + (fromBits.5 ? 1 : 0)
+    }
+    init(highBits: Bits4, lowBits: Bits4) {
+        var value:Self = 0
+        if highBits.0 { value += 128 }
+        if highBits.1 { value += 64 }
+        if highBits.2 { value += 32 }
+        if highBits.3 { value += 16 }
+        if lowBits.0 { value += 8 }
+        if lowBits.1 { value += 4 }
+        if lowBits.2 { value += 2 }
+        if lowBits.3 { value += 1 }
+        self = value
     }
     init(fromBits: Bits8) {
         var value:Self = 0
@@ -68,6 +87,26 @@ public extension FixedWidthInteger {
         if fromBits.8  { value += 4 }
         if fromBits.9  { value += 2 }
         if fromBits.10 { value += 1 }
+        self = value
+    }
+    init(highBits: Bits8, lowBits: Bits8) {
+        var value:Self = 0
+        if highBits.0 { value += 32768 }
+        if highBits.1 { value += 16384 }
+        if highBits.2 { value += 8192 }
+        if highBits.3 { value += 4096 }
+        if highBits.4 { value += 2048 }
+        if highBits.5 { value += 1024 }
+        if highBits.6 { value += 512 }
+        if highBits.7 { value += 256 }
+        if lowBits.0  { value += 128 }
+        if lowBits.1  { value += 64 }
+        if lowBits.2  { value += 32 }
+        if lowBits.3  { value += 16 }
+        if lowBits.4  { value += 8 }
+        if lowBits.5  { value += 4 }
+        if lowBits.6  { value += 2 }
+        if lowBits.7  { value += 1 }
         self = value
     }
     init(fromBits: Bits16) {

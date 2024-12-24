@@ -16,6 +16,7 @@ public extension CompressionTechnique {
 // MARK: Compress
 public extension CompressionTechnique.DNASingleBlockEncoding {
     /// Compress a sequence of bytes using the DNA single block encoding technique.
+    /// 
     /// - Parameters:
     ///   - data: The sequence of bytes to compress.
     /// - Complexity: O(_n_ + (_m_ log _m_)) where _n_ is the length of `data` and _m_ is the number of unique bytes in `data`.
@@ -33,6 +34,7 @@ public extension CompressionTechnique.DNASingleBlockEncoding {
 
 extension CompressionTechnique.DNASingleBlockEncoding {
     /// Compress a sequence of bytes using phase one (compress data to binary) of the DNA single block encoding technique.
+    /// 
     /// - Parameters:
     ///   - data: The sequence of bytes to compress.
     /// - Complexity: O(_n_ + (_m_ log _m_)) where _n_ is the length of `data` and _m_ is the number of unique bytes in `data`.
@@ -142,6 +144,7 @@ extension CompressionTechnique.DNASingleBlockEncoding {
 // MARK: Decompress
 public extension CompressionTechnique.DNASingleBlockEncoding { // TODO: finish
     /// Decompress a sequence of bytes using the DNA single block encoding technique.
+    /// 
     /// - Parameters:
     ///   - data: The sequence of bytes to decompress.
     @inlinable

@@ -127,13 +127,13 @@ public extension CompressionTechnique {
 
 // MARK: Compress
 public extension CompressionTechnique {
-    /// Compress a sequence of bytes using the given technique.
+    /// Compress a collection of bytes using the given technique.
     /// 
     /// - Parameters:
-    ///   - data: The sequence of bytes to compress.
+    ///   - data: The collection of bytes to compress.
     /// - Complexity: Varies by technique; minimum of O(_n_) where _n_ is the length of `data`.
     @inlinable
-    func compress<S: Sequence<UInt8>>(data: S) -> CompressionResult<[UInt8]>? {
+    func compress<C: Collection<UInt8>>(data: C) -> CompressionResult<[UInt8]>? {
         switch self {
             case .multiple(let techniques):
                 var result:CompressionResult<[UInt8]> = CompressionResult(data: [UInt8](data))
@@ -160,16 +160,22 @@ public extension CompressionTechnique {
     /// 
     /// - Parameters:
     ///   - data: The sequence of bytes to compress.
+    ///   - bufferingPolicy: A strategy that handles exhaustion of a buffer’s capacity.
     /// - Complexity: Varies by technique; minimum of O(_n_) where _n_ is the length of `data`.
     @inlinable
-    func compress(data: [UInt8]) -> CompressionResult<AsyncStream<UInt8>>? {
+    func compress(
+        data: [UInt8],
+        bufferingPolicy limit: AsyncStream<UInt8>.Continuation.BufferingPolicy = .unbounded
+    ) -> CompressionResult<AsyncStream<UInt8>>? {
         switch self {
             case .huffman(_):
-                return Huffman.compress(data: data)
+                return Huffman.compress(data: data, bufferingPolicy: limit)
+            case .lz77(let windowSize, let bufferSize):
+                return CompressionResult(data: LZ77.compress(data: data, windowSize: windowSize, bufferSize: bufferSize, bufferingPolicy: limit))
             case .runLength(let minRun, let alwaysIncludeRunCount):
-                return CompressionResult(data: RunLengthEncoding.compress(data: data, minRun: minRun, alwaysIncludeRunCount: alwaysIncludeRunCount))
+                return CompressionResult(data: RunLengthEncoding.compress(data: data, minRun: minRun, alwaysIncludeRunCount: alwaysIncludeRunCount, bufferingPolicy: limit))
             default:
-                return CompressionResult(data: AsyncStream { $0.finish() })
+                return nil
         }
     }
 }
@@ -202,6 +208,7 @@ public extension CompressionTechnique {
             case .dnaSingleBlockEncoding: return DNASingleBlockEncoding.decompress(data: data)
             case .huffman(let root): return Huffman.decompress(data: data, root: root)
             case .json: return JSON.decompress(data: data)
+            case .lz77(let windowSize, _): return LZ77.decompress(data: data, windowSize: windowSize)
             case .runLength(_, _): return RunLengthEncoding.decompress(data: data)
             case .snappy: return Snappy.decompress(data: data)
             default: return data
@@ -221,7 +228,7 @@ public extension CompressionTechnique {
     ) -> AsyncStream<UInt8> {
         guard !data.isEmpty else { return AsyncStream { $0.finish() } }
         switch self {
-            case .huffman(let root): return Huffman.decompress(data: data, root: root)
+            case .huffman(let root): return Huffman.decompress(data: data, root: root, bufferingPolicy: limit)
             case .dnaBinaryEncoding(let baseBits):
                 var reversed:[[Bool]:UInt8] = [:]
                 reversed.reserveCapacity(baseBits.count)
@@ -229,6 +236,7 @@ public extension CompressionTechnique {
                     reversed[bits] = byte
                 }
                 return DNABinaryEncoding.decompress(data: data, baseBits: reversed, bufferingPolicy: limit)
+            case .lz77(let windowSize, _): return LZ77.decompress(data: data, windowSize: windowSize, bufferingPolicy: limit)
             case .runLength(_, _): return RunLengthEncoding.decompress(data: data, bufferingPolicy: limit)
             case .snappy: return Snappy.decompress(data: data, bufferingPolicy: limit)
             default: return AsyncStream { $0.finish() }

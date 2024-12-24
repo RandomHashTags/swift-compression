@@ -17,6 +17,9 @@ public extension CompressionTechnique {
 
 // MARK: Compress
 public extension CompressionTechnique.Snappy { // TODO: finish
+    /// - Parameters:
+    ///   - data: A sequence of bytes to compress.
+    /// - Complexity: O(_n_) where _n_ is the length of `data`.
     @inlinable
     static func compress<S: Sequence<UInt8>>(data: S) -> [UInt8] {
         return []
@@ -25,6 +28,8 @@ public extension CompressionTechnique.Snappy { // TODO: finish
 
 // MARK: Decompress
 public extension CompressionTechnique.Snappy {
+    /// - Parameters:
+    ///   - data: A sequence of bytes to decompress.
     /// - Complexity: O(_n_) where _n_ is the length of `data`.
     @inlinable
     static func decompress(data: [UInt8]) -> [UInt8] {
@@ -45,9 +50,15 @@ public extension CompressionTechnique.Snappy {
         return decompressed
     }
 
+    /// - Parameters:
+    ///   - data: A sequence of bytes to decompress.
+    ///   - bufferingPolicy: A strategy that handles exhaustion of a buffer’s capacity.
     /// - Complexity: O(_n_) where _n_ is the length of `data`.
     @inlinable
-    static func decompress(data: [UInt8], bufferingPolicy limit: AsyncStream<UInt8>.Continuation.BufferingPolicy = .unbounded) -> AsyncStream<UInt8> {
+    static func decompress(
+        data: [UInt8],
+        bufferingPolicy limit: AsyncStream<UInt8>.Continuation.BufferingPolicy = .unbounded
+    ) -> AsyncStream<UInt8> {
         return AsyncStream(bufferingPolicy: limit) { continuation in
             let totalSize:Int = Int(data[0])
             var index:Int = 1
