@@ -7,7 +7,7 @@ let package = Package(
     name: "swift-compression",
     products: [
         .library(
-            name: "swift-compression",
+            name: "SwiftCompression",
             targets: ["SwiftCompression"]
         ),
     ],
