@@ -71,6 +71,60 @@ public enum CompressionTechnique : Hashable, Sendable {
     case mpeg    
 }
 
+// MARK: RawValue
+public extension CompressionTechnique {
+    /// The case name of the technique.
+    var rawValue : String {
+        switch self {
+        case .multiple: return "multiple"
+
+        case .aac: return "aac"
+        case .mp3: return "mp3"
+
+        case .arithmetic: return "arithmetic"
+        case .brotli: return "brotli"
+
+        case .bwt: return "bwt"
+        case .deflate: return "deflate"
+        case .huffman: return "huffman"
+        case .json: return "json"
+        case .lz4: return "lz4"
+        case .lz77: return "lz77"
+        case .lz78: return "lz78"
+        case .lzw: return "lzw"
+        case .mtf: return "mtf"
+        case .runLength: return "runLength"
+        case .snappy: return "snappy"
+        case .snappyFramed: return "snappyFramed"
+        case .zstd: return "zstd"
+
+        case ._7z: return "_7z"
+        case .bzip2: return "bzip2"
+        case .gzip: return "gzip"
+        case .rar: return "rar"
+        
+        case .h264: return "h264"
+        case .h265: return "h265"
+        case .jpeg: return "jpeg"
+        case .jpeg2000: return "jpeg2000"
+
+        case .eliasDelta: return "eliasDelta"
+        case .eliasGamma: return "eliasGamma"
+        case .eliasOmega: return "eliasOmega"
+        case .fibonacci: return "fibonacci"
+
+        case .dnaBinaryEncoding(_): return "dnaBinaryEncoding"
+        case .dnaSingleBlockEncoding: return "dnaSingleBlockEncoding"
+
+        case .boringSSL: return "boringSSL"
+
+        case .av1: return "av1"
+        case .dirac: return "dirac"
+        case .mpeg: return "mpeg"
+        }
+    }
+}
+
 // MARK: Compress
 public extension CompressionTechnique {
     /// Compress a sequence of bytes using the given technique.
@@ -182,6 +236,7 @@ public extension CompressionTechnique {
     }
 }
 
+// MARK: Frequency tables
 public extension CompressionTechnique {
     /// Creates a universal frequency table from a sequence of raw bytes.
     /// 
