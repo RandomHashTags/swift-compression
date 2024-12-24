@@ -209,7 +209,7 @@ public extension CompressionTechnique.Huffman {
 // MARK: Node
 public extension CompressionTechnique.Huffman {
     /// A Huffman Node.
-    final class Node : Comparable, Hashable {
+    final class Node : Comparable, Hashable, Sendable {
         public static func < (left: Node, right: Node) -> Bool {
             return left.frequency < right.frequency
         }
@@ -217,10 +217,10 @@ public extension CompressionTechnique.Huffman {
             return left.frequency == right.frequency
         }
 
-        public var character:UInt8?
-        public var frequency:Int
-        public var left:Node?
-        public var right:Node?
+        public let character:UInt8?
+        public let frequency:Int
+        public let left:Node?
+        public let right:Node?
 
         public init(
             character: UInt8? = nil,

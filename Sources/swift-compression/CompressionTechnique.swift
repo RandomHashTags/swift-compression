@@ -7,7 +7,7 @@
 
 // MARK: CompressionTechnique
 /// A collection of well-known and useful compression and decompression techniques.
-public enum CompressionTechnique : Hashable {
+public enum CompressionTechnique : Hashable, Sendable {
     case multiple(techniques: [CompressionTechnique])
 
     // audio
