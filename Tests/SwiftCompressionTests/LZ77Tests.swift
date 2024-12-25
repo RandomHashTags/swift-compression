@@ -2,7 +2,7 @@
 //  LZ77Tests.swift
 //
 //
-//  Created by Evan Anderson on 12/17/24.
+//  Created by Evan Anderson on 12/24/24.
 //
 
 #if compiler(>=6.0)
