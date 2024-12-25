@@ -134,6 +134,7 @@ public extension CompressionTechnique {
     /// - Complexity: Varies by technique; minimum of O(_n_) where _n_ is the length of `data`.
     @inlinable
     func compress<C: Collection<UInt8>>(data: C) -> CompressionResult<[UInt8]>? {
+        guard !data.isEmpty else { return nil }
         switch self {
             case .multiple(let techniques):
                 var result:CompressionResult<[UInt8]> = CompressionResult(data: [UInt8](data))
@@ -167,15 +168,20 @@ public extension CompressionTechnique {
         data: [UInt8],
         bufferingPolicy limit: AsyncStream<UInt8>.Continuation.BufferingPolicy = .unbounded
     ) -> CompressionResult<AsyncStream<UInt8>>? {
+        guard !data.isEmpty else { return nil }
         switch self {
-            case .huffman(_):
-                return Huffman.compress(data: data, bufferingPolicy: limit)
-            case .lz77(let windowSize, let bufferSize):
-                return CompressionResult(data: LZ77.compress(data: data, windowSize: windowSize, bufferSize: bufferSize, bufferingPolicy: limit))
-            case .runLength(let minRun, let alwaysIncludeRunCount):
-                return CompressionResult(data: RunLengthEncoding.compress(data: data, minRun: minRun, alwaysIncludeRunCount: alwaysIncludeRunCount, bufferingPolicy: limit))
-            default:
-                return nil
+        case .huffman(_):
+            return Huffman.compress(data: data, bufferingPolicy: limit)
+        default:
+            let stream:AsyncStream<UInt8> = AsyncStream(bufferingPolicy: limit) { continuation in
+                switch self {
+                case .lz77(let windowSize, let bufferSize): LZ77.compress(data: data, windowSize: windowSize, bufferSize: bufferSize, continuation: continuation)
+                case .runLength(let minRun, let alwaysIncludeRunCount): RunLengthEncoding.compress(data: data, minRun: minRun, alwaysIncludeRunCount: alwaysIncludeRunCount, continuation: continuation)
+                default: break
+                }
+                continuation.finish()
+            }
+            return CompressionResult(data: stream)
         }
     }
 }
@@ -191,27 +197,27 @@ public extension CompressionTechnique {
     func decompress(data: [UInt8]) -> [UInt8] {
         guard !data.isEmpty else { return data }
         switch self {
-            case .multiple(let techniques):
-                var data:[UInt8] = data
-                for technique in techniques {
-                    data = technique.decompress(data: data)
-                }
-                return data
-            case .deflate: return Deflate.decompress(data: data)
-            case .dnaBinaryEncoding(let baseBits):
-                var reversed:[[Bool]:UInt8] = [:]
-                reversed.reserveCapacity(baseBits.count)
-                for (byte, bits) in baseBits {
-                    reversed[bits] = byte
-                }
-                return DNABinaryEncoding.decompress(data: data, baseBits: reversed)
-            case .dnaSingleBlockEncoding: return DNASingleBlockEncoding.decompress(data: data)
-            case .huffman(let root): return Huffman.decompress(data: data, root: root)
-            case .json: return JSON.decompress(data: data)
-            case .lz77(let windowSize, _): return LZ77.decompress(data: data, windowSize: windowSize)
-            case .runLength(_, _): return RunLengthEncoding.decompress(data: data)
-            case .snappy: return Snappy.decompress(data: data)
-            default: return data
+        case .multiple(let techniques):
+            var data:[UInt8] = data
+            for technique in techniques {
+                data = technique.decompress(data: data)
+            }
+            return data
+        case .deflate: return Deflate.decompress(data: data)
+        case .dnaBinaryEncoding(let baseBits):
+            var reversed:[[Bool]:UInt8] = [:]
+            reversed.reserveCapacity(baseBits.count)
+            for (byte, bits) in baseBits {
+                reversed[bits] = byte
+            }
+            return DNABinaryEncoding.decompress(data: data, baseBits: reversed)
+        case .dnaSingleBlockEncoding: return DNASingleBlockEncoding.decompress(data: data)
+        case .huffman(let root): return Huffman.decompress(data: data, root: root)
+        case .json: return JSON.decompress(data: data)
+        case .lz77(let windowSize, _): return LZ77.decompress(data: data, windowSize: windowSize)
+        case .runLength(_, _): return RunLengthEncoding.decompress(data: data)
+        case .snappy: return Snappy.decompress(data: data)
+        default: return data
         }
     }
     
@@ -227,20 +233,24 @@ public extension CompressionTechnique {
         bufferingPolicy limit: AsyncStream<UInt8>.Continuation.BufferingPolicy = .unbounded
     ) -> AsyncStream<UInt8> {
         guard !data.isEmpty else { return AsyncStream { $0.finish() } }
-        switch self {
-            case .huffman(let root): return Huffman.decompress(data: data, root: root, bufferingPolicy: limit)
+        let stream:AsyncStream<UInt8> = AsyncStream(bufferingPolicy: limit) { continuation in
+            switch self {
             case .dnaBinaryEncoding(let baseBits):
                 var reversed:[[Bool]:UInt8] = [:]
                 reversed.reserveCapacity(baseBits.count)
                 for (byte, bits) in baseBits {
                     reversed[bits] = byte
                 }
-                return DNABinaryEncoding.decompress(data: data, baseBits: reversed, bufferingPolicy: limit)
-            case .lz77(let windowSize, _): return LZ77.decompress(data: data, windowSize: windowSize, bufferingPolicy: limit)
-            case .runLength(_, _): return RunLengthEncoding.decompress(data: data, bufferingPolicy: limit)
-            case .snappy: return Snappy.decompress(data: data, bufferingPolicy: limit)
-            default: return AsyncStream { $0.finish() }
+                DNABinaryEncoding.decompress(data: data, baseBits: reversed, continuation: continuation)
+            case .huffman(let root): Huffman.decompress(data: data, root: root, continuation: continuation)
+            case .lz77(let windowSize, _): LZ77.decompress(data: data, windowSize: windowSize, continuation: continuation)
+            case .runLength(_, _): RunLengthEncoding.decompress(data: data, continuation: continuation)
+            case .snappy: Snappy.decompress(data: data, continuation: continuation)
+            default: break
+            }
+            continuation.finish()
         }
+        return stream
     }
 }
 

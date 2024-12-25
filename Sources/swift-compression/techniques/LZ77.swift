@@ -42,19 +42,16 @@ public extension CompressionTechnique.LZ77 {
     ///   - data: The collection of bytes to compress.
     ///   - windowSize: The size of the window.
     ///   - bufferSize: The size of the buffer.
-    ///   - bufferingPolicy: A strategy that handles exhaustion of a buffer’s capacity.
+    ///   - continuation: The `AsyncStream<UInt8>.Continuation`.
     /// - Complexity: O(_n_) where _n_ is the length of `data`.
     @inlinable
     static func compress<C: Collection<UInt8>>(
         data: C,
         windowSize: Int,
         bufferSize: Int,
-        bufferingPolicy limit: AsyncStream<UInt8>.Continuation.BufferingPolicy = .unbounded
-    ) -> AsyncStream<UInt8> {
-        return AsyncStream(bufferingPolicy: limit) { continuation in
-            compress(data: data, windowSize: windowSize, bufferSize: bufferSize) { continuation.yield($0) }
-            continuation.finish()
-        }
+        continuation: AsyncStream<UInt8>.Continuation
+    ) {
+        compress(data: data, windowSize: windowSize, bufferSize: bufferSize) { continuation.yield($0) }
     }
 
     /// Compress a collection of bytes using the LZ77 technique.
@@ -136,18 +133,15 @@ public extension CompressionTechnique.LZ77 {
     /// - Parameters:
     ///   - data: The collection of bytes to decompress.
     ///   - windowSize: The size of the window.
-    ///   - bufferingPolicy: A strategy that handles exhaustion of a buffer’s capacity.
+    ///   - continuation: The `AsyncStream<UInt8>.Continuation`.
     /// - Complexity: O(_n_) where _n_ is the length of `data`.
     @inlinable
     static func decompress<C: Collection<UInt8>>(
         data: C,
         windowSize: Int,
-        bufferingPolicy limit: AsyncStream<UInt8>.Continuation.BufferingPolicy = .unbounded
-    ) -> AsyncStream<UInt8> {
-        return AsyncStream(bufferingPolicy: limit) { continuation in
-            decompress(data: data, windowSize: windowSize) { continuation.yield($0) }
-            continuation.finish()
-        }
+        continuation: AsyncStream<UInt8>.Continuation
+    ) {
+        decompress(data: data, windowSize: windowSize) { continuation.yield($0) }
     }
 
     /// Decompress a collection of bytes using the LZ77 technique.

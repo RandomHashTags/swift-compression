@@ -62,37 +62,34 @@ public extension CompressionTechnique.RunLengthEncoding {
     ///   - data: The sequence of bytes to compress.
     ///   - minRun: The minimum run count required to compress identical sequential bytes.
     ///   - alwaysIncludeRunCount: Whether or not to always include the run count in the result, regardless of run count.
-    ///   - bufferingPolicy: A strategy that handles exhaustion of a buffer’s capacity.
+    ///   - continuation: The `AsyncStream<UInt8>.Continuation`.
     /// - Complexity: O(_n_) where _n_ is the length of `data`.
     @inlinable
     static func compress<S: Sequence<UInt8>>(
         data: S,
         minRun: Int,
         alwaysIncludeRunCount: Bool,
-        bufferingPolicy limit: AsyncStream<UInt8>.Continuation.BufferingPolicy = .unbounded
-    ) -> AsyncStream<UInt8> {
-        return AsyncStream(bufferingPolicy: limit) { continuation in
-            let closure:(Int, UInt8) -> Void
-            if alwaysIncludeRunCount {
-                closure = { run, runByte in
+        continuation: AsyncStream<UInt8>.Continuation
+    ) {
+        let closure:(Int, UInt8) -> Void
+        if alwaysIncludeRunCount {
+            closure = { run, runByte in
+                continuation.yield(UInt8(191 + run))
+                continuation.yield(runByte)
+            }
+        } else {
+            closure = { run, runByte in
+                if runByte <= 191 && run < minRun {
+                    for _ in 0..<run {
+                        continuation.yield(runByte)
+                    } 
+                } else {
                     continuation.yield(UInt8(191 + run))
                     continuation.yield(runByte)
                 }
-            } else {
-                closure = { run, runByte in
-                    if runByte <= 191 && run < minRun {
-                        for _ in 0..<run {
-                            continuation.yield(runByte)
-                        } 
-                    } else {
-                        continuation.yield(UInt8(191 + run))
-                        continuation.yield(runByte)
-                    }
-                }
             }
-            compress(data: data, minRun: minRun, closure: closure)
-            continuation.finish()
         }
+        compress(data: data, minRun: minRun, closure: closure)
     }
 
     /// - Parameters:
@@ -146,17 +143,14 @@ public extension CompressionTechnique.RunLengthEncoding {
     /// 
     /// - Parameters:
     ///   - data: The sequence of bytes to decompress.
-    ///   - bufferingPolicy: A strategy that handles exhaustion of a buffer’s capacity.
+    ///   - continuation: The `AsyncStream<UInt8>.Continuation`.
     /// - Complexity: O(_n_) where _n_ is the length of `data`.
     @inlinable
     static func decompress(
         data: [UInt8],
-        bufferingPolicy limit: AsyncStream<UInt8>.Continuation.BufferingPolicy = .unbounded
-    ) -> AsyncStream<UInt8> {
-        return AsyncStream(bufferingPolicy: limit) { continuation in
-            decompress(data: data) { continuation.yield($0) }
-            continuation.finish()
-        }
+        continuation: AsyncStream<UInt8>.Continuation
+    ) {
+        decompress(data: data) { continuation.yield($0) }
     }
 
     /// - Parameters:

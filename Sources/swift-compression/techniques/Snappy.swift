@@ -52,27 +52,24 @@ public extension CompressionTechnique.Snappy {
 
     /// - Parameters:
     ///   - data: A sequence of bytes to decompress.
-    ///   - bufferingPolicy: A strategy that handles exhaustion of a buffer’s capacity.
+    ///   - continuation: The `AsyncStream<UInt8>.Continuation`.
     /// - Complexity: O(_n_) where _n_ is the length of `data`.
     @inlinable
     static func decompress(
         data: [UInt8],
-        bufferingPolicy limit: AsyncStream<UInt8>.Continuation.BufferingPolicy = .unbounded
-    ) -> AsyncStream<UInt8> {
-        return AsyncStream(bufferingPolicy: limit) { continuation in
-            let totalSize:Int = Int(data[0])
-            var index:Int = 1
-            let closure:(_ byte: UInt8) -> Void = { continuation.yield($0) }
-            while index < totalSize {
-                let flagBits:Bits8 = data[index].bitsTuple
-                switch (flagBits.6, flagBits.7) {
-                    case (false, false): decompressLiteral(flagBits: flagBits, index: &index, compressed: data, closure: closure)
-                    case (false, true):  decompressCopy1(flagBits: flagBits, index: &index, compressed: data, closure: closure)
-                    case (true, false):  decompressCopy2(flagBits: flagBits, index: &index, compressed: data, closure: closure)
-                    case (true, true):   decompressCopy4(flagBits: flagBits, index: &index, compressed: data, closure: closure)
-                }
+        continuation: AsyncStream<UInt8>.Continuation
+    ) {
+        let totalSize:Int = Int(data[0])
+        var index:Int = 1
+        let closure:(_ byte: UInt8) -> Void = { continuation.yield($0) }
+        while index < totalSize {
+            let flagBits:Bits8 = data[index].bitsTuple
+            switch (flagBits.6, flagBits.7) {
+                case (false, false): decompressLiteral(flagBits: flagBits, index: &index, compressed: data, closure: closure)
+                case (false, true):  decompressCopy1(flagBits: flagBits, index: &index, compressed: data, closure: closure)
+                case (true, false):  decompressCopy2(flagBits: flagBits, index: &index, compressed: data, closure: closure)
+                case (true, true):   decompressCopy4(flagBits: flagBits, index: &index, compressed: data, closure: closure)
             }
-            continuation.finish()
         }
     }
 }

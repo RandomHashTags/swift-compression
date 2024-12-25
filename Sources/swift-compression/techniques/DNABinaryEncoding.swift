@@ -39,7 +39,7 @@ public extension CompressionTechnique.DNABinaryEncoding {
     /// - Parameters:
     ///   - data: The sequence of bytes to compress.
     ///   - baseBits: The bit codes for the unique base nucleotides.
-    ///   - bufferingPolicy: A strategy that handles exhaustion of a buffer’s capacity.
+    ///   - continuation: The `AsyncStream<UInt8>.Continuation`.
     /// - Complexity: O(_n_) where _n_ is the length of `data`.
     @inlinable
     static func compress<S: Sequence<UInt8>>(
@@ -50,13 +50,10 @@ public extension CompressionTechnique.DNABinaryEncoding {
             71 : [true, false],  // G
             84 : [true, true]    // T
         ],
-        bufferingPolicy limit: AsyncStream<UInt8>.Continuation.BufferingPolicy = .unbounded
-    ) -> AsyncStream<UInt8> {
-        return AsyncStream(bufferingPolicy: limit) { continuation in
-            if let validBits:UInt8 = compress(data: data, baseBits: baseBits, closure: { continuation.yield($0) }) {
-                // TODO: fix
-            }
-            continuation.finish()
+        continuation: AsyncStream<UInt8>.Continuation
+    ) {
+        if let validBits:UInt8 = compress(data: data, baseBits: baseBits, closure: { continuation.yield($0) }) {
+            // TODO: fix
         }
     }
 
@@ -123,7 +120,7 @@ public extension CompressionTechnique.DNABinaryEncoding {
     /// - Parameters:
     ///   - data: The sequence of bytes to decompress.
     ///   - baseBits: The bit codes for the unique base nucleotides.
-    ///   - bufferingPolicy: A strategy that handles exhaustion of a buffer’s capacity.
+    ///   - continuation: The `AsyncStream<UInt8>.Continuation`.
     /// - Complexity: O(_n_) where _n_ is the length of `data`.
     @inlinable
     static func decompress<S: Sequence<UInt8>>(
@@ -134,12 +131,9 @@ public extension CompressionTechnique.DNABinaryEncoding {
             [true, false] : 71,  // G
             [true, true] : 84    // T
         ],
-        bufferingPolicy limit: AsyncStream<UInt8>.Continuation.BufferingPolicy = .unbounded
-    ) -> AsyncStream<UInt8> {
-        return AsyncStream(bufferingPolicy: limit) { continuation in
-            decompress(data: data, baseBits: baseBits) { continuation.yield($0) }
-            continuation.finish()
-        }
+        continuation: AsyncStream<UInt8>.Continuation
+    ) {
+        decompress(data: data, baseBits: baseBits) { continuation.yield($0) }
     }
 
     /// Decompress a sequence of bytes using the DNA binary encoding technique.
