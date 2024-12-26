@@ -9,35 +9,44 @@ public extension CompressionTechnique {
     /// The LZ77 compression technique.
     /// 
     /// - Parameters:
+    ///   - T: The integer type the offset is encoded as. Default is the `UInt16`.
     ///   - windowSize: The size of the sliding window, measured in bytes.
     ///   - bufferSize: The size of the buffer, measured in bytes.
-    ///   - offsetType: The integer type the offset is encoded as.
     /// 
     /// https://en.wikipedia.org/wiki/LZ77_and_LZ78
     @inlinable
-    static func lz77<T: FixedWidthInteger & Sendable>(windowSize: Int, bufferSize: Int, offsetType: T.Type = UInt16.self) -> LZ77<T> {
-        return LZ77(windowSize: windowSize, bufferSize: bufferSize, offsetType: offsetType)
+    static func lz77<T: FixedWidthInteger & Sendable>(windowSize: Int, bufferSize: Int) -> LZ77<T> {
+        return LZ77(windowSize: windowSize, bufferSize: bufferSize)
+    }
+
+    /// The LZ77 compression technique where the offset is encoded as a `UInt16`.
+    /// 
+    /// - Parameters:
+    ///   - windowSize: The size of the sliding window, measured in bytes.
+    ///   - bufferSize: The size of the buffer, measured in bytes.
+    /// 
+    /// https://en.wikipedia.org/wiki/LZ77_and_LZ78
+    @inlinable
+    static func lz77(windowSize: Int, bufferSize: Int) -> LZ77<UInt16> {
+        return LZ77(windowSize: windowSize, bufferSize: bufferSize)
     }
     
     struct LZ77<T: FixedWidthInteger & Sendable> : Compressor {
         public typealias CompressClosureParameters = UInt8
         public typealias DecompressClosureParameters = UInt8
+        
         /// The size of the window.
         public let windowSize:Int
 
         /// The size of the buffer.
         public let bufferSize:Int
 
-        /// The integer type the offset is encoded as.
-        public let offsetType:T.Type
-
-        public init(windowSize: Int, bufferSize: Int, offsetType: T.Type = UInt16.self) {
+        public init(windowSize: Int, bufferSize: Int) {
             self.windowSize = windowSize
             self.bufferSize = bufferSize
-            self.offsetType = offsetType
         }
 
-        public var rawValue: String { "lz77" }
+        public var rawValue : String { "lz77" }
     }
 }
 

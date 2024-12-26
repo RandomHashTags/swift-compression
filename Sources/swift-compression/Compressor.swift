@@ -5,7 +5,7 @@
 //  Created by Evan Anderson on 12/16/24.
 //
 
-public protocol Compressor : Sendable {
+public protocol Compressor : Hashable, Sendable {
     associatedtype CompressClosureParameters
     associatedtype DecompressClosureParameters
 

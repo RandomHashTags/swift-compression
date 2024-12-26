@@ -7,7 +7,7 @@
 
 // MARK: CompressionTechnique
 /// A collection of well-known and useful compression and decompression techniques.
-public enum CompressionTechnique : Hashable, Compressor {
+public enum CompressionTechnique : Compressor {
     public func compress<C: Collection<UInt8>>(data: C, closure: (UInt8) -> Void) -> UInt8? {
         return nil
     }
