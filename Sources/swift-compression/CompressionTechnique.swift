@@ -23,6 +23,10 @@ public enum CompressionTechnique : Hashable, Sendable {
     case huffman(rootNode: Huffman.Node?)
     case json
     case lz4
+
+    /// - Parameters:
+    ///   - windowSize: The size of the sliding window, measured in bytes.
+    ///   - bufferSize: The size of the buffer, measured in bytes.
     case lz77(windowSize: Int, bufferSize: Int)
     case lz78
     case lzw

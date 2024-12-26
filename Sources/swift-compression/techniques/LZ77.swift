@@ -72,26 +72,25 @@ public extension CompressionTechnique.LZ77 {
         let count:Int = data.count
         var index:Int = 0
         while index < count {
-            let windowStarts:Int = max(0, index - windowSize)
+            let bufferEndIndex:Int = min(index + bufferSize, count)
+            guard index < bufferEndIndex else { break }
+            let bufferCount:Int = bufferEndIndex - index
+            let bufferRange:Range<C.Index> = data.index(data.startIndex, offsetBy: index)..<data.index(data.startIndex, offsetBy: bufferEndIndex)
+            let buffer:C.SubSequence = data[bufferRange]
+            let windowRange:Range<C.Index> = data.index(data.startIndex, offsetBy: max(0, index - windowSize))..<data.index(data.startIndex, offsetBy: index)
+            let window:C.SubSequence = data[windowRange], windowCount:Int = window.count
             var offset:Int = 0, bestLength:Int = 0
-            let bufferStartIndex:C.Index = data.index(data.startIndex, offsetBy: index)
-            let bufferEndIndex:C.Index = data.index(data.startIndex, offsetBy: index + bufferSize, limitedBy: data.endIndex) ?? data.endIndex
-            guard bufferStartIndex < bufferEndIndex else { break }
-            let bufferRange:Range<C.Index> = bufferStartIndex..<bufferEndIndex
-            let buffer:[UInt8] = [UInt8](data[bufferRange]) // TODO: make array slice for better performance
-            let windowRange:Range<C.Index> = data.index(data.startIndex, offsetBy: windowStarts)..<data.index(data.startIndex, offsetBy: index)
-            let window:[UInt8] = [UInt8](data[windowRange]) // TODO: make array slice for better performance
             for i in 0..<windowSize {
                 var length:Int = 0
-                while length < buffer.count && window.get(i + length) == buffer[length] {
+                while length < bufferCount && window.get(window.index(window.startIndex, offsetBy: i + length)) == buffer[buffer.index(buffer.startIndex, offsetBy: length)] {
                     length += 1
-                    if i + length >= window.count {
+                    if i + length >= windowCount {
                         break
                     }
                 }
                 if length > bestLength {
                     bestLength = length
-                    offset = window.count - i
+                    offset = windowCount - i
                 }
             }
             let byte:UInt8

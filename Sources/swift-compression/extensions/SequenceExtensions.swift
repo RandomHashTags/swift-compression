@@ -17,6 +17,8 @@ extension Sequence where Element == UInt8 {
 #endif
 
 extension Collection {
+    /// - Returns: The element at the given index, if the index is within bounds. Otherwise `nil`.
+    /// - Complexity: O(1).
     @inlinable
     func get(_ index: Index) -> Element? {
         return index < endIndex && index >= startIndex ? self[index] : nil

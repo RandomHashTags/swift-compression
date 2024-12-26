@@ -16,6 +16,7 @@ public typealias Bits24 = (Bool, Bool, Bool, Bool, Bool, Bool, Bool, Bool, Bool,
 public typealias Bits32 = (Bool, Bool, Bool, Bool, Bool, Bool, Bool, Bool, Bool, Bool, Bool, Bool, Bool, Bool, Bool, Bool, Bool, Bool, Bool, Bool, Bool, Bool, Bool, Bool, Bool, Bool, Bool, Bool, Bool, Bool, Bool, Bool)
 
 public extension FixedWidthInteger {
+    /// - Complexity: O(_n_) where _n_ is `bitWidth`.
     var bits : [Bool] {
         var int:Self = self
         var bits:[Bool] = Array(repeating: false, count: bitWidth)
@@ -26,9 +27,12 @@ public extension FixedWidthInteger {
         return bits
     }
 
+    /// - Complexity: O(1).
     var bytes : [UInt8] {
         return withUnsafeBytes(of: self, Array.init)
     }
+
+    /// - Complexity: O(1).
     var reversedBytes : ReversedCollection<[UInt8]> {
         return withUnsafeBytes(of: self, Array.init).reversed()
     }
