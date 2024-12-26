@@ -12,8 +12,8 @@ public extension Collection where Element == UInt8 {
     /// - Returns: The `CompressionResult`.
     /// - Complexity: Varies by technique; minimum of O(_n_) where _n_ is the length of the sequence.
     @inlinable
-    func compressed<T: Compressor>(using technique: T) -> CompressionResult<[UInt8]>? where T.CompressClosureParameters == UInt8 {
-        return technique.compress(data: self)
+    func compressed<T: Compressor>(using technique: T) throws -> CompressionResult<[UInt8]> {
+        return try technique.compress(data: self)
     }
 
     /// Decompress the sequence of bytes using the specified technique(s).
@@ -21,21 +21,21 @@ public extension Collection where Element == UInt8 {
     /// - Returns: The decompressed bytes.
     /// - Complexity: Varies by technique; minimum of O(_n_) where _n_ is the length of the sequence.
     @inlinable
-    func decompressed<T: Compressor>(using technique: T) -> [UInt8] where T.DecompressClosureParameters == UInt8 {
-        return technique.decompress(data: [UInt8](self))
+    func decompressed<T: Compressor>(using technique: T) throws -> [UInt8] where T.DecompressClosureParameters == UInt8 {
+        return try technique.decompress(data: [UInt8](self))
     }
 }
 
 // MARK: [UInt8]
 public extension Array where Element == UInt8 {
-    /// Compress this data using the specified technique(s).
+    /// Compress this data using the specified technique.
     /// 
     /// - Returns: `self`.
     /// - Complexity: Varies by technique; minimum of O(_n_) where _n_ is the length of the sequence.
     @discardableResult
     @inlinable
-    mutating func compress<T: Compressor>(using technique: T) -> Self where T.CompressClosureParameters == UInt8 {
-        self = technique.compress(data: self).data
+    mutating func compress<T: Compressor>(using technique: T) throws -> Self {
+        self = try technique.compress(data: self).data
         return self
     }
 
@@ -45,14 +45,14 @@ public extension Array where Element == UInt8 {
     /// - Complexity: Varies by technique; minimum of O(_n_) where _n_ is the length of the sequence.
     @discardableResult
     @inlinable
-    mutating func decompress<T: Compressor>(using technique: T) -> Self where T.DecompressClosureParameters == UInt8 {
-        self = technique.decompress(data: self)
+    mutating func decompress<T: Compressor>(using technique: T) throws -> Self where T.DecompressClosureParameters == UInt8 {
+        self = try technique.decompress(data: self)
         return self
     }
 }
 
-// MARK: AsyncStream
-public extension Array where Element == UInt8 {
+// MARK: AsyncThrowingStream
+public extension Collection where Element == UInt8 {
     /// Decompress this data to a stream using the specified technique(s).
     /// 
     /// - Parameters:
@@ -62,11 +62,15 @@ public extension Array where Element == UInt8 {
     @inlinable
     func decompress<T: Compressor>(
         using technique: T,
-        bufferingPolicy limit: AsyncStream<UInt8>.Continuation.BufferingPolicy = .unbounded
-    ) -> AsyncStream<UInt8> where T.DecompressClosureParameters == UInt8 {
-        return AsyncStream { continuation in
+        bufferingPolicy limit: AsyncThrowingStream<UInt8, Error>.Continuation.BufferingPolicy = .unbounded
+    ) -> AsyncThrowingStream<UInt8, Error> where T.DecompressClosureParameters == UInt8 {
+        return AsyncThrowingStream { continuation in
             defer { continuation.finish() }
-            return technique.decompress(data: self, continuation: continuation)
+            do {
+                try technique.decompress(data: self, continuation: continuation)
+            } catch {
+                continuation.finish(throwing: error)
+            }
         }
     }
 }
@@ -82,8 +86,8 @@ public extension Data {
     /// - Complexity: Varies by technique; minimum of O(_n_) where _n_ is the length of the sequence.
     @discardableResult
     @inlinable
-    mutating func compress<T: Compressor>(using technique: T) -> Self where T.CompressClosureParameters == UInt8 {
-        self = Data(technique.compress(data: [UInt8](self)).data)
+    mutating func compress<T: Compressor>(using technique: T) throws -> Self where T.CompressClosureParameters == UInt8 {
+        self = try Data(technique.compress(data: [UInt8](self)).data)
         return self
     }
 
@@ -92,25 +96,25 @@ public extension Data {
     /// - Returns: The `CompressionResult`.
     /// - Complexity: Varies by technique; minimum of O(_n_) where _n_ is the length of the sequence.
     @inlinable
-    func compressed<T: Compressor>(using technique: T) -> CompressionResult<[UInt8]>? where T.CompressClosureParameters == UInt8 {
-        return technique.compress(data: [UInt8](self))
+    func compressed<T: Compressor>(using technique: T) throws -> CompressionResult<[UInt8]> where T.CompressClosureParameters == UInt8 {
+        return try technique.compress(data: [UInt8](self))
     }
 
     /// Decompress this data using the specified technique(s).
     /// - Returns: The decompressed data.
     /// - Complexity: Varies by technique; minimum of O(_n_) where _n_ is the length of the sequence.
     @inlinable
-    func decompressed<T: Compressor>(using technique: T) -> Data where T.DecompressClosureParameters == UInt8 {
-        return Data(technique.decompress(data: [UInt8](self)))
+    func decompressed<T: Compressor>(using technique: T) throws -> Data where T.DecompressClosureParameters == UInt8 {
+        return try Data(technique.decompress(data: [UInt8](self)))
     }
 }
 
 public extension StringProtocol {
     /// - Complexity: Varies by technique; minimum of O(_n_) where _n_ is the length of the sequence.
     @inlinable
-    func compressed<T: Compressor>(using technique: T, encoding: String.Encoding = .utf8) -> CompressionResult<[UInt8]>? where T.CompressClosureParameters == UInt8 {
-        guard let data:Data = self.data(using: encoding) else { return nil }
-        return data.compressed(using: technique)
+    func compressed<T: Compressor>(using technique: T, encoding: String.Encoding = .utf8) throws -> CompressionResult<[UInt8]> where T.CompressClosureParameters == UInt8 {
+        guard let data:Data = self.data(using: encoding) else { throw CompressionError.failedConversionOfStringToFoundationData }
+        return try data.compressed(using: technique)
     }
 }
 

@@ -36,71 +36,27 @@ public extension CompressionTechnique {
 
 // MARK: Compress
 public extension CompressionTechnique.RunLengthEncoding {
-    /// Compress a sequence of bytes using the Run-length encoding technique.
-    /// 
-    /// - Parameters:
-    ///   - data: The sequence of bytes to compress.
-    ///   - reserveCapacity: Reserves enough space to store the specified number of elements.
-    /// - Complexity: O(_n_) where _n_ is the length of `data`.
     @inlinable
-    func compress<S: Sequence<UInt8>>(
-        data: S,
-        reserveCapacity: Int = 1024
-    ) -> [UInt8] {
-        let closure:(Int, UInt8) -> Void
-        var compressed:[UInt8] = []
-        compressed.reserveCapacity(reserveCapacity)
+    func compressClosure(closure: @escaping (UInt8) -> Void) -> @Sendable (CompressClosureParameters) -> Void {
         if alwaysIncludeRunCount {
-            closure = { run, runByte in
-                compressed.append(UInt8(191 + run))
-                compressed.append(runByte)
+            return { (arg) in
+                let (run, runByte) = arg
+                closure(UInt8(191 + run))
+                closure(runByte)
             }
         } else {
-            closure = { run, runByte in
+            return { (arg) in
+                let (run, runByte) = arg
                 if runByte <= 191 && run < minRun {
-                    compressed.append(contentsOf: Array(repeating: runByte, count: run))
+                    for byte in Array(repeating: runByte, count: run) {
+                        closure(byte)
+                    }
                 } else {
-                    compressed.append(UInt8(191 + run))
-                    compressed.append(runByte)
+                    closure(UInt8(191 + run))
+                    closure(runByte)
                 }
             }
         }
-        compress(data: data, closure: closure)
-        return compressed
-    }
-
-    /// Compress a sequence of bytes using the Run-length encoding technique.
-    /// 
-    /// - Parameters:
-    ///   - data: The sequence of bytes to compress.
-    ///   - minRun: 
-    ///   - alwaysIncludeRunCount: 
-    ///   - continuation: The `AsyncStream<UInt8>.Continuation`.
-    /// - Complexity: O(_n_) where _n_ is the length of `data`.
-    @inlinable
-    func compress<S: Sequence<UInt8>>(
-        data: S,
-        continuation: AsyncStream<UInt8>.Continuation
-    ) {
-        let closure:(Int, UInt8) -> Void
-        if alwaysIncludeRunCount {
-            closure = { run, runByte in
-                continuation.yield(UInt8(191 + run))
-                continuation.yield(runByte)
-            }
-        } else {
-            closure = { run, runByte in
-                if runByte <= 191 && run < minRun {
-                    for _ in 0..<run {
-                        continuation.yield(runByte)
-                    } 
-                } else {
-                    continuation.yield(UInt8(191 + run))
-                    continuation.yield(runByte)
-                }
-            }
-        }
-        compress(data: data, closure: closure)
     }
 
     /// - Parameters:

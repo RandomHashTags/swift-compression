@@ -14,9 +14,6 @@ public extension CompressionTechnique {
     static let snappy:Snappy = Snappy()
 
     struct Snappy : Compressor {
-        public typealias CompressClosureParameters = UInt8
-        public typealias DecompressClosureParameters = UInt8
-
         public var algorithm : CompressionAlgorithm { .snappy }
     }
 }

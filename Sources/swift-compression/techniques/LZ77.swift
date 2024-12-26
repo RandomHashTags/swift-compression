@@ -32,9 +32,6 @@ public extension CompressionTechnique {
     }
     
     struct LZ77<T: FixedWidthInteger & Sendable> : Compressor {
-        public typealias CompressClosureParameters = UInt8
-        public typealias DecompressClosureParameters = UInt8
-        
         /// The size of the window.
         public let windowSize:Int
 

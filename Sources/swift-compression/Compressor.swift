@@ -5,9 +5,18 @@
 //  Created by Evan Anderson on 12/16/24.
 //
 
+// MARK: Compressor
 public protocol Compressor : AnyCompressor {
     associatedtype CompressClosureParameters
     associatedtype DecompressClosureParameters
+
+    @inlinable func compressClosure(closure: @escaping @Sendable (UInt8) -> Void) -> @Sendable (CompressClosureParameters) -> Void
+
+    @inlinable
+    func compress<C: Collection<UInt8>>(
+        data: C,
+        reserveCapacity: Int
+    ) throws -> CompressionResult<[UInt8]>
 
     /// Compress a collection of bytes using this technique.
     /// 
@@ -23,7 +32,7 @@ public protocol Compressor : AnyCompressor {
     func compress<C: Collection<UInt8>>(
         data: C,
         closure: (CompressClosureParameters) -> Void
-    ) -> UInt8?
+    ) throws -> UInt8?
 
     /// Decompress a collection of bytes using this technique.
     /// 
@@ -39,11 +48,11 @@ public protocol Compressor : AnyCompressor {
     func decompress<C: Collection<UInt8>>(
         data: C,
         closure: (DecompressClosureParameters) -> Void
-    )
+    ) throws
 }
 
 // MARK: Compress
-public extension Compressor where CompressClosureParameters == UInt8 {
+public extension Compressor {
     /// Compress a collection of bytes using this technique.
     /// 
     /// - Parameters:
@@ -57,10 +66,10 @@ public extension Compressor where CompressClosureParameters == UInt8 {
     func compress<C: Collection<UInt8>>(
         data: C,
         reserveCapacity: Int = 1024
-    ) -> CompressionResult<[UInt8]> {
+    ) throws -> CompressionResult<[UInt8]> {
         var compressed:[UInt8] = []
         compressed.reserveCapacity(reserveCapacity)
-        let validBitsInLastByte:UInt8 = compress(data: data) { compressed.append($0) } ?? 8
+        let validBitsInLastByte:UInt8 = try compress(data: data, closure: compressClosure { compressed.append($0) }) ?? 8 // TODO: fix Swift 6 error
         return CompressionResult(data: compressed, validBitsInLastByte: validBitsInLastByte)
     }
 
@@ -77,10 +86,13 @@ public extension Compressor where CompressClosureParameters == UInt8 {
     func compress<C: Collection<UInt8>>(
         data: C,
         continuation: AsyncStream<UInt8>.Continuation
-    ) {
+    ) throws {
         // TODO: finish
-        let validBitsInLastByte:UInt8 = compress(data: data) { continuation.yield($0) } ?? 8
+        let validBitsInLastByte:UInt8 = try compress(data: data, closure: compressClosure { continuation.yield($0) }) ?? 8
     }
+}
+public extension Compressor where CompressClosureParameters == UInt8 {
+    @inlinable func compressClosure(closure: @escaping @Sendable (UInt8) -> Void) -> @Sendable (CompressClosureParameters) -> Void { closure }
 }
 
 // MARK: Decompress
@@ -99,10 +111,10 @@ public extension Compressor where DecompressClosureParameters == UInt8 {
     func decompress<C: Collection<UInt8>>(
         data: C,
         reserveCapacity: Int = 1024
-    ) -> [UInt8] {
+    ) throws -> [UInt8] {
         var decompressed:[UInt8] = []
         decompressed.reserveCapacity(reserveCapacity)
-        decompress(data: data) { decompressed.append($0) }
+        try decompress(data: data) { decompressed.append($0) }
         return decompressed
     }
 
@@ -119,8 +131,8 @@ public extension Compressor where DecompressClosureParameters == UInt8 {
     @inlinable
     func decompress<C: Collection<UInt8>>(
         data: C,
-        continuation: AsyncStream<UInt8>.Continuation
-    ) {
-        decompress(data: data) { continuation.yield($0) }
+        continuation: AsyncThrowingStream<UInt8, Error>.Continuation
+    ) throws {
+        try decompress(data: data) { continuation.yield($0) }
     }
 }
