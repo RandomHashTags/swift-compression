@@ -23,7 +23,7 @@ struct HuffmanTests {
 
     @Test func decompressHuffman() {
         let result:CompressionResult = Self.scoobyDooCompressed
-        let decompressed:[UInt8] = CompressionTechnique.huffman(rootNode: result.rootNode).decompress(data: result.data)
+        let decompressed:[UInt8] = CompressionTechnique.Huffman.decompress(data: result.data, root: result.rootNode)
         #expect(result.validBitsInLastByte == 4)
         #expect(decompressed == Self.scoobyDoo)
     }

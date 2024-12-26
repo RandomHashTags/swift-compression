@@ -17,7 +17,7 @@ public extension CompressionTechnique {
         public typealias CompressClosureParameters = UInt8
         public typealias DecompressClosureParameters = UInt8
 
-        public var rawValue : String { "snappy" }
+        public var algorithm : CompressionAlgorithm { .snappy }
     }
 }
 

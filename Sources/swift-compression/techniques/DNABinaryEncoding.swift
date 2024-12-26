@@ -30,7 +30,7 @@ public extension CompressionTechnique {
             self.baseBits = baseBits
         }
 
-        public var rawValue : String { "dnaBinaryEncoding" }
+        public var algorithm : CompressionAlgorithm { .dnaBinaryEncoding(baseBits: baseBits) }
 
         public var baseBitsReversed : [[Bool]:UInt8] {
             var reversed:[[Bool]:UInt8] = [:]

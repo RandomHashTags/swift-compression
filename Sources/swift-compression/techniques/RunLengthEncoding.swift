@@ -30,7 +30,7 @@ public extension CompressionTechnique {
             self.alwaysIncludeRunCount = alwaysIncludeRunCount
         }
 
-        public var rawValue : String { "runLength" }
+        public var algorithm : CompressionAlgorithm { .runLengthEncoding(minRun: minRun, alwaysIncludeRunCount: alwaysIncludeRunCount) }
     }
 }
 

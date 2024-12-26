@@ -5,11 +5,9 @@
 //  Created by Evan Anderson on 12/16/24.
 //
 
-public protocol Compressor : Hashable, Sendable {
+public protocol Compressor : AnyCompressor {
     associatedtype CompressClosureParameters
     associatedtype DecompressClosureParameters
-
-    var rawValue : String { get }
 
     /// Compress a collection of bytes using this technique.
     /// 

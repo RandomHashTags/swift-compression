@@ -9,7 +9,7 @@ public extension CompressionTechnique {
     /// The LZ77 compression technique.
     /// 
     /// - Parameters:
-    ///   - T: The integer type the offset is encoded as. Default is the `UInt16`.
+    ///   - T: The integer type the offset is encoded as. Default is `UInt16`.
     ///   - windowSize: The size of the sliding window, measured in bytes.
     ///   - bufferSize: The size of the buffer, measured in bytes.
     /// 
@@ -46,7 +46,7 @@ public extension CompressionTechnique {
             self.bufferSize = bufferSize
         }
 
-        public var rawValue : String { "lz77" }
+        public var algorithm : CompressionAlgorithm { .lz77(windowSize: windowSize, bufferSize: bufferSize, offsetBitWidth: T.bitWidth) }
     }
 }
 
