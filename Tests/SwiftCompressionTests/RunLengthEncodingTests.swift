@@ -14,31 +14,31 @@ import Testing
 struct RunLengthEncodingTests {
     @Test func compressRLE() {
         var data:[UInt8] = [UInt8]("AAAAABBBBBCCCCC".utf8)
-        var compressed:[UInt8] = CompressionTechnique.RunLengthEncoding.compress(data: data, minRun: 3, alwaysIncludeRunCount: true)
+        var compressed:[UInt8] = CompressionTechnique.RunLengthEncoding(minRun: 3, alwaysIncludeRunCount: true).compress(data: data)
         var expected_result:[UInt8] = [196, 65, 196, 66, 196, 67]
         #expect(compressed == expected_result)
 
-        compressed = CompressionTechnique.RunLengthEncoding.compress(data: data, minRun: 5, alwaysIncludeRunCount: true)
+        compressed = CompressionTechnique.RunLengthEncoding(minRun: 5, alwaysIncludeRunCount: true).compress(data: data)
         #expect(compressed == expected_result)
 
-        compressed = CompressionTechnique.RunLengthEncoding.compress(data: data, minRun: 6, alwaysIncludeRunCount: true)
+        compressed = CompressionTechnique.RunLengthEncoding(minRun: 6, alwaysIncludeRunCount: true).compress(data: data)
         #expect(compressed == expected_result)
 
-        compressed = CompressionTechnique.RunLengthEncoding.compress(data: data, minRun: 6, alwaysIncludeRunCount: false)
+        compressed = CompressionTechnique.RunLengthEncoding(minRun: 6, alwaysIncludeRunCount: false).compress(data: data)
         expected_result = data
         #expect(compressed == expected_result)
 
         data = [UInt8](String(repeating: "A", count: 66).utf8)
-        compressed = CompressionTechnique.RunLengthEncoding.compress(data: data, minRun: 3, alwaysIncludeRunCount: true)
+        compressed = CompressionTechnique.RunLengthEncoding(minRun: 3, alwaysIncludeRunCount: true).compress(data: data)
         expected_result = [255, 65, 193, 65]
         #expect(compressed == expected_result)
 
         data = [190, 191, 192]
-        compressed = CompressionTechnique.RunLengthEncoding.compress(data: data, minRun: 3, alwaysIncludeRunCount: false)
+        compressed = CompressionTechnique.RunLengthEncoding(minRun: 3, alwaysIncludeRunCount: false).compress(data: data)
         expected_result = [190, 191, 192, 192]
         #expect(compressed == expected_result)
 
-        compressed = CompressionTechnique.RunLengthEncoding.compress(data: data, minRun: 3, alwaysIncludeRunCount: true)
+        compressed = CompressionTechnique.RunLengthEncoding(minRun: 3, alwaysIncludeRunCount: true).compress(data: data)
         expected_result = [192, 190, 192, 191, 192, 192]
         #expect(compressed == expected_result)
     }
@@ -48,58 +48,79 @@ struct RunLengthEncodingTests {
 extension RunLengthEncodingTests {
     @Test func compressRLEAsyncStream() async {
         var data:[UInt8] = [UInt8]("AAAAABBBBBCCCCC".utf8)
-        var compressed:AsyncStream<UInt8> = CompressionTechnique.runLength(minRun: 3, alwaysIncludeRunCount: true).compress(data: data)!.data
+        var stream:AsyncStream<UInt8> = AsyncStream {
+            CompressionTechnique.runLength(minRun: 3, alwaysIncludeRunCount: true).compress(data: data, continuation: $0)
+            $0.finish()
+        }
         var index:Int = 0
         var expected_result:[UInt8] = [196, 65, 196, 66, 196, 67]
-        for await byte in compressed {
+        for await byte in stream {
             #expect(byte == expected_result[index])
             index += 1
         }
 
         index = 0
-        compressed = CompressionTechnique.runLength(minRun: 5, alwaysIncludeRunCount: true).compress(data: data)!.data
-        for await byte in compressed {
+        stream = AsyncStream {
+            CompressionTechnique.runLength(minRun: 5, alwaysIncludeRunCount: true).compress(data: data, continuation: $0)
+            $0.finish()
+        }
+        for await byte in stream {
             #expect(byte == expected_result[index])
             index += 1
         }
 
         index = 0
-        compressed = CompressionTechnique.runLength(minRun: 6, alwaysIncludeRunCount: true).compress(data: data)!.data
-        for await byte in compressed {
+        stream = AsyncStream {
+            CompressionTechnique.runLength(minRun: 6, alwaysIncludeRunCount: true).compress(data: data, continuation: $0)
+            $0.finish()
+        }
+        for await byte in stream {
             #expect(byte == expected_result[index])
             index += 1
         }
 
         index = 0
-        compressed = CompressionTechnique.runLength(minRun: 6, alwaysIncludeRunCount: false).compress(data: data)!.data
+        stream = AsyncStream {
+            CompressionTechnique.runLength(minRun: 6, alwaysIncludeRunCount: false).compress(data: data, continuation: $0)
+            $0.finish()
+        }
         expected_result = data
-        for await byte in compressed {
+        for await byte in stream {
             #expect(byte == expected_result[index])
             index += 1
         }
 
         index = 0
         data = [UInt8](String(repeating: "A", count: 66).utf8)
-        compressed = CompressionTechnique.runLength(minRun: 3, alwaysIncludeRunCount: true).compress(data: data)!.data
+        stream = AsyncStream {
+            CompressionTechnique.runLength(minRun: 3, alwaysIncludeRunCount: true).compress(data: data, continuation: $0)
+            $0.finish()
+        }
         expected_result = [255, 65, 193, 65]
-        for await byte in compressed {
+        for await byte in stream {
             #expect(byte == expected_result[index])
             index += 1
         }
 
         index = 0
         data = [190, 191, 192]
-        compressed = CompressionTechnique.runLength(minRun: 3, alwaysIncludeRunCount: false).compress(data: data)!.data
+        stream = AsyncStream {
+            CompressionTechnique.runLength(minRun: 3, alwaysIncludeRunCount: false).compress(data: data, continuation: $0)
+            $0.finish()
+        }
         expected_result = [190, 191, 192, 192]
-        for await byte in compressed {
+        for await byte in stream {
             #expect(byte == expected_result[index])
             index += 1
         }
 
         index = 0
-        compressed = CompressionTechnique.runLength(minRun: 3, alwaysIncludeRunCount: true).compress(data: data)!.data
+        stream = AsyncStream {
+            CompressionTechnique.runLength(minRun: 3, alwaysIncludeRunCount: true).compress(data: data, continuation: $0)
+            $0.finish()
+        }
         expected_result = [192, 190, 192, 191, 192, 192]
-        for await byte in compressed {
+        for await byte in stream {
             #expect(byte == expected_result[index])
             index += 1
         }
@@ -111,8 +132,8 @@ extension RunLengthEncodingTests {
     @Test func decompressRLE() {
         let string:String = "AAAAABBBBBCCCCC"
         let data:[UInt8] = [UInt8](string.utf8)
-        let compressed:[UInt8] = CompressionTechnique.RunLengthEncoding.compress(data: data, minRun: 3, alwaysIncludeRunCount: true)
-        let decompressed:[UInt8] = CompressionTechnique.RunLengthEncoding.decompress(data: compressed)
+        let compressed:[UInt8] = CompressionTechnique.RunLengthEncoding(minRun: 3, alwaysIncludeRunCount: true).compress(data: data)
+        let decompressed:[UInt8] = CompressionTechnique.RunLengthEncoding(minRun: 3, alwaysIncludeRunCount: true).decompress(data: compressed)
         #expect(decompressed == data)
     }
 }

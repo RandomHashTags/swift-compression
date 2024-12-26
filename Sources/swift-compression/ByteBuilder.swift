@@ -5,7 +5,8 @@
 //  Created by Evan Anderson on 12/24/24.
 //
 
-/// Outputs a byte (`UInt8`) when 8 bits written or flushed.
+// MARK: ByteBuilder
+/// Outputs a byte (`UInt8`) when 8 bits are written or upon flush.
 public struct ByteBuilder {
     public var bits:Bits8 = (false, false, false, false, false, false, false, false)
     public var index:UInt8 = 0
@@ -119,12 +120,64 @@ public struct ByteBuilder {
         stream.yield(wrote)
     }
     
-    /// Assigns the `index` to zero and assigns all bits to `false`.
+    /// Assigns the `index` to zero and all bits to `false`.
     /// 
     /// - Complexity: O(1).
     @inlinable
     public mutating func clear() {
         index = 0
         bits = (false, false, false, false, false, false, false, false)
+    }
+}
+
+// MARK: Stream & Data Builder
+public extension CompressionTechnique {
+    struct StreamBuilder {
+        public var stream:AsyncStream<UInt8>.Continuation
+        public var builder:ByteBuilder
+
+        public init(stream: AsyncStream<UInt8>.Continuation, builder: ByteBuilder = ByteBuilder()) {
+            self.stream = stream
+            self.builder = builder
+        }
+
+        /// - Complexity: O(1).
+        @inlinable
+        public mutating func write(bit: Bool) {
+            if let wrote:UInt8 = builder.write(bit: bit) {
+                stream.yield(wrote)
+            }
+        }
+
+        /// - Complexity: O(1).
+        @inlinable
+        public mutating func finalize() {
+            builder.flush(into: stream)
+        }
+    }
+    struct DataBuilder {
+        public var data:[UInt8]
+        public var builder:ByteBuilder
+
+        public init(data: [UInt8] = [], builder: ByteBuilder = ByteBuilder()) {
+            self.data = data
+            self.builder = builder
+        }
+
+        @inlinable
+        public mutating func write(bit: Bool) {
+            if let wrote:UInt8 = builder.write(bit: bit) {
+                data.append(wrote)
+            }
+        }
+        @inlinable
+        public mutating func write(bits: [Bool]) {
+            builder.write(bits: bits, closure: { data.append($0) })
+        }
+        
+        @inlinable
+        public mutating func finalize() {
+            builder.flush(into: &data)
+        }
     }
 }

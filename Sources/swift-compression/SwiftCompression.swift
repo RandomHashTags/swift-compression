@@ -12,7 +12,7 @@ public extension Collection where Element == UInt8 {
     /// - Returns: The `CompressionResult`.
     /// - Complexity: Varies by technique; minimum of O(_n_) where _n_ is the length of the sequence.
     @inlinable
-    func compressed(using technique: CompressionTechnique) -> CompressionResult<[UInt8]>? {
+    func compressed<T: Compressor>(using technique: T) -> CompressionResult<[UInt8]>? where T.CompressClosureParameters == UInt8 {
         return technique.compress(data: self)
     }
 
@@ -21,7 +21,7 @@ public extension Collection where Element == UInt8 {
     /// - Returns: The decompressed bytes.
     /// - Complexity: Varies by technique; minimum of O(_n_) where _n_ is the length of the sequence.
     @inlinable
-    func decompressed(using technique: CompressionTechnique) -> [UInt8] {
+    func decompressed<T: Compressor>(using technique: T) -> [UInt8] where T.DecompressClosureParameters == UInt8 {
         return technique.decompress(data: [UInt8](self))
     }
 }
@@ -34,8 +34,8 @@ public extension Array where Element == UInt8 {
     /// - Complexity: Varies by technique; minimum of O(_n_) where _n_ is the length of the sequence.
     @discardableResult
     @inlinable
-    mutating func compress(using technique: CompressionTechnique) -> Self {
-        self = technique.compress(data: self)?.data ?? []
+    mutating func compress<T: Compressor>(using technique: T) -> Self where T.CompressClosureParameters == UInt8 {
+        self = technique.compress(data: self).data
         return self
     }
 
@@ -45,7 +45,7 @@ public extension Array where Element == UInt8 {
     /// - Complexity: Varies by technique; minimum of O(_n_) where _n_ is the length of the sequence.
     @discardableResult
     @inlinable
-    mutating func decompress(using technique: CompressionTechnique) -> Self {
+    mutating func decompress<T: Compressor>(using technique: T) -> Self where T.DecompressClosureParameters == UInt8 {
         self = technique.decompress(data: self)
         return self
     }
@@ -60,11 +60,14 @@ public extension Array where Element == UInt8 {
     /// - Returns: An `AsyncStream<UInt8>` that receives a decompressed byte.
     /// - Complexity: Varies by technique; minimum of O(_n_) where _n_ is the length of the sequence.
     @inlinable
-    func decompress(
-        using technique: CompressionTechnique,
+    func decompress<T: Compressor>(
+        using technique: T,
         bufferingPolicy limit: AsyncStream<UInt8>.Continuation.BufferingPolicy = .unbounded
-    ) -> AsyncStream<UInt8> {
-        return technique.decompress(data: self, bufferingPolicy: limit)
+    ) -> AsyncStream<UInt8> where T.DecompressClosureParameters == UInt8 {
+        return AsyncStream { continuation in
+            defer { continuation.finish() }
+            return technique.decompress(data: self, continuation: continuation)
+        }
     }
 }
 
@@ -79,12 +82,8 @@ public extension Data {
     /// - Complexity: Varies by technique; minimum of O(_n_) where _n_ is the length of the sequence.
     @discardableResult
     @inlinable
-    mutating func compress(using technique: CompressionTechnique) -> Self {
-        if let compressed:[UInt8] = technique.compress(data: [UInt8](self))?.data {
-            self = Data(compressed)
-        } else {
-            self = Data()
-        }
+    mutating func compress<T: Compressor>(using technique: T) -> Self where T.CompressClosureParameters == UInt8 {
+        self = Data(technique.compress(data: [UInt8](self)).data)
         return self
     }
 
@@ -93,7 +92,7 @@ public extension Data {
     /// - Returns: The `CompressionResult`.
     /// - Complexity: Varies by technique; minimum of O(_n_) where _n_ is the length of the sequence.
     @inlinable
-    func compressed(using technique: CompressionTechnique) -> CompressionResult<[UInt8]>? {
+    func compressed<T: Compressor>(using technique: T) -> CompressionResult<[UInt8]>? where T.CompressClosureParameters == UInt8 {
         return technique.compress(data: [UInt8](self))
     }
 
@@ -101,7 +100,7 @@ public extension Data {
     /// - Returns: The decompressed data.
     /// - Complexity: Varies by technique; minimum of O(_n_) where _n_ is the length of the sequence.
     @inlinable
-    func decompressed(using technique: CompressionTechnique) -> Data {
+    func decompressed<T: Compressor>(using technique: T) -> Data where T.DecompressClosureParameters == UInt8 {
         return Data(technique.decompress(data: [UInt8](self)))
     }
 }
@@ -109,9 +108,10 @@ public extension Data {
 public extension StringProtocol {
     /// - Complexity: Varies by technique; minimum of O(_n_) where _n_ is the length of the sequence.
     @inlinable
-    func compressed(using technique: CompressionTechnique, encoding: String.Encoding = .utf8) -> CompressionResult<[UInt8]>? {
+    func compressed<T: Compressor>(using technique: T, encoding: String.Encoding = .utf8) -> CompressionResult<[UInt8]>? where T.CompressClosureParameters == UInt8 {
         guard let data:Data = self.data(using: encoding) else { return nil }
         return data.compressed(using: technique)
     }
 }
+
 #endif

@@ -24,7 +24,7 @@ struct SnappyTests {
         string.removeAll(where: { $0.isWhitespace })
         let hex = string.hexadecimal
         let data:[UInt8] = [UInt8](hex)
-        let decompressed:[UInt8] = CompressionTechnique.Snappy.decompress(data: data)
+        let decompressed:[UInt8] = CompressionTechnique.snappy.decompress(data: data)
         #expect(decompressed == [UInt8](expected_result.utf8))
     }
     #endif

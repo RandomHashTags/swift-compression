@@ -7,7 +7,13 @@
 
 // MARK: CompressionTechnique
 /// A collection of well-known and useful compression and decompression techniques.
-public enum CompressionTechnique : Hashable, Sendable {
+public enum CompressionTechnique : Hashable, Compressor {
+    public func compress<C: Collection<UInt8>>(data: C, closure: (UInt8) -> Void) -> UInt8? {
+        return nil
+    }
+    public func decompress<C: Collection<UInt8>>(data: C, closure: (UInt8) -> Void) {
+    }
+
     case multiple(techniques: [CompressionTechnique])
 
     // audio
@@ -24,17 +30,10 @@ public enum CompressionTechnique : Hashable, Sendable {
     case json
     case lz4
 
-    /// - Parameters:
-    ///   - windowSize: The size of the sliding window, measured in bytes.
-    ///   - bufferSize: The size of the buffer, measured in bytes.
-    case lz77(windowSize: Int, bufferSize: Int)
     case lz78
     case lzw
     /// Move-to-front transform
     case mtf
-    case runLength(minRun: Int, alwaysIncludeRunCount: Bool)
-    /// AKA Zippy
-    case snappy
     /// AKA Zippy Framed
     case snappyFramed
     case zstd
@@ -58,12 +57,6 @@ public enum CompressionTechnique : Hashable, Sendable {
     case fibonacci
 
     // science
-    case dnaBinaryEncoding(baseBits: [UInt8:[Bool]] = [
-        65 : [false, false], // A
-        67 : [false, true],  // C
-        71 : [true, false],  // G
-        84 : [true, true]    // T
-    ])
     case dnaSingleBlockEncoding
 
     // SSL
@@ -93,12 +86,9 @@ public extension CompressionTechnique {
         case .huffman: return "huffman"
         case .json: return "json"
         case .lz4: return "lz4"
-        case .lz77: return "lz77"
         case .lz78: return "lz78"
         case .lzw: return "lzw"
         case .mtf: return "mtf"
-        case .runLength: return "runLength"
-        case .snappy: return "snappy"
         case .snappyFramed: return "snappyFramed"
         case .zstd: return "zstd"
 
@@ -117,7 +107,6 @@ public extension CompressionTechnique {
         case .eliasOmega: return "eliasOmega"
         case .fibonacci: return "fibonacci"
 
-        case .dnaBinaryEncoding(_): return "dnaBinaryEncoding"
         case .dnaSingleBlockEncoding: return "dnaSingleBlockEncoding"
 
         case .boringSSL: return "boringSSL"
@@ -150,13 +139,9 @@ public extension CompressionTechnique {
                 }
                 return result
             case .deflate:                                          return Deflate.compress(data: data)
-            case .dnaBinaryEncoding(let baseBits):                  return DNABinaryEncoding.compress(data: data, baseBits: baseBits) 
             case .dnaSingleBlockEncoding:                           return DNASingleBlockEncoding.compress(data: data)
             case .huffman(_):                                       return Huffman.compress(data: data)
             case .json:                                             return JSON.compress(data: data)
-            case .lz77(let windowSize, let bufferSize):             return LZ77.compress(data: data, windowSize: windowSize, bufferSize: bufferSize)
-            case .runLength(let minRun, let alwaysIncludeRunCount): return CompressionResult(data: RunLengthEncoding.compress(data: data, minRun: minRun, alwaysIncludeRunCount: alwaysIncludeRunCount))
-            case .snappy:                                           return CompressionResult(data: Snappy.compress(data: data))
             default:                                                return nil
         }
     }
@@ -178,11 +163,6 @@ public extension CompressionTechnique {
             return Huffman.compress(data: data, bufferingPolicy: limit)
         default:
             let stream:AsyncStream<UInt8> = AsyncStream(bufferingPolicy: limit) { continuation in
-                switch self {
-                case .lz77(let windowSize, let bufferSize): LZ77.compress(data: data, windowSize: windowSize, bufferSize: bufferSize, continuation: continuation)
-                case .runLength(let minRun, let alwaysIncludeRunCount): RunLengthEncoding.compress(data: data, minRun: minRun, alwaysIncludeRunCount: alwaysIncludeRunCount, continuation: continuation)
-                default: break
-                }
                 continuation.finish()
             }
             return CompressionResult(data: stream)
@@ -208,19 +188,9 @@ public extension CompressionTechnique {
             }
             return data
         case .deflate: return Deflate.decompress(data: data)
-        case .dnaBinaryEncoding(let baseBits):
-            var reversed:[[Bool]:UInt8] = [:]
-            reversed.reserveCapacity(baseBits.count)
-            for (byte, bits) in baseBits {
-                reversed[bits] = byte
-            }
-            return DNABinaryEncoding.decompress(data: data, baseBits: reversed)
         case .dnaSingleBlockEncoding: return DNASingleBlockEncoding.decompress(data: data)
         case .huffman(let root): return Huffman.decompress(data: data, root: root)
         case .json: return JSON.decompress(data: data)
-        case .lz77(let windowSize, _): return LZ77.decompress(data: data, windowSize: windowSize)
-        case .runLength(_, _): return RunLengthEncoding.decompress(data: data)
-        case .snappy: return Snappy.decompress(data: data)
         default: return data
         }
     }
@@ -239,17 +209,7 @@ public extension CompressionTechnique {
         guard !data.isEmpty else { return AsyncStream { $0.finish() } }
         let stream:AsyncStream<UInt8> = AsyncStream(bufferingPolicy: limit) { continuation in
             switch self {
-            case .dnaBinaryEncoding(let baseBits):
-                var reversed:[[Bool]:UInt8] = [:]
-                reversed.reserveCapacity(baseBits.count)
-                for (byte, bits) in baseBits {
-                    reversed[bits] = byte
-                }
-                DNABinaryEncoding.decompress(data: data, baseBits: reversed, continuation: continuation)
             case .huffman(let root): Huffman.decompress(data: data, root: root, continuation: continuation)
-            case .lz77(let windowSize, _): LZ77.decompress(data: data, windowSize: windowSize, continuation: continuation)
-            case .runLength(_, _): RunLengthEncoding.decompress(data: data, continuation: continuation)
-            case .snappy: Snappy.decompress(data: data, continuation: continuation)
             default: break
             }
             continuation.finish()
@@ -305,57 +265,5 @@ public extension CompressionTechnique {
             }
         }
         return table
-    }
-}
-
-// MARK: Stream & Data Builder
-public extension CompressionTechnique {
-    struct StreamBuilder {
-        public var stream:AsyncStream<UInt8>.Continuation
-        public var bitBuilder:ByteBuilder
-
-        public init(stream: AsyncStream<UInt8>.Continuation, bitBuilder: ByteBuilder = ByteBuilder()) {
-            self.stream = stream
-            self.bitBuilder = bitBuilder
-        }
-
-        /// - Complexity: O(1).
-        @inlinable
-        public mutating func write(bit: Bool) {
-            if let wrote:UInt8 = bitBuilder.write(bit: bit) {
-                stream.yield(wrote)
-            }
-        }
-
-        /// - Complexity: O(1).
-        @inlinable
-        public mutating func finalize() {
-            bitBuilder.flush(into: stream)
-        }
-    }
-    struct DataBuilder {
-        public var data:[UInt8]
-        public var bitBuilder:ByteBuilder
-
-        public init(data: [UInt8] = [], bitBuilder: ByteBuilder = ByteBuilder()) {
-            self.data = data
-            self.bitBuilder = bitBuilder
-        }
-
-        @inlinable
-        public mutating func write(bit: Bool) {
-            if let wrote:UInt8 = bitBuilder.write(bit: bit) {
-                data.append(wrote)
-            }
-        }
-        @inlinable
-        public mutating func write(bits: [Bool]) {
-            bitBuilder.write(bits: bits, closure: { data.append($0) })
-        }
-        
-        @inlinable
-        public mutating func finalize() {
-            bitBuilder.flush(into: &data)
-        }
     }
 }

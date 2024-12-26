@@ -8,8 +8,36 @@
 public extension CompressionTechnique {
     /// The LZ77 compression technique.
     /// 
+    /// - Parameters:
+    ///   - windowSize: The size of the sliding window, measured in bytes.
+    ///   - bufferSize: The size of the buffer, measured in bytes.
+    ///   - offsetType: The integer type the offset is encoded as.
+    /// 
     /// https://en.wikipedia.org/wiki/LZ77_and_LZ78
-    enum LZ77 {
+    @inlinable
+    static func lz77<T: FixedWidthInteger & Sendable>(windowSize: Int, bufferSize: Int, offsetType: T.Type = UInt16.self) -> LZ77<T> {
+        return LZ77(windowSize: windowSize, bufferSize: bufferSize, offsetType: offsetType)
+    }
+    
+    struct LZ77<T: FixedWidthInteger & Sendable> : Compressor {
+        public typealias CompressClosureParameters = UInt8
+        public typealias DecompressClosureParameters = UInt8
+        /// The size of the window.
+        public let windowSize:Int
+
+        /// The size of the buffer.
+        public let bufferSize:Int
+
+        /// The integer type the offset is encoded as.
+        public let offsetType:T.Type
+
+        public init(windowSize: Int, bufferSize: Int, offsetType: T.Type = UInt16.self) {
+            self.windowSize = windowSize
+            self.bufferSize = bufferSize
+            self.offsetType = offsetType
+        }
+
+        public var rawValue: String { "lz77" }
     }
 }
 
@@ -19,62 +47,13 @@ public extension CompressionTechnique.LZ77 {
     /// 
     /// - Parameters:
     ///   - data: The collection of bytes to compress.
-    ///   - reserveCapacity: The space to reserve for the compressed result.
-    ///   - windowSize: The size of the window.
-    ///   - bufferSize: The size of the buffer.
-    ///   - offsetType: The integer type the offset is encoded as.
-    /// - Complexity: O(_n_) where _n_ is the length of `data`.
-    @inlinable
-    static func compress<C: Collection<UInt8>, T: FixedWidthInteger>(
-        data: C,
-        reserveCapacity: Int = 1024,
-        windowSize: Int,
-        bufferSize: Int,
-        offsetType: T.Type = UInt16.self
-    ) -> CompressionResult<[UInt8]> {
-        var compressed:[UInt8] = []    
-        compressed.reserveCapacity(reserveCapacity)
-        compress(data: data, windowSize: windowSize, bufferSize: bufferSize, offsetType: offsetType) { compressed.append($0) }
-        return CompressionResult(data: compressed)
-    }
-
-    /// Compress a collection of bytes into a stream using the LZ77 technique.
-    /// 
-    /// - Parameters:
-    ///   - data: The collection of bytes to compress.
-    ///   - windowSize: The size of the window.
-    ///   - bufferSize: The size of the buffer.
-    ///   - offsetType: The integer type the offset is encoded as.
-    ///   - continuation: The `AsyncStream<UInt8>.Continuation`.
-    /// - Complexity: O(_n_) where _n_ is the length of `data`.
-    @inlinable
-    static func compress<C: Collection<UInt8>, T: FixedWidthInteger>(
-        data: C,
-        windowSize: Int,
-        bufferSize: Int,
-        offsetType: T.Type = UInt16.self,
-        continuation: AsyncStream<UInt8>.Continuation
-    ) {
-        compress(data: data, windowSize: windowSize, bufferSize: bufferSize, offsetType: offsetType) { continuation.yield($0) }
-    }
-
-    /// Compress a collection of bytes using the LZ77 technique.
-    /// 
-    /// - Parameters:
-    ///   - data: The collection of bytes to compress.
-    ///   - windowSize: The size of the window.
-    ///   - bufferSize: The size of the buffer.
     ///   - closure: The logic to execute when a byte is compressed.
-    ///   - offsetType: The integer type the offset is encoded as.
     /// - Complexity: O(_n_) where _n_ is the length of `data`.
     @inlinable
-    static func compress<C: Collection<UInt8>, T: FixedWidthInteger>(
+    func compress<C: Collection<UInt8>>(
         data: C,
-        windowSize: Int,
-        bufferSize: Int,
-        offsetType: T.Type,
         closure: (UInt8) -> Void
-    ) {
+    ) -> UInt8? {
         let count:Int = data.count
         var index:Int = 0
         while index < count {
@@ -112,6 +91,7 @@ public extension CompressionTechnique.LZ77 {
             closure(byte)
             index += bestLength + 1
         }
+        return nil
     }
 }
 
@@ -121,51 +101,11 @@ public extension CompressionTechnique.LZ77 {
     /// 
     /// - Parameters:
     ///   - data: The collection of bytes to decompress.
-    ///   - windowSize: The size of the window.
-    ///   - offsetType: The integer type the offset is encoded as.
-    /// - Complexity: O(_n_) where _n_ is the length of `data`.
-    @inlinable
-    static func decompress<C: Collection<UInt8>, T: FixedWidthInteger>(
-        data: C,
-        windowSize: Int,
-        offsetType: T.Type = UInt16.self
-    ) -> [UInt8] {
-        var decompressed:[UInt8] = []
-        decompress(data: data, windowSize: windowSize, offsetType: offsetType) { decompressed.append($0) }
-        return decompressed
-    }
-
-    /// Decompress a collection of bytes into a stream using the LZ77 technique.
-    /// 
-    /// - Parameters:
-    ///   - data: The collection of bytes to decompress.
-    ///   - windowSize: The size of the window.
-    ///   - offsetType: The integer type the offset is encoded as.
-    ///   - continuation: The `AsyncStream<UInt8>.Continuation`.
-    /// - Complexity: O(_n_) where _n_ is the length of `data`.
-    @inlinable
-    static func decompress<C: Collection<UInt8>, T: FixedWidthInteger>(
-        data: C,
-        windowSize: Int,
-        offsetType: T.Type = UInt16.self,
-        continuation: AsyncStream<UInt8>.Continuation
-    ) {
-        decompress(data: data, windowSize: windowSize, offsetType: offsetType) { continuation.yield($0) }
-    }
-
-    /// Decompress a collection of bytes using the LZ77 technique.
-    /// 
-    /// - Parameters:
-    ///   - data: The collection of bytes to decompress.
-    ///   - windowSize: The size of the window.
-    ///   - offsetType: The integer type the offset is encoded as.
     ///   - closure: The logic to execute when a byte was decompressed.
     /// - Complexity: O(_n_) where _n_ is the length of `data`.
     @inlinable
-    static func decompress<C: Collection<UInt8>, T: FixedWidthInteger>(
+    func decompress<C: Collection<UInt8>>(
         data: C,
-        windowSize: Int,
-        offsetType: T.Type = UInt16.self,
         closure: (UInt8) -> Void
     ) {
         let count:Int = data.count
