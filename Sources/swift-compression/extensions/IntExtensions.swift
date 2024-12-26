@@ -37,6 +37,9 @@ public extension FixedWidthInteger {
         return withUnsafeBytes(of: self, Array.init).reversed()
     }
 
+    /// - Parameters:
+    ///   - fromBits: The bits to assign.
+    /// - Complexity: O(_n_) where _n_ is the length of `fromBits`.
     init?(fromBits: [Bool]) {
         guard fromBits.count <= Self.bitWidth else { return nil }
         self = fromBits.reduce(0) { 2 * $0 + ($1 ? 1 : 0) }
@@ -196,6 +199,21 @@ public extension FixedWidthInteger {
         if fromBits.30 { value += 2 }
         if fromBits.31 { value += 1 }
         self = value
+    }
+}
+public extension UInt16 {
+    init(_ b0: Bits8, _ b1: Bits8) {
+        self = Self(UInt8(fromBits: b0)) + Self(UInt8(fromBits: b1))
+    }
+}
+public extension UInt32 {
+    init(_ b0: Bits8, _ b1: Bits8, _ b2: Bits8, _ b3: Bits8) {
+        self = Self(UInt16(highBits: b0, lowBits: b1)) + Self(UInt16(highBits: b2, lowBits: b3))
+    }
+}
+public extension UInt64 {
+    init(_ b0: Bits8, _ b1: Bits8, _ b2: Bits8, _ b3: Bits8, _ b4: Bits8, _ b5: Bits8, _ b6: Bits8, _ b7: Bits8) {
+        self = Self(UInt32(b0, b1, b2, b3)) + Self(UInt32(b4, b5, b6, b7))
     }
 }
 
