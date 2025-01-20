@@ -17,6 +17,7 @@ public typealias Bits32 = (Bool, Bool, Bool, Bool, Bool, Bool, Bool, Bool, Bool,
 
 public extension FixedWidthInteger {
     /// - Complexity: O(_n_) where _n_ is `bitWidth`.
+    @inlinable
     var bits : [Bool] {
         var int:Self = self
         var bits:[Bool] = Array(repeating: false, count: bitWidth)
@@ -28,11 +29,13 @@ public extension FixedWidthInteger {
     }
 
     /// - Complexity: O(1).
+    @inlinable
     var bytes : [UInt8] {
         return withUnsafeBytes(of: self, Array.init)
     }
 
     /// - Complexity: O(1).
+    @inlinable
     var reversedBytes : ReversedCollection<[UInt8]> {
         return withUnsafeBytes(of: self, Array.init).reversed()
     }
@@ -219,6 +222,7 @@ public extension UInt64 {
 
 public extension UInt8 {
     /// - Complexity: O(1).
+    @inlinable
     var bitsTuple : Bits8 {
         var int:Self = self
         let v7:Bool = int & 0x01 == 1
@@ -240,6 +244,7 @@ public extension UInt8 {
     }
     
     /// - Complexity: O(1).
+    @inlinable
     var bitsTupleReverse : Bits8 {
         var int:Self = self
         let v7:Bool = int & 0x01 == 1

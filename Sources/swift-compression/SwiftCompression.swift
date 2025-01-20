@@ -65,9 +65,9 @@ public extension Collection where Element == UInt8 {
         bufferingPolicy limit: AsyncThrowingStream<UInt8, Error>.Continuation.BufferingPolicy = .unbounded
     ) -> AsyncThrowingStream<UInt8, Error> where T.DecompressClosureParameters == UInt8 {
         return AsyncThrowingStream { continuation in
-            defer { continuation.finish() }
             do {
                 try technique.decompress(data: self, continuation: continuation)
+                continuation.finish()
             } catch {
                 continuation.finish(throwing: error)
             }
@@ -75,10 +75,14 @@ public extension Collection where Element == UInt8 {
     }
 }
 
-#if canImport(Foundation)
 // MARK: Foundation
+#if canImport(FoundationEssentials)
+import FoundationEssentials
+#elseif canImport(Foundation)
 import Foundation
+#endif
 
+#if canImport(FoundationEssentials) || canImport(Foundation)
 public extension Data {
     /// Compress this data using the specified technique(s).
     /// 

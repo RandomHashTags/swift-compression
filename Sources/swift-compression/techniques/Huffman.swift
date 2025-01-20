@@ -5,10 +5,6 @@
 //  Created by Evan Anderson on 12/9/24.
 //
 
-#if canImport(Foundation)
-import Foundation
-#endif
-
 public extension CompressionTechnique {
     /// The Huffman coding compression technique.
     /// 

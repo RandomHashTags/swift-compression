@@ -80,7 +80,7 @@ public extension CompressionAlgorithm {
         case .huffmanCoding: return "huffmanCoding"
         case .json: return "json"
         case .lz4: return "lz4"
-        case .lz77(_, _, _): return "lz77"
+        case .lz77: return "lz77"
         case .lz78: return "lz78"
         case .lzw: return "lzw"
         case .mtf: return "mtf"
@@ -118,6 +118,7 @@ public extension CompressionAlgorithm {
 
 // MARK: Technique
 public extension CompressionAlgorithm {
+    /// The technique used for this algorithm.
     @inlinable
     var technique : (any Compressor)? {
         switch self {
