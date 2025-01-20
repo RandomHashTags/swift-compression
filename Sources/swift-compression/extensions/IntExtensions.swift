@@ -15,10 +15,10 @@ public typealias Bits16 = (Bool, Bool, Bool, Bool, Bool, Bool, Bool, Bool, Bool,
 public typealias Bits24 = (Bool, Bool, Bool, Bool, Bool, Bool, Bool, Bool, Bool, Bool, Bool, Bool, Bool, Bool, Bool, Bool, Bool, Bool, Bool, Bool, Bool, Bool, Bool, Bool)
 public typealias Bits32 = (Bool, Bool, Bool, Bool, Bool, Bool, Bool, Bool, Bool, Bool, Bool, Bool, Bool, Bool, Bool, Bool, Bool, Bool, Bool, Bool, Bool, Bool, Bool, Bool, Bool, Bool, Bool, Bool, Bool, Bool, Bool, Bool)
 
-public extension FixedWidthInteger {
+extension FixedWidthInteger {
     /// - Complexity: O(_n_) where _n_ is `bitWidth`.
     @inlinable
-    var bits : [Bool] {
+    public var bits : [Bool] {
         var int:Self = self
         var bits:[Bool] = Array(repeating: false, count: bitWidth)
         for i in stride(from: bitWidth-1, through: 0, by: -1) {
@@ -30,37 +30,37 @@ public extension FixedWidthInteger {
 
     /// - Complexity: O(1).
     @inlinable
-    var bytes : [UInt8] {
+    public var bytes : [UInt8] {
         return withUnsafeBytes(of: self, Array.init)
     }
 
     /// - Complexity: O(1).
     @inlinable
-    var reversedBytes : ReversedCollection<[UInt8]> {
+    public var reversedBytes : ReversedCollection<[UInt8]> {
         return withUnsafeBytes(of: self, Array.init).reversed()
     }
 
     /// - Parameters:
     ///   - fromBits: The bits to assign.
     /// - Complexity: O(_n_) where _n_ is the length of `fromBits`.
-    init?(fromBits: [Bool]) {
+    public init?(fromBits: [Bool]) {
         guard fromBits.count <= Self.bitWidth else { return nil }
         self = fromBits.reduce(0) { 2 * $0 + ($1 ? 1 : 0) }
     }
 
-    init(fromBits: Bits2) {
+    public init(fromBits: Bits2) {
         self = (fromBits.0 ? 2 : 0) + (fromBits.1 ? 1 : 0)
     }
-    init(fromBits: Bits3) {
+    public init(fromBits: Bits3) {
         self = (fromBits.0 ? 4 : 0) + (fromBits.1 ? 2 : 0) + (fromBits.2 ? 1 : 0)
     }
-    init(fromBits: Bits4) {
+    public init(fromBits: Bits4) {
         self = (fromBits.0 ? 8 : 0) + (fromBits.1 ? 4 : 0) + (fromBits.2 ? 2 : 0) + (fromBits.3 ? 1 : 0)
     }
-    init(fromBits: Bits6) {
+    public init(fromBits: Bits6) {
         self = (fromBits.0 ? 32 : 0) + (fromBits.1 ? 16 : 0) + (fromBits.2 ? 8 : 0) + (fromBits.3 ? 4 : 0) + (fromBits.4 ? 2 : 0) + (fromBits.5 ? 1 : 0)
     }
-    init(highBits: Bits4, lowBits: Bits4) {
+    public init(highBits: Bits4, lowBits: Bits4) {
         var value:Self = 0
         if highBits.0 { value += 128 }
         if highBits.1 { value += 64 }
@@ -72,7 +72,7 @@ public extension FixedWidthInteger {
         if lowBits.3 { value += 1 }
         self = value
     }
-    init(fromBits: Bits8) {
+    public init(fromBits: Bits8) {
         var value:Self = 0
         if fromBits.0 { value += 128 }
         if fromBits.1 { value += 64 }
@@ -84,7 +84,7 @@ public extension FixedWidthInteger {
         if fromBits.7 { value += 1 }
         self = value
     }
-    init(fromBits: Bits11) {
+    public init(fromBits: Bits11) {
         var value:Self = 0
         if fromBits.0  { value += 1024 }
         if fromBits.1  { value += 512 }
@@ -99,7 +99,7 @@ public extension FixedWidthInteger {
         if fromBits.10 { value += 1 }
         self = value
     }
-    init(highBits: Bits8, lowBits: Bits8) {
+    public init(highBits: Bits8, lowBits: Bits8) {
         var value:Self = 0
         if highBits.0 { value += 32768 }
         if highBits.1 { value += 16384 }
@@ -119,7 +119,7 @@ public extension FixedWidthInteger {
         if lowBits.7  { value += 1 }
         self = value
     }
-    init(fromBits: Bits16) {
+    public init(fromBits: Bits16) {
         var value:Self = 0
         if fromBits.0  { value += 32768 }
         if fromBits.1  { value += 16384 }
@@ -139,7 +139,7 @@ public extension FixedWidthInteger {
         if fromBits.15 { value += 1 }
         self = value
     }
-    init(fromBits: Bits24) {
+    public init(fromBits: Bits24) {
         var value:Self = 0
         if fromBits.0  { value += 8388608 }
         if fromBits.1  { value += 4194304 }
@@ -167,7 +167,7 @@ public extension FixedWidthInteger {
         if fromBits.23 { value += 1 }
         self = value
     }
-    init(fromBits: Bits32) {
+    public init(fromBits: Bits32) {
         var value:Self = 0
         if fromBits.0  { value += 2147483648 }
         if fromBits.1  { value += 1073741824 }
@@ -204,26 +204,33 @@ public extension FixedWidthInteger {
         self = value
     }
 }
-public extension UInt16 {
-    init(_ b0: Bits8, _ b1: Bits8) {
+extension UInt16 {
+    public init(_ b0: Bits8, _ b1: Bits8) {
         self = Self(UInt8(fromBits: b0)) + Self(UInt8(fromBits: b1))
     }
 }
-public extension UInt32 {
-    init(_ b0: Bits8, _ b1: Bits8, _ b2: Bits8, _ b3: Bits8) {
+extension UInt32 {
+    public init(_ b0: Bits8, _ b1: Bits8, _ b2: Bits8, _ b3: Bits8) {
         self = Self(UInt16(highBits: b0, lowBits: b1)) + Self(UInt16(highBits: b2, lowBits: b3))
     }
 }
-public extension UInt64 {
-    init(_ b0: Bits8, _ b1: Bits8, _ b2: Bits8, _ b3: Bits8, _ b4: Bits8, _ b5: Bits8, _ b6: Bits8, _ b7: Bits8) {
+extension UInt64 {
+    public init(_ b0: Bits8, _ b1: Bits8, _ b2: Bits8, _ b3: Bits8, _ b4: Bits8, _ b5: Bits8, _ b6: Bits8, _ b7: Bits8) {
         self = Self(UInt32(b0, b1, b2, b3)) + Self(UInt32(b4, b5, b6, b7))
     }
 }
+#if compiler(>=6.0)
+extension UInt128 {
+    public init(_ b0: Bits8, _ b1: Bits8, _ b2: Bits8, _ b3: Bits8, _ b4: Bits8, _ b5: Bits8, _ b6: Bits8, _ b7: Bits8, _ b8: Bits8, _ b9: Bits8, _ b10: Bits8, _ b11: Bits8, _ b12: Bits8, _ b13: Bits8, _ b14: Bits8, _ b15: Bits8) {
+        self = Self(UInt64(b0, b1, b2, b3, b4, b5, b6, b7)) + Self(UInt64(b8, b9, b10, b11, b12, b13, b14, b15))
+    }
+}
+#endif
 
-public extension UInt8 {
+extension UInt8 {
     /// - Complexity: O(1).
     @inlinable
-    var bitsTuple : Bits8 {
+    public var bitsTuple : Bits8 {
         var int:Self = self
         let v7:Bool = int & 0x01 == 1
         int >>= 1
@@ -245,7 +252,7 @@ public extension UInt8 {
     
     /// - Complexity: O(1).
     @inlinable
-    var bitsTupleReverse : Bits8 {
+    public var bitsTupleReverse : Bits8 {
         var int:Self = self
         let v7:Bool = int & 0x01 == 1
         int >>= 1

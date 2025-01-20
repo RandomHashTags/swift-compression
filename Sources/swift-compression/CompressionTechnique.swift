@@ -11,7 +11,7 @@ public enum CompressionTechnique {
 }
 
 // MARK: Frequency tables
-public extension CompressionTechnique {
+extension CompressionTechnique {
     /// Creates a universal frequency table from a sequence of raw bytes.
     /// 
     /// - Parameters:
@@ -19,7 +19,7 @@ public extension CompressionTechnique {
     /// - Returns: A universal frequency table.
     /// - Complexity: O(_n_) where _n_ is the length of `data`.
     @inlinable
-    static func buildFrequencyTable<S: Sequence<UInt8>>(data: S) -> [Int] {
+    public static func buildFrequencyTable<S: Sequence<UInt8>>(data: S) -> [Int] {
         var table:[Int] = Array(repeating: 0, count: 255)
         for byte in data {
             table[Int(byte)] += 1
@@ -34,7 +34,7 @@ public extension CompressionTechnique {
     /// - Returns: A lookup frequency table.
     /// - Complexity: O(_n_) where _n_ is the length of `data`.
     @inlinable
-    static func buildFrequencyTable<S: Sequence<UInt8>>(data: S) -> [UInt8:Int] {
+    public static func buildFrequencyTable<S: Sequence<UInt8>>(data: S) -> [UInt8:Int] {
         var table:[UInt8:Int] = [:]
         for byte in data {
             table[byte, default: 0] += 1
@@ -49,7 +49,7 @@ public extension CompressionTechnique {
     /// - Returns: A universal frequency table.
     /// - Complexity: O(_n_) where _n_ is the sum of the `Character` utf8 lengths in `chars`.
     @inlinable
-    static func buildFrequencyTable(chars: [Character:Int]) -> [Int] {
+    public static func buildFrequencyTable(chars: [Character:Int]) -> [Int] {
         var table:[Int] = Array(repeating: 0, count: 255)
         for (char, freq) in chars {
             for byte in char.utf8 {

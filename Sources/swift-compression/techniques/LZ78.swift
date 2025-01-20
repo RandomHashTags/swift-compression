@@ -5,18 +5,18 @@
 //  Created by Evan Anderson on 12/25/24.
 //
 
-public extension CompressionTechnique {
+extension CompressionTechnique {
     /// The LZ78 compression technique.
     /// 
     /// https://en.wikipedia.org/wiki/LZ77_and_LZ78
-    enum LZ78 {
+    public enum LZ78 {
         typealias Entry = (Int, UInt8)
     }
 }
 
 // MARK: Compress
-public extension CompressionTechnique.LZ78 {
-    static func compress<S: Sequence<UInt8>>(
+extension CompressionTechnique.LZ78 {
+    public static func compress<S: Sequence<UInt8>>(
         data: S,
         endOfFileMarker: UInt8?
     ) -> [UInt8] {

@@ -5,23 +5,23 @@
 //  Created by Evan Anderson on 12/18/24.
 //
 
-public extension CompressionTechnique {
+extension CompressionTechnique {
     /// The DNA single block encoding compression technique.
     /// 
     /// https://www.mdpi.com/1999-4893/13/4/99
-    enum DNASingleBlockEncoding {
+    public enum DNASingleBlockEncoding {
     }
 }
 
 // MARK: Compress
-public extension CompressionTechnique.DNASingleBlockEncoding {
+extension CompressionTechnique.DNASingleBlockEncoding {
     /// Compress a sequence of bytes using the DNA single block encoding technique.
     /// 
     /// - Parameters:
     ///   - data: The sequence of bytes to compress.
     /// - Complexity: O(_n_ + (_m_ log _m_)) where _n_ is the length of `data` and _m_ is the number of unique bytes in `data`.
     @inlinable
-    static func compress<S: Sequence<UInt8>>(
+    public static func compress<S: Sequence<UInt8>>(
         data: S
     ) -> CompressionResult<[UInt8]>? { // TODO: finish
         let results:[UInt8:[UInt8]] = compressBinary(data: data)
@@ -142,13 +142,13 @@ extension CompressionTechnique.DNASingleBlockEncoding {
 }
 
 // MARK: Decompress
-public extension CompressionTechnique.DNASingleBlockEncoding { // TODO: finish
+extension CompressionTechnique.DNASingleBlockEncoding { // TODO: finish
     /// Decompress a sequence of bytes using the DNA single block encoding technique.
     /// 
     /// - Parameters:
     ///   - data: The sequence of bytes to decompress.
     @inlinable
-    static func decompress(data: [UInt8]) -> [UInt8] {
+    public static func decompress(data: [UInt8]) -> [UInt8] {
         return []
     }
 }

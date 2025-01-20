@@ -131,8 +131,8 @@ public struct ByteBuilder {
 }
 
 // MARK: Stream & Data Builder
-public extension CompressionTechnique {
-    struct StreamBuilder {
+extension CompressionTechnique {
+    public struct StreamBuilder {
         public var stream:AsyncStream<UInt8>.Continuation
         public var builder:ByteBuilder
 
@@ -155,7 +155,7 @@ public extension CompressionTechnique {
             builder.flush(into: stream)
         }
     }
-    struct DataBuilder {
+    public struct DataBuilder {
         public var data:[UInt8]
         public var builder:ByteBuilder
 

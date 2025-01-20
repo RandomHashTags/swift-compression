@@ -5,18 +5,18 @@
 //  Created by Evan Anderson on 12/12/24.
 //
 
-public extension CompressionTechnique {
+extension CompressionTechnique {
     /// The Move-to-front transform compression technique.
     /// 
     /// https://en.wikipedia.org/wiki/Move-to-front_transform
-    enum MoveToFront { // TODO: finish
+    public enum MoveToFront { // TODO: finish
     }
 }
 
 // MARK: Transform
-public extension CompressionTechnique.MoveToFront {
+extension CompressionTechnique.MoveToFront {
     @inlinable
-    static func transform<S: Sequence<UInt8>>(
+    public static func transform<S: Sequence<UInt8>>(
         data: S,
         reserveCapacity: Int = 1024
     ) -> [UInt8] {

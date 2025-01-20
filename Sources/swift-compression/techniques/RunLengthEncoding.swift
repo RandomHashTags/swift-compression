@@ -5,17 +5,17 @@
 //  Created by Evan Anderson on 12/9/24.
 //
 
-public extension CompressionTechnique {
+extension CompressionTechnique {
 
     /// The Run-length encoding compression technique.
     /// 
     /// https://en.wikipedia.org/wiki/Run-length_encoding
     @inlinable
-    static func runLength(minRun: Int, alwaysIncludeRunCount: Bool) -> RunLengthEncoding {
+    public static func runLength(minRun: Int, alwaysIncludeRunCount: Bool) -> RunLengthEncoding {
         return RunLengthEncoding(minRun: minRun, alwaysIncludeRunCount: alwaysIncludeRunCount)
     }
 
-    struct RunLengthEncoding : Compressor {
+    public struct RunLengthEncoding : Compressor {
         public typealias CompressClosureParameters = (run: Int, byte: UInt8)
         public typealias DecompressClosureParameters = UInt8
 
@@ -35,9 +35,9 @@ public extension CompressionTechnique {
 }
 
 // MARK: Compress
-public extension CompressionTechnique.RunLengthEncoding {
+extension CompressionTechnique.RunLengthEncoding {
     @inlinable
-    func compressClosure(closure: @escaping (UInt8) -> Void) -> @Sendable (CompressClosureParameters) -> Void {
+    public func compressClosure(closure: @escaping (UInt8) -> Void) -> @Sendable (CompressClosureParameters) -> Void {
         if alwaysIncludeRunCount {
             return { (arg) in
                 let (run, runByte) = arg
@@ -65,7 +65,7 @@ public extension CompressionTechnique.RunLengthEncoding {
     ///   - closure: The logic to execute for a run.
     /// - Complexity: O(_n_) where _n_ is the length of `data`.
     @inlinable
-    func compress<S: Sequence<UInt8>>(data: S, closure: (CompressClosureParameters) -> Void) -> UInt8? {
+    public func compress<S: Sequence<UInt8>>(data: S, closure: (CompressClosureParameters) -> Void) -> UInt8? {
         var run:Int = 0, runByte:UInt8? = nil
         data.withContiguousStorageIfAvailable { p in
             for index in 0..<p.count {
@@ -94,13 +94,13 @@ public extension CompressionTechnique.RunLengthEncoding {
 }
 
 // MARK: Decompress
-public extension CompressionTechnique.RunLengthEncoding {
+extension CompressionTechnique.RunLengthEncoding {
     /// - Parameters:
     ///   - data: The sequence of bytes to decompress.
     ///   - closure: The logic to execute for a run.
     /// - Complexity: O(_n_) where _n_ is the length of `data`.
     @inlinable
-    func decompress<C: Collection<UInt8>>(data: C, closure: (DecompressClosureParameters) -> Void) {
+    public func decompress<C: Collection<UInt8>>(data: C, closure: (DecompressClosureParameters) -> Void) {
         let count:Int = data.count
         var index:Int = 0, run:UInt8 = 0, character:UInt8 = 0
         while index < count {

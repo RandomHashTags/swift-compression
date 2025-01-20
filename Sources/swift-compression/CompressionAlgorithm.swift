@@ -65,9 +65,9 @@ public enum CompressionAlgorithm : Hashable, Sendable {
 }
 
 // MARK: RawValue
-public extension CompressionAlgorithm {
+extension CompressionAlgorithm {
     /// The case name of the algorithm.
-    var rawValue : String {
+    public var rawValue : String {
         switch self {
         case .aac: return "aac"
         case .mp3: return "mp3"
@@ -117,10 +117,10 @@ public extension CompressionAlgorithm {
 }
 
 // MARK: Technique
-public extension CompressionAlgorithm {
+extension CompressionAlgorithm {
     /// The technique used for this algorithm.
     @inlinable
-    var technique : (any Compressor)? {
+    public var technique : (any Compressor)? {
         switch self {
         case .lz77(let windowSize, let bufferSize, let offsetBitWidth):
             switch offsetBitWidth {
@@ -136,6 +136,11 @@ public extension CompressionAlgorithm {
                 case 64:
                     let lz:CompressionTechnique.LZ77<UInt64> = CompressionTechnique.lz77<UInt64>(windowSize: windowSize, bufferSize: bufferSize)
                     return lz
+                #if compiler(>=6.0)
+                case 128:
+                    let lz:CompressionTechnique.LZ77<UInt128> = CompressionTechnique.lz77<UInt128>(windowSize: windowSize, bufferSize: bufferSize)
+                    return lz
+                #endif
                 default: return nil
             }
         case .runLengthEncoding(let minRun, let alwaysIncludeRunCount): return CompressionTechnique.runLength(minRun: minRun, alwaysIncludeRunCount: alwaysIncludeRunCount)

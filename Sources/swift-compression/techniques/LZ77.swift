@@ -5,7 +5,7 @@
 //  Created by Evan Anderson on 12/12/24.
 //
 
-public extension CompressionTechnique {
+extension CompressionTechnique {
     /// The LZ77 compression technique.
     /// 
     /// - Parameters:
@@ -15,7 +15,7 @@ public extension CompressionTechnique {
     /// 
     /// https://en.wikipedia.org/wiki/LZ77_and_LZ78
     @inlinable
-    static func lz77<T: FixedWidthInteger & Sendable>(windowSize: Int, bufferSize: Int) -> LZ77<T> {
+    public static func lz77<T: FixedWidthInteger & Sendable>(windowSize: Int, bufferSize: Int) -> LZ77<T> {
         return LZ77(windowSize: windowSize, bufferSize: bufferSize)
     }
 
@@ -27,11 +27,11 @@ public extension CompressionTechnique {
     /// 
     /// https://en.wikipedia.org/wiki/LZ77_and_LZ78
     @inlinable
-    static func lz77(windowSize: Int, bufferSize: Int) -> LZ77<UInt16> {
+    public static func lz77(windowSize: Int, bufferSize: Int) -> LZ77<UInt16> {
         return LZ77(windowSize: windowSize, bufferSize: bufferSize)
     }
     
-    struct LZ77<T: FixedWidthInteger & Sendable> : Compressor {
+    public struct LZ77<T: FixedWidthInteger & Sendable> : Compressor {
         /// The size of the window.
         public let windowSize:Int
 
@@ -43,12 +43,13 @@ public extension CompressionTechnique {
             self.bufferSize = bufferSize
         }
 
+        @inlinable
         public var algorithm : CompressionAlgorithm { .lz77(windowSize: windowSize, bufferSize: bufferSize, offsetBitWidth: T.bitWidth) }
     }
 }
 
 // MARK: Compress
-public extension CompressionTechnique.LZ77 {
+extension CompressionTechnique.LZ77 {
     /// Compress a collection of bytes using the LZ77 technique.
     /// 
     /// - Parameters:
@@ -56,7 +57,7 @@ public extension CompressionTechnique.LZ77 {
     ///   - closure: The logic to execute when a byte is compressed.
     /// - Complexity: O(_n_) where _n_ is the length of `data`.
     @inlinable
-    func compress<C: Collection<UInt8>>(
+    public func compress<C: Collection<UInt8>>(
         data: C,
         closure: (UInt8) -> Void
     ) -> UInt8? {
@@ -102,7 +103,7 @@ public extension CompressionTechnique.LZ77 {
 }
 
 // MARK: Decompress
-public extension CompressionTechnique.LZ77 {
+extension CompressionTechnique.LZ77 {
     /// Decompress a collection of bytes using the LZ77 technique.
     /// 
     /// - Parameters:
@@ -110,7 +111,7 @@ public extension CompressionTechnique.LZ77 {
     ///   - closure: The logic to execute when a byte was decompressed.
     /// - Complexity: O(_n_) where _n_ is the length of `data`.
     @inlinable
-    func decompress<C: Collection<UInt8>>(
+    public func decompress<C: Collection<UInt8>>(
         data: C,
         closure: (UInt8) -> Void
     ) {
@@ -153,6 +154,29 @@ public extension CompressionTechnique.LZ77 {
                     data[data.index(data.startIndex, offsetBy: index+7)].bitsTuple
                 ) as? T
             }
+        #if compiler(>=6.0)
+        case 16:
+            parseOffset = { index in
+                return UInt128(
+                    data[data.index(data.startIndex, offsetBy: index)].bitsTuple,
+                    data[data.index(data.startIndex, offsetBy: index+1)].bitsTuple,
+                    data[data.index(data.startIndex, offsetBy: index+2)].bitsTuple,
+                    data[data.index(data.startIndex, offsetBy: index+3)].bitsTuple,
+                    data[data.index(data.startIndex, offsetBy: index+4)].bitsTuple,
+                    data[data.index(data.startIndex, offsetBy: index+5)].bitsTuple,
+                    data[data.index(data.startIndex, offsetBy: index+6)].bitsTuple,
+                    data[data.index(data.startIndex, offsetBy: index+7)].bitsTuple,
+                    data[data.index(data.startIndex, offsetBy: index+8)].bitsTuple,
+                    data[data.index(data.startIndex, offsetBy: index+9)].bitsTuple,
+                    data[data.index(data.startIndex, offsetBy: index+10)].bitsTuple,
+                    data[data.index(data.startIndex, offsetBy: index+11)].bitsTuple,
+                    data[data.index(data.startIndex, offsetBy: index+12)].bitsTuple,
+                    data[data.index(data.startIndex, offsetBy: index+13)].bitsTuple,
+                    data[data.index(data.startIndex, offsetBy: index+14)].bitsTuple,
+                    data[data.index(data.startIndex, offsetBy: index+15)].bitsTuple
+                ) as? T
+            }
+        #endif
         default:
             parseOffset = { index in
                 var bits:[Bool] = data[data.index(data.startIndex, offsetBy: index)].bits

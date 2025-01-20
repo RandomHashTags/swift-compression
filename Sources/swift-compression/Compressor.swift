@@ -52,7 +52,7 @@ public protocol Compressor : AnyCompressor {
 }
 
 // MARK: Compress
-public extension Compressor {
+extension Compressor {
     /// Compress a collection of bytes using this technique.
     /// 
     /// - Parameters:
@@ -63,7 +63,7 @@ public extension Compressor {
     ///   - LZ77: O(_n_)
     ///   - Snappy: O(_n_)
     @inlinable
-    func compress<C: Collection<UInt8>>(
+    public func compress<C: Collection<UInt8>>(
         data: C,
         reserveCapacity: Int = 1024
     ) throws -> CompressionResult<[UInt8]> {
@@ -83,7 +83,7 @@ public extension Compressor {
     ///   - LZ77: O(_n_)
     ///   - Snappy: O(_n_)
     @inlinable
-    func compress<C: Collection<UInt8>>(
+    public func compress<C: Collection<UInt8>>(
         data: C,
         continuation: AsyncStream<UInt8>.Continuation
     ) throws {
@@ -91,12 +91,12 @@ public extension Compressor {
         let validBitsInLastByte:UInt8 = try compress(data: data, closure: compressClosure { continuation.yield($0) }) ?? 8
     }
 }
-public extension Compressor where CompressClosureParameters == UInt8 {
-    @inlinable func compressClosure(closure: @escaping @Sendable (UInt8) -> Void) -> @Sendable (CompressClosureParameters) -> Void { closure }
+extension Compressor where CompressClosureParameters == UInt8 {
+    @inlinable public func compressClosure(closure: @escaping @Sendable (UInt8) -> Void) -> @Sendable (CompressClosureParameters) -> Void { closure }
 }
 
 // MARK: Decompress
-public extension Compressor where DecompressClosureParameters == UInt8 {
+extension Compressor where DecompressClosureParameters == UInt8 {
     /// Decompress a collection of bytes using this technique.
     /// 
     /// - Parameters:
@@ -108,7 +108,7 @@ public extension Compressor where DecompressClosureParameters == UInt8 {
     ///   - Run-length encoding: O(_n_)
     ///   - Snappy: O(_n_)
     @inlinable
-    func decompress<C: Collection<UInt8>>(
+    public func decompress<C: Collection<UInt8>>(
         data: C,
         reserveCapacity: Int = 1024
     ) throws -> [UInt8] {
@@ -129,7 +129,7 @@ public extension Compressor where DecompressClosureParameters == UInt8 {
     ///   - Run-length encoding: O(_n_)
     ///   - Snappy: O(_n_)
     @inlinable
-    func decompress<C: Collection<UInt8>>(
+    public func decompress<C: Collection<UInt8>>(
         data: C,
         continuation: AsyncThrowingStream<UInt8, Error>.Continuation
     ) throws {

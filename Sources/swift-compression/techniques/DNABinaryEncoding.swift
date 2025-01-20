@@ -5,11 +5,11 @@
 //  Created by Evan Anderson on 12/20/24.
 //
 
-public extension CompressionTechnique {
+extension CompressionTechnique {
 
     /// The DNA binary encoding compression technique.
     @inlinable
-    static func dnaBinaryEncoding(baseBits: [UInt8:[Bool]] = [
+    public static func dnaBinaryEncoding(baseBits: [UInt8:[Bool]] = [
         65 : [false, false], // A
         67 : [false, true],  // C
         71 : [true, false],  // G
@@ -18,7 +18,7 @@ public extension CompressionTechnique {
         return DNABinaryEncoding(baseBits: baseBits)
     }
 
-    struct DNABinaryEncoding : Compressor {
+    public struct DNABinaryEncoding : Compressor {
         public let baseBits:[UInt8:[Bool]]
 
         public init(baseBits: [UInt8:[Bool]] = [
@@ -44,7 +44,7 @@ public extension CompressionTechnique {
 }
 
 // MARK: Compress
-public extension CompressionTechnique.DNABinaryEncoding {
+extension CompressionTechnique.DNABinaryEncoding {
     /// Compress a collection of bytes using the DNA binary encoding technique.
     /// 
     /// - Parameters:
@@ -54,7 +54,7 @@ public extension CompressionTechnique.DNABinaryEncoding {
     /// - Returns: The valid bits for the last byte, if necessary.
     /// - Complexity: O(_n_) where _n_ is the length of `data`.
     @inlinable
-    func compress<S: Collection<UInt8>>(
+    public func compress<S: Collection<UInt8>>(
         data: S,
         closure: (UInt8) -> Void
     ) -> UInt8? {
@@ -75,7 +75,7 @@ public extension CompressionTechnique.DNABinaryEncoding {
 }
 
 // MARK: Decompress
-public extension CompressionTechnique.DNABinaryEncoding {
+extension CompressionTechnique.DNABinaryEncoding {
     /// Decompress a collection of bytes using the DNA binary encoding technique.
     /// 
     /// - Parameters:
@@ -83,7 +83,7 @@ public extension CompressionTechnique.DNABinaryEncoding {
     ///   - closure: The logic to execute when a given base nucleotide is found.
     /// - Complexity: O(_n_) where _n_ is the length of `data`.
     @inlinable
-    func decompress<S: Collection<UInt8>>(
+    public func decompress<S: Collection<UInt8>>(
         data: S,
         closure: (UInt8) -> Void
     ) {

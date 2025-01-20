@@ -5,37 +5,37 @@
 //  Created by Evan Anderson on 12/9/24.
 //
 
-public extension CompressionTechnique {
+extension CompressionTechnique {
     /// The Snappy (Zippy) compression technique.
     /// 
     /// https://en.wikipedia.org/wiki/Snappy_(compression)
     /// 
     /// https://github.com/google/snappy
-    static let snappy:Snappy = Snappy()
+    public static let snappy:Snappy = Snappy()
 
-    struct Snappy : Compressor {
+    public struct Snappy : Compressor {
         public var algorithm : CompressionAlgorithm { .snappy }
     }
 }
 
 // MARK: Compress
-public extension CompressionTechnique.Snappy { // TODO: finish
+extension CompressionTechnique.Snappy { // TODO: finish
     /// - Parameters:
     ///   - data: A sequence of bytes to compress.
     /// - Complexity: O(_n_) where _n_ is the length of `data`.
-    func compress<C: Collection<UInt8>>(data: C, closure: (UInt8) -> Void) -> UInt8? {
+    public func compress<C: Collection<UInt8>>(data: C, closure: (UInt8) -> Void) -> UInt8? {
         return nil
     }
 }
 
 // MARK: Decompress
-public extension CompressionTechnique.Snappy {
+extension CompressionTechnique.Snappy {
     /// - Parameters:
     ///   - data: A collection of bytes to decompress.
     ///   - closure: The logic to execute when a byte is decompressed.
     /// - Complexity: O(_n_) where _n_ is the length of `data`.
     @inlinable
-    func decompress<C: Collection<UInt8>>(
+    public func decompress<C: Collection<UInt8>>(
         data: C,
         closure: (UInt8) -> Void
     ) {

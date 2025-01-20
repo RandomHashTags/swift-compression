@@ -9,16 +9,16 @@
 import Foundation
 #endif
 
-public extension CompressionTechnique {
-    enum JSON { // TODO: finish
+extension CompressionTechnique {
+    public enum JSON { // TODO: finish
     }
 }
 
 #if canImport(Foundation)
 // MARK: Compress encodable
-public extension CompressionTechnique.JSON {
+extension CompressionTechnique.JSON {
     @inlinable
-    static func compress<T: Encodable>(encodable: T) -> CompressionResult<[UInt8]>? {
+    public static func compress<T: Encodable>(encodable: T) -> CompressionResult<[UInt8]>? {
         guard let data:Data = try? JSONEncoder().encode(encodable) else { return nil }
         var compressed:[UInt8] = []
         compressed.reserveCapacity(data.count)
@@ -77,17 +77,17 @@ public extension CompressionTechnique.JSON {
 #endif
 
 // MARK: Compress
-public extension CompressionTechnique.JSON {
+extension CompressionTechnique.JSON {
     @inlinable
-    static func compress<S: Sequence<UInt8>>(data: S) -> CompressionResult<[UInt8]>? {
+    public static func compress<S: Sequence<UInt8>>(data: S) -> CompressionResult<[UInt8]>? {
         return nil
     }
 }
 
 // MARK: Decompress
-public extension CompressionTechnique.JSON {
+extension CompressionTechnique.JSON {
     @inlinable
-    static func decompress(data: [UInt8]) -> [UInt8] {
+    public static func decompress(data: [UInt8]) -> [UInt8] {
         return data
     }
 }
