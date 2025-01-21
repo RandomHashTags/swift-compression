@@ -6,9 +6,11 @@ import PackageDescription
 let package = Package(
     name: "swift-compression",
     platforms: [
-        .macOS(.v10_15),
-        .iOS(.v13),
-        .tvOS(.v13),
+        .macOS(.v14),
+        .iOS(.v17),
+        .tvOS(.v17),
+        .visionOS(.v1),
+        .watchOS(.v10)
     ],
     products: [
         .library(
