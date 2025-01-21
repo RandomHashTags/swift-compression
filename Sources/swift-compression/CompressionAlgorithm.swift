@@ -62,11 +62,16 @@ public enum CompressionAlgorithm : Hashable, Sendable {
     case av1
     case dirac
     case mpeg
+
+    // Apple
+    /// iWork (Pages, Keynote, Numbers)
+    case iwa
 }
 
 // MARK: RawValue
 extension CompressionAlgorithm {
     /// The case name of the algorithm.
+    @inlinable
     public var rawValue : String {
         switch self {
         case .aac: return "aac"
@@ -112,6 +117,8 @@ extension CompressionAlgorithm {
         case .av1: return "av1"
         case .dirac: return "dirac"
         case .mpeg: return "mpeg"
+
+        case .iwa: return "iwa"
         }
     }
 }
