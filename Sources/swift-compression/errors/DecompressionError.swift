@@ -6,5 +6,5 @@
 //
 
 public enum DecompressionError : Error {
-    case unsupported
+    case unsupportedOperation
 }

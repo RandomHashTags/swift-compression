@@ -66,6 +66,9 @@ public enum CompressionAlgorithm : Hashable, Sendable {
     // Apple
     /// iWork (Pages, Keynote, Numbers)
     case iwa
+
+    // Swift
+    case swiftProduction
 }
 
 // MARK: RawValue
@@ -119,6 +122,8 @@ extension CompressionAlgorithm {
         case .mpeg: return "mpeg"
 
         case .iwa: return "iwa"
+
+        case .swiftProduction: return "swiftProduction"
         }
     }
 }
@@ -154,6 +159,8 @@ extension CompressionAlgorithm {
         case .snappy: return CompressionTechnique.snappy
 
         case .dnaBinaryEncoding(let baseBits): return CompressionTechnique.dnaBinaryEncoding(baseBits: baseBits)
+
+        case .swiftProduction: return CompressionTechnique.swiftProduction
         default: return nil
         }
     }

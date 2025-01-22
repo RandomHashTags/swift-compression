@@ -13,8 +13,9 @@ extension CompressionTechnique {
     /// https://github.com/google/snappy
     public static let snappy:Snappy = Snappy()
 
-    public struct Snappy : Compressor {
-        public var algorithm : CompressionAlgorithm { .snappy }
+    public struct Snappy : Compressor, Decompressor {        
+        @inlinable public var algorithm : CompressionAlgorithm { .snappy }
+        @inlinable public var quality : CompressionQuality { .lossless }
     }
 }
 

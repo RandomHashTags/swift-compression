@@ -31,7 +31,7 @@ extension CompressionTechnique {
         return LZ77(windowSize: windowSize, bufferSize: bufferSize)
     }
     
-    public struct LZ77<T: FixedWidthInteger & Sendable> : Compressor {
+    public struct LZ77<T: FixedWidthInteger & Sendable> : Compressor, Decompressor {
         /// The size of the window.
         public let windowSize:Int
 
@@ -43,8 +43,8 @@ extension CompressionTechnique {
             self.bufferSize = bufferSize
         }
 
-        @inlinable
-        public var algorithm : CompressionAlgorithm { .lz77(windowSize: windowSize, bufferSize: bufferSize, offsetBitWidth: T.bitWidth) }
+        @inlinable public var algorithm : CompressionAlgorithm { .lz77(windowSize: windowSize, bufferSize: bufferSize, offsetBitWidth: T.bitWidth) }
+        @inlinable public var quality : CompressionQuality { .lossless }
     }
 }
 

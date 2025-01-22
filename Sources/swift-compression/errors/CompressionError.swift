@@ -7,5 +7,5 @@
 
 public enum CompressionError : Error {
     case failedConversionOfStringToFoundationData
-    case unsupported
+    case unsupportedOperation
 }

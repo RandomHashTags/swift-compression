@@ -15,7 +15,7 @@ extension CompressionTechnique {
         return RunLengthEncoding(minRun: minRun, alwaysIncludeRunCount: alwaysIncludeRunCount)
     }
 
-    public struct RunLengthEncoding : Compressor {
+    public struct RunLengthEncoding : Compressor, Decompressor {
         public typealias CompressClosureParameters = (run: Int, byte: UInt8)
         public typealias DecompressClosureParameters = UInt8
 
@@ -30,7 +30,8 @@ extension CompressionTechnique {
             self.alwaysIncludeRunCount = alwaysIncludeRunCount
         }
 
-        public var algorithm : CompressionAlgorithm { .runLengthEncoding(minRun: minRun, alwaysIncludeRunCount: alwaysIncludeRunCount) }
+        @inlinable public var algorithm : CompressionAlgorithm { .runLengthEncoding(minRun: minRun, alwaysIncludeRunCount: alwaysIncludeRunCount) }
+        @inlinable public var quality : CompressionQuality { .lossless }
     }
 }
 

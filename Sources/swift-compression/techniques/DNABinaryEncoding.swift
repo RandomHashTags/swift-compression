@@ -18,7 +18,7 @@ extension CompressionTechnique {
         return DNABinaryEncoding(baseBits: baseBits)
     }
 
-    public struct DNABinaryEncoding : Compressor {
+    public struct DNABinaryEncoding : Compressor, Decompressor {        
         public let baseBits:[UInt8:[Bool]]
 
         public init(baseBits: [UInt8:[Bool]] = [
@@ -30,7 +30,8 @@ extension CompressionTechnique {
             self.baseBits = baseBits
         }
 
-        public var algorithm : CompressionAlgorithm { .dnaBinaryEncoding(baseBits: baseBits) }
+        @inlinable public var algorithm : CompressionAlgorithm { .dnaBinaryEncoding(baseBits: baseBits) }
+        @inlinable public var quality : CompressionQuality { .lossless }
 
         public var baseBitsReversed : [[Bool]:UInt8] {
             var reversed:[[Bool]:UInt8] = [:]

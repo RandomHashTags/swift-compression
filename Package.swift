@@ -16,13 +16,21 @@ let package = Package(
         .library(
             name: "SwiftCompression",
             targets: ["SwiftCompression"]
-        ),
+        )
     ],
     targets: [
         .target(
             name: "SwiftCompression",
             path: "Sources/swift-compression"
         ),
+
+        .executableTarget(
+            name: "Run",
+            dependencies: [
+                "SwiftCompression"
+            ]
+        ),
+
         .testTarget(
             name: "SwiftCompressionTests",
             dependencies: ["SwiftCompression"]

@@ -21,7 +21,7 @@ extension Collection where Element == UInt8 {
     /// - Returns: The decompressed bytes.
     /// - Complexity: Varies by technique; minimum of O(_n_) where _n_ is the length of the sequence.
     @inlinable
-    public func decompressed<T: Compressor>(using technique: T) throws -> [UInt8] where T.DecompressClosureParameters == UInt8 {
+    public func decompressed<T: Decompressor>(using technique: T) throws -> [UInt8] where T.DecompressClosureParameters == UInt8 {
         return try technique.decompress(data: [UInt8](self))
     }
 }
@@ -45,7 +45,7 @@ extension Array where Element == UInt8 {
     /// - Complexity: Varies by technique; minimum of O(_n_) where _n_ is the length of the sequence.
     @discardableResult
     @inlinable
-    public mutating func decompress<T: Compressor>(using technique: T) throws -> Self where T.DecompressClosureParameters == UInt8 {
+    public mutating func decompress<T: Decompressor>(using technique: T) throws -> Self where T.DecompressClosureParameters == UInt8 {
         self = try technique.decompress(data: self)
         return self
     }
@@ -60,7 +60,7 @@ extension Collection where Element == UInt8 {
     /// - Returns: An `AsyncStream<UInt8>` that receives a decompressed byte.
     /// - Complexity: Varies by technique; minimum of O(_n_) where _n_ is the length of the sequence.
     @inlinable
-    public func decompress<T: Compressor>(
+    public func decompress<T: Decompressor>(
         using technique: T,
         bufferingPolicy limit: AsyncThrowingStream<UInt8, Error>.Continuation.BufferingPolicy = .unbounded
     ) -> AsyncThrowingStream<UInt8, Error> where T.DecompressClosureParameters == UInt8 {
@@ -109,7 +109,7 @@ extension Data {
     /// - Returns: The decompressed data.
     /// - Complexity: Varies by technique; minimum of O(_n_) where _n_ is the length of the sequence.
     @inlinable
-    public func decompressed<T: Compressor>(using technique: T) throws -> Data where T.DecompressClosureParameters == UInt8 {
+    public func decompressed<T: Decompressor>(using technique: T) throws -> Data where T.DecompressClosureParameters == UInt8 {
         return try Data(technique.decompress(data: [UInt8](self)))
     }
 }
