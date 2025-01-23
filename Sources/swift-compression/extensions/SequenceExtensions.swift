@@ -23,4 +23,17 @@ extension Collection {
     func get(_ index: Index) -> Element? {
         return index < endIndex && index >= startIndex ? self[index] : nil
     }
+
+    @inlinable
+    subscript<T: FixedWidthInteger>(_ index: T) -> Element {
+        get { self[self.index(startIndex, offsetBy: Int(index))] }
+    }
+}
+
+extension Collection where Element == UInt8 {
+    @inlinable
+    func get(_ index: Int) -> Element? {
+        guard let i:Index = self.index(startIndex, offsetBy: index, limitedBy: endIndex) else { return nil }
+        return self.get(i)
+    }
 }

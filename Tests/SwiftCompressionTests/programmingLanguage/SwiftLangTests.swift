@@ -1,5 +1,5 @@
 //
-//  SwiftProductionTests.swift
+//  SwiftLangTests.swift
 //
 //
 //  Created by Evan Anderson on 1/22/25.
@@ -10,10 +10,10 @@
 import Testing
 @testable import SwiftCompression
 
-struct SwiftProductionTests {
+struct SwiftLangTests {
 
     @Test
-    func swiftCode() throws {
+    func minifySwiftCode() throws {
         let code:String = """
         //
         //  AnyCompressor.swift
@@ -31,7 +31,7 @@ struct SwiftProductionTests {
             var quality : CompressionQuality { get }
         }
         """
-        let result:String = try CompressionTechnique.swiftProduction.compress(swiftSourceCode: code)
+        let result:String = try CompressionTechnique.swift.minify(swiftSourceCode: code)
         #expect(result == "public protocol AnyCompressor:Sendable{public var algorithm:CompressionAlgorithm{get};var quality:CompressionQuality{get}}")
     }
 }

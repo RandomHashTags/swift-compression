@@ -7,39 +7,29 @@
 
 extension CompressionTechnique {
 
-    /// The Swift Production compression technique.
-    /// 
-    /// Optimizes Swift code to make it suitable for production-only usage, which results in the minimum binary size required to represent the same code.
-    /// 
-    /// Optionally removes:
-    ///   - documentation
-    ///   - comments
-    ///   - unnecessary whitespace
-    ///   - unnecessary access control declarations
-    ///   - unit tests
-    public static let swiftProduction:SwiftProduction = SwiftProduction()
+    /// Swift compression techniques.
+    public static let swift:SwiftLang = SwiftLang()
 
-    public struct SwiftProduction : Compressor {
-        @inlinable public var algorithm : CompressionAlgorithm { .swiftProduction }
+    public struct SwiftLang : Compressor {
+        @inlinable public var algorithm : CompressionAlgorithm { .programmingLanguage(.swift) }
         @inlinable public var quality : CompressionQuality { .lossy }
     }
 }
 
 // MARK: Compress
-extension CompressionTechnique.SwiftProduction {
+extension CompressionTechnique.SwiftLang {
     @inlinable
     public func compress<C: Collection<UInt8>>(data: C, reserveCapacity: Int) throws -> CompressionResult<[UInt8]> {
-        throw CompressionError.unsupportedOperation
+        throw CompressionError.unsupportedOperation // TODO: support?
     }
 
     /// - Parameters:
     ///   - data: The sequence of bytes to compress.
-    ///   - minRun: The minimum run count required to compress identical sequential bytes.
     ///   - closure: The logic to execute for a run.
     /// - Complexity: O(_n_) where _n_ is the length of `data`.
     @inlinable
     public func compress<S: Sequence<UInt8>>(data: S, closure: (UInt8) -> Void) -> UInt8? {
-        return nil
+        return nil // TODO: support?
     }
 }
 
@@ -50,10 +40,16 @@ extension CompressionTechnique.SwiftProduction { // TODO: support
         return ""
     }
 }*/
-extension CompressionTechnique.SwiftProduction {
-    /// Compress literal Swift code.
+// MARK: Minify
+extension CompressionTechnique.SwiftLang {
+    /// Minifies Swift code to make it suitable for production-only usage, which results in the minimum binary size required to represent the same code.
+    /// 
+    /// Optionally removes documentation, comments, unnecessary whitespace and access control declarations, and unit tests
+    /// 
+    /// - Parameters:
+    ///   - swiftSourceCode: Literal, valid, Swift code.
     @inlinable
-    /*public */func compress<T: StringProtocol>(swiftSourceCode: T) throws -> T {
+    /*public */func minify<T: StringProtocol>(swiftSourceCode: T) throws -> T {
         // TODO: finish
         let accessControlInternal:Regex = try Regex(#"(internal\s+)"#)
         let documentation:Regex = try Regex(#"(\/\/\/.*)"#)
@@ -99,7 +95,7 @@ extension CompressionTechnique.SwiftProduction {
         for (regex, replacement) in recursive {
             var matches = result.matches(of: regex)
             while !matches.isEmpty {
-                for match in matches {
+                for match in matches.reversed() {
                     result.replaceSubrange(match.range, with: replacement)
                 }
                 matches = result.matches(of: regex)

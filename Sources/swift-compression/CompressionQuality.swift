@@ -12,6 +12,6 @@ public enum CompressionQuality {
     /// Compressed data can be decompressed without losing any information.
     case lossless
 
-    /// Compressed data is decompressed by making inexact approximations, losing information.
+    /// Compressed data is decompressed by making inexact approximations or losing information.
     case lossy
 }
