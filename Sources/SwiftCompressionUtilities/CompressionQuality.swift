@@ -9,9 +9,9 @@
 /// 
 /// https://en.wikipedia.org/wiki/Data_compression
 public enum CompressionQuality {
-    /// Compressed data can be decompressed without losing any information.
+    /// Data is compressed/decompressed without losing any information.
     case lossless
 
-    /// Compressed data is decompressed by making inexact approximations or losing information.
+    /// Data is compressed/decompressed making inexact approximations or losing information.
     case lossy
 }
