@@ -41,9 +41,12 @@ extension CompressionAlgorithm {
             }
         case .runLengthEncoding(let minRun, let alwaysIncludeRunCount): return CompressionTechnique.runLength(minRun: minRun, alwaysIncludeRunCount: alwaysIncludeRunCount)
         case .snappy: return CompressionTechnique.snappy
+        case .snappyFramed: return CompressionTechnique.snappyFramed
 
         case .dnaBinaryEncoding(let baseBits): return CompressionTechnique.dnaBinaryEncoding(baseBits: baseBits)
         case .dnaSingleBlockEncoding: return CompressionTechnique.dnaSingleBlockEncoding
+
+        case .iwa(let version): return CompressionTechnique.iwa(version: version)
 
         case .programmingLanguage(let lang):
             switch lang {

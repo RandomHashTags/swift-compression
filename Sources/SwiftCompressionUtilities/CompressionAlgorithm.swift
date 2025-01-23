@@ -64,8 +64,8 @@ public enum CompressionAlgorithm : Hashable, Sendable {
     case mpeg
 
     // Apple
-    /// iWork (Pages, Keynote, Numbers)
-    case iwa
+    /// iWork Archive (Pages, Keynote, Numbers)
+    case iwa(version: IWAVersion)
 
     // Code
     case programmingLanguage(ProgrammingLanguage)
