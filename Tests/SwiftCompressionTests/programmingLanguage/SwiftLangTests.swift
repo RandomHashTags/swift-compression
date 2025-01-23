@@ -9,6 +9,7 @@
 
 import Testing
 @testable import SwiftCompression
+@testable import SwiftCompressionUtilities
 
 struct SwiftLangTests {
 
