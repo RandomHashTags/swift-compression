@@ -6,7 +6,7 @@
 //
 
 // MARK: CompressionTechnique
-/// A collection of well-known and useful compression and decompression technique implementations.
+/// Collection of well-known and useful compression and decompression technique implementations.
 public enum CompressionTechnique {
 }
 
@@ -15,7 +15,7 @@ extension CompressionTechnique {
     /// Creates a universal frequency table from a sequence of raw bytes.
     /// 
     /// - Parameters:
-    ///   - data: A sequence of raw bytes.
+    ///   - data: Sequence of raw bytes.
     /// - Returns: A universal frequency table.
     /// - Complexity: O(_n_) where _n_ is the length of `data`.
     @inlinable
@@ -30,7 +30,7 @@ extension CompressionTechnique {
     /// Creates a lookup frequency table from a sequence of raw bytes.
     /// 
     /// - Parameters:
-    ///   - data: A sequence of raw bytes.
+    ///   - data: Sequence of raw bytes.
     /// - Returns: A lookup frequency table.
     /// - Complexity: O(_n_) where _n_ is the length of `data`.
     @inlinable

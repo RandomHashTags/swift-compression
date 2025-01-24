@@ -26,8 +26,8 @@ extension CompressionTechnique.CSS {
     }
 
     /// - Parameters:
-    ///   - data: The sequence of bytes to compress.
-    ///   - closure: The logic to execute for a run.
+    ///   - data: Sequence of bytes to compress.
+    ///   - closure: Logic to execute for a run.
     /// - Complexity: O(_n_) where _n_ is the length of `data`.
     @inlinable
     public func compress<S: Sequence<UInt8>>(data: S, closure: (UInt8) -> Void) -> UInt8? {

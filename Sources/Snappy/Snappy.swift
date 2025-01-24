@@ -24,7 +24,7 @@ extension CompressionTechnique {
 // MARK: Compress
 extension CompressionTechnique.Snappy { // TODO: finish
     /// - Parameters:
-    ///   - data: A sequence of bytes to compress.
+    ///   - data: Sequence of bytes to compress.
     /// - Complexity: O(_n_) where _n_ is the length of `data`.
     public func compress<C: Collection<UInt8>>(data: C, closure: (UInt8) -> Void) -> UInt8? {
         return nil
@@ -34,8 +34,8 @@ extension CompressionTechnique.Snappy { // TODO: finish
 // MARK: Decompress
 extension CompressionTechnique.Snappy {
     /// - Parameters:
-    ///   - data: A collection of bytes to decompress.
-    ///   - closure: The logic to execute when a byte is decompressed.
+    ///   - data: Collection of bytes to decompress.
+    ///   - closure: Logic to execute when a byte is decompressed.
     /// - Complexity: O(_n_) where _n_ is the length of `data`.
     @inlinable
     public func decompress<C: Collection<UInt8>>(

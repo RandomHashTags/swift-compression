@@ -20,7 +20,7 @@ extension CompressionTechnique {
     public struct RunLengthEncoding : Compressor, Decompressor {
         public typealias CompressClosureParameters = (run: Int, byte: UInt8)
 
-        /// The minimum run count required to compress identical sequential bytes.
+        /// Minimum run count required to compress identical sequential bytes.
         public let minRun:Int
 
         /// Whether or not to always include the run count in the result, regardless of run count.
@@ -62,9 +62,9 @@ extension CompressionTechnique.RunLengthEncoding {
     }
 
     /// - Parameters:
-    ///   - data: The sequence of bytes to compress.
-    ///   - minRun: The minimum run count required to compress identical sequential bytes.
-    ///   - closure: The logic to execute for a run.
+    ///   - data: Sequence of bytes to compress.
+    ///   - minRun: Minimum run count required to compress identical sequential bytes.
+    ///   - closure: Logic to execute for a run.
     /// - Complexity: O(_n_) where _n_ is the length of `data`.
     @inlinable
     public func compress<S: Sequence<UInt8>>(data: S, closure: (CompressClosureParameters) -> Void) -> UInt8? {
@@ -98,8 +98,8 @@ extension CompressionTechnique.RunLengthEncoding {
 // MARK: Decompress
 extension CompressionTechnique.RunLengthEncoding {
     /// - Parameters:
-    ///   - data: The sequence of bytes to decompress.
-    ///   - closure: The logic to execute for a run.
+    ///   - data: Sequence of bytes to decompress.
+    ///   - closure: Logic to execute for a run.
     /// - Complexity: O(_n_) where _n_ is the length of `data`.
     @inlinable
     public func decompress<C: Collection<UInt8>>(data: C, closure: (UInt8) -> Void) {

@@ -41,7 +41,7 @@ extension FixedWidthInteger {
     }
 
     /// - Parameters:
-    ///   - fromBits: The bits to assign.
+    ///   - fromBits: Bits to assign.
     /// - Complexity: O(_n_) where _n_ is the length of `fromBits`.
     public init?(fromBits: [Bool]) {
         guard fromBits.count <= Self.bitWidth else { return nil }

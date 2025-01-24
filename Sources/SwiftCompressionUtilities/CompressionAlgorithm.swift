@@ -6,7 +6,7 @@
 //
 
 // MARK: CompressionAlgorithm
-/// A collection of well-known and useful compression and decompression algorithms.
+/// Collection of well-known and useful compression and decompression algorithms.
 public enum CompressionAlgorithm : Hashable, Sendable {
     // audio
     case aac
@@ -14,7 +14,7 @@ public enum CompressionAlgorithm : Hashable, Sendable {
 
     // data
     case arithmetic
-    case brotli
+    case brotli(windowSize: Int)
     /// Burrows–Wheeler transform
     case bwt
     case deflate
@@ -73,7 +73,7 @@ public enum CompressionAlgorithm : Hashable, Sendable {
 
 // MARK: RawValue
 extension CompressionAlgorithm {
-    /// The case name of the algorithm.
+    /// Case name of the algorithm.
     @inlinable
     public var rawValue : String {
         switch self {

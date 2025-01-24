@@ -11,9 +11,9 @@ extension CompressionTechnique {
     /// The LZ77 compression technique.
     /// 
     /// - Parameters:
-    ///   - T: The integer type the offset is encoded as. Default is `UInt16`.
-    ///   - windowSize: The size of the sliding window, measured in bytes.
-    ///   - bufferSize: The size of the buffer, measured in bytes.
+    ///   - T: Integer type the offset is encoded as. Default is `UInt16`.
+    ///   - windowSize: Size of the sliding window, measured in bytes.
+    ///   - bufferSize: Size of the buffer, measured in bytes.
     /// 
     /// https://en.wikipedia.org/wiki/LZ77_and_LZ78
     @inlinable
@@ -24,8 +24,8 @@ extension CompressionTechnique {
     /// The LZ77 compression technique where the offset is encoded as a `UInt16`.
     /// 
     /// - Parameters:
-    ///   - windowSize: The size of the sliding window, measured in bytes.
-    ///   - bufferSize: The size of the buffer, measured in bytes.
+    ///   - windowSize: Size of the sliding window, measured in bytes.
+    ///   - bufferSize: Size of the buffer, measured in bytes.
     /// 
     /// https://en.wikipedia.org/wiki/LZ77_and_LZ78
     @inlinable
@@ -34,10 +34,10 @@ extension CompressionTechnique {
     }
     
     public struct LZ77<T: FixedWidthInteger & Sendable> : Compressor, Decompressor {
-        /// The size of the window.
+        /// Size of the window.
         public let windowSize:Int
 
-        /// The size of the buffer.
+        /// Size of the buffer.
         public let bufferSize:Int
 
         public init(windowSize: Int, bufferSize: Int) {
@@ -55,8 +55,8 @@ extension CompressionTechnique.LZ77 {
     /// Compress a collection of bytes using the LZ77 technique.
     /// 
     /// - Parameters:
-    ///   - data: The collection of bytes to compress.
-    ///   - closure: The logic to execute when a byte is compressed.
+    ///   - data: Collection of bytes to compress.
+    ///   - closure: Logic to execute when a byte is compressed.
     /// - Complexity: O(_n_) where _n_ is the length of `data`.
     @inlinable
     public func compress<C: Collection<UInt8>>(
@@ -109,8 +109,8 @@ extension CompressionTechnique.LZ77 {
     /// Decompress a collection of bytes using the LZ77 technique.
     /// 
     /// - Parameters:
-    ///   - data: The collection of bytes to decompress.
-    ///   - closure: The logic to execute when a byte was decompressed.
+    ///   - data: Collection of bytes to decompress.
+    ///   - closure: Logic to execute when a byte was decompressed.
     /// - Complexity: O(_n_) where _n_ is the length of `data`.
     @inlinable
     public func decompress<C: Collection<UInt8>>(

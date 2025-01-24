@@ -12,8 +12,8 @@ public protocol Decompressor : AnyDecompressor {
     /// Decompress a collection of bytes using this technique.
     /// 
     /// - Parameters:
-    ///   - data: The collection of bytes to decompress.
-    ///   - closure: The logic to execute when a byte is decompressed.
+    ///   - data: Collection of bytes to decompress.
+    ///   - closure: Logic to execute when a byte is decompressed.
     /// - Complexity: where _n_ is the length of `data`
     ///   - DNA binary encoding: O(_n_)
     ///   - Snappy: O(_n_)
@@ -31,8 +31,8 @@ extension Decompressor where DecompressClosureParameters == UInt8 {
     /// Decompress a collection of bytes using this technique.
     /// 
     /// - Parameters:
-    ///   - data: The collection of bytes to decompress.
-    ///   - reserveCapacity: The space to reserve for the compressed result.
+    ///   - data: Collection of bytes to decompress.
+    ///   - reserveCapacity: Space to reserve for the compressed result.
     /// - Complexity: where _n_ is the length of `data`
     ///   - DNA binary encoding: O(_n_)
     ///   - LZ77: O(_n_)
@@ -52,7 +52,7 @@ extension Decompressor where DecompressClosureParameters == UInt8 {
     /// Decompress a collection of bytes into a stream using this technique.
     /// 
     /// - Parameters:
-    ///   - data: The collection of bytes to decompress.
+    ///   - data: Collection of bytes to decompress.
     ///   - continuation: The `AsyncStream<UInt8>.Continuation`.
     /// - Complexity: where _n_ is the length of `data`
     ///   - DNA binary encoding: O(_n_)

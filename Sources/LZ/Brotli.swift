@@ -1,5 +1,5 @@
 //
-//  IWA.swift
+//  Brotli.swift
 //
 //
 //  Created by Evan Anderson on 1/23/25.
@@ -8,29 +8,34 @@
 import SwiftCompressionUtilities
 
 extension CompressionTechnique {
-    /// The iWork Archive (iwa) compression technique.
+    /// The Brotli compression technique.
     /// 
-    /// https://en.wikipedia.org/wiki/IWork
+    /// https://github.com/google/brotli
+    /// 
+    /// https://en.wikipedia.org/wiki/Brotli
     @inlinable
-    public static func iwa(version: IWAVersion) -> IWA {
-        return IWA(version: version)
+    public static func brotli(windowSize: Int = 32768) -> Brotli {
+        return Brotli(windowSize: windowSize)
     }
 
-    public struct IWA : Compressor, Decompressor {        
-        /// Version of the iWork Archive to use.
-        public let version:IWAVersion
+    public struct Brotli : Compressor, Decompressor { // TODO: finish
+        /// Size of the window.
+        public let windowSize:Int
 
-        public init(version: IWAVersion) {
-            self.version = version
+        /// Predefined dictionary to use.
+        //public let dictionary:[String:String]
+
+        public init(windowSize: Int = 32768) {
+            self.windowSize = windowSize
         }
 
-        @inlinable public var algorithm : CompressionAlgorithm { .iwa(version: version) }
+        @inlinable public var algorithm : CompressionAlgorithm { .brotli(windowSize: windowSize) }
         @inlinable public var quality : CompressionQuality { .lossless }
     }
 }
 
 // MARK: Compress
-extension CompressionTechnique.IWA { // TODO: finish
+extension CompressionTechnique.Brotli { // TODO: finish
     /// - Parameters:
     ///   - data: Sequence of bytes to compress.
     /// - Complexity: O(_n_) where _n_ is the length of `data`.
@@ -41,7 +46,7 @@ extension CompressionTechnique.IWA { // TODO: finish
 }
 
 // MARK: Decompress
-extension CompressionTechnique.IWA { // TODO: finish
+extension CompressionTechnique.Brotli { // TODO: finish
     /// - Parameters:
     ///   - data: Collection of bytes to decompress.
     ///   - closure: Logic to execute when a byte is decompressed.

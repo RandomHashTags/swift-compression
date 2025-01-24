@@ -20,8 +20,8 @@ public protocol Compressor : AnyCompressor {
     /// Compress a collection of bytes using this technique.
     /// 
     /// - Parameters:
-    ///   - data: The collection of bytes to compress.
-    ///   - closure: The logic to execute when a byte is compressed.
+    ///   - data: Collection of bytes to compress.
+    ///   - closure: Logic to execute when a byte is compressed.
     /// - Returns: The number of valid bits in the last byte.
     /// - Complexity: where _n_ is the length of `data`
     ///   - DNA binary encoding: O(_n_)
@@ -39,8 +39,8 @@ extension Compressor {
     /// Compress a collection of bytes using this technique.
     /// 
     /// - Parameters:
-    ///   - data: The collection of bytes to compress.
-    ///   - reserveCapacity: The space to reserve for the compressed result.
+    ///   - data: Collection of bytes to compress.
+    ///   - reserveCapacity: Space to reserve for the compressed result.
     /// - Complexity: where _n_ is the length of `data`
     ///   - DNA binary encoding: O(_n_)
     ///   - LZ77: O(_n_)
@@ -59,7 +59,7 @@ extension Compressor {
     /// Compress a collection of bytes into a stream using this technique.
     /// 
     /// - Parameters:
-    ///   - data: The collection of bytes to compress.
+    ///   - data: Collection of bytes to compress.
     ///   - continuation: The `AsyncStream<UInt8>.Continuation`.
     /// - Complexity: where _n_ is the length of `data`
     ///   - DNA binary encoding: O(_n_)

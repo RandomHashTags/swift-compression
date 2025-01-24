@@ -18,7 +18,7 @@ extension CompressionTechnique.Huffman {
     /// Compress a sequence of bytes using the Huffman Coding technique.
     /// 
     /// - Parameters:
-    ///   - data: The sequence of bytes to compress.
+    ///   - data: Sequence of bytes to compress.
     @inlinable
     public static func compress<S: Sequence<UInt8>>(data: S) -> CompressionResult<[UInt8]>? {
         return compress(data: data) { frequencies, codes, root in
@@ -36,7 +36,7 @@ extension CompressionTechnique.Huffman {
     /// Compress a sequence of bytes to a stream using the Huffman Coding technique.
     /// 
     /// - Parameters:
-    ///   - data: The sequence of bytes to compress.
+    ///   - data: Sequence of bytes to compress.
     ///   - continuation: The `AsyncStream<UInt8>.Continuation`.
     @inlinable
     public static func compress<S: Sequence<UInt8>>(
@@ -91,7 +91,7 @@ extension CompressionTechnique.Huffman {
     /// Decompress a sequence of bytes using the Huffman Coding technique.
     /// 
     /// - Parameters:
-    ///   - data: The sequence of bytes to decompress.
+    ///   - data: Sequence of bytes to decompress.
     ///   - root: The root Huffman Node.
     /// - Complexity: O(_n_) where _n_ is the length of `data`.
     @inlinable
@@ -104,7 +104,7 @@ extension CompressionTechnique.Huffman {
     /// Decompress a sequence of bytes into a stream using the Huffman Coding technique.
     /// 
     /// - Parameters:
-    ///   - data: The sequence of bytes to decompress.
+    ///   - data: Sequence of bytes to decompress.
     ///   - root: The root Huffman Node.
     ///   - continuation: The `AsyncStream<UInt8>.Continuation`.
     /// - Complexity: O(_n_) where _n_ is the length of `data`.
@@ -160,7 +160,7 @@ extension CompressionTechnique.Huffman {
     /// Decompress a sequence of bytes using the Huffman Coding technique.
     /// 
     /// - Parameters:
-    ///   - data: The sequence of bytes to decompress.
+    ///   - data: Sequence of bytes to decompress.
     ///   - frequencyTable: A Huffman frequency table of characters.
     // /// - Complexity: O(_n_ + _m_) where _n_ is the length of `data` and _m_ is the length of `frequencyTable`. // TODO: FIX
     @inlinable
@@ -172,7 +172,7 @@ extension CompressionTechnique.Huffman {
     /// Decompress a sequence of bytes into a stream using the Huffman Coding technique.
     /// 
     /// - Parameters:
-    ///   - data: The sequence of bytes to decompress.
+    ///   - data: Sequence of bytes to decompress.
     ///   - frequencyTable: A Huffman frequency table of characters.
     ///   - continuation: The `AsyncStream<UInt8>.Continuation`.
     // /// - Complexity: O(_n_ + _m_) where _n_ is the length of `data` and _m_ is the length of `frequencyTable`. // TODO: FIX

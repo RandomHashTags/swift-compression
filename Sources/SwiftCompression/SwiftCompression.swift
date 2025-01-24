@@ -18,6 +18,8 @@ extension CompressionAlgorithm {
     @inlinable
     public var technique : (any Compressor)? {
         switch self {
+        case .brotli(let windowSize):
+            return CompressionTechnique.brotli(windowSize: windowSize)
         case .lz77(let windowSize, let bufferSize, let offsetBitWidth):
             switch offsetBitWidth {
             case 8:

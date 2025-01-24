@@ -51,10 +51,10 @@ extension CompressionTechnique.DNABinaryEncoding {
     /// Compress a collection of bytes using the DNA binary encoding technique.
     /// 
     /// - Parameters:
-    ///   - data: The collection of bytes to compress.
-    ///   - baseBits: The bit codes for the unique base nucleotides.
-    ///   - closure: The logic to execute when a byte was encoded.
-    /// - Returns: The valid bits for the last byte, if necessary.
+    ///   - data: Collection of bytes to compress.
+    ///   - baseBits: Bit codes for the unique base nucleotides.
+    ///   - closure: Logic to execute when a byte was encoded.
+    /// - Returns: Valid bits for the last byte, if necessary.
     /// - Complexity: O(_n_) where _n_ is the length of `data`.
     @inlinable
     public func compress<S: Collection<UInt8>>(
@@ -82,8 +82,8 @@ extension CompressionTechnique.DNABinaryEncoding {
     /// Decompress a collection of bytes using the DNA binary encoding technique.
     /// 
     /// - Parameters:
-    ///   - data: The collection of bytes to decompress.
-    ///   - closure: The logic to execute when a given base nucleotide is found.
+    ///   - data: Collection of bytes to decompress.
+    ///   - closure: Logic to execute when a given base nucleotide is found.
     /// - Complexity: O(_n_) where _n_ is the length of `data`.
     @inlinable
     public func decompress<S: Collection<UInt8>>(

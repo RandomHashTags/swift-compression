@@ -29,7 +29,7 @@ extension CompressionTechnique.DNASingleBlockEncoding {
     /// Compress a sequence of bytes using the DNA single block encoding technique.
     /// 
     /// - Parameters:
-    ///   - data: The sequence of bytes to compress.
+    ///   - data: Sequence of bytes to compress.
     /// - Complexity: O(_n_ + (_m_ log _m_)) where _n_ is the length of `data` and _m_ is the number of unique bytes in `data`.
     @inlinable
     public static func compress<S: Collection<UInt8>>(
@@ -48,7 +48,7 @@ extension CompressionTechnique.DNASingleBlockEncoding {
     /// Compress a sequence of bytes using phase one (compress data to binary) of the DNA single block encoding technique.
     /// 
     /// - Parameters:
-    ///   - data: The sequence of bytes to compress.
+    ///   - data: Sequence of bytes to compress.
     /// - Complexity: O(_n_ + (_m_ log _m_)) where _n_ is the length of `data` and _m_ is the number of unique bytes in `data`.
     @inlinable
     static func compressBinary<S: Sequence<UInt8>>(
@@ -83,8 +83,8 @@ extension CompressionTechnique.DNASingleBlockEncoding {
     /// https://www.mdpi.com/algorithms/algorithms-13-00099/article_deploy/html/images/algorithms-13-00099-g003.png
     /// 
     /// - Parameters:
-    ///   - binaryData: The collection of bits to compress.
-    /// - Returns: The compressed bit blocks and the control bits.
+    ///   - binaryData: Collection of bits to compress.
+    /// - Returns: Compressed bit blocks and the control bits.
     /// - Complexity: O(_n_) where _n_ is the length of `binaryData`.
     @inlinable
     static func compressSBE<C: Collection<UInt8>>(
@@ -156,13 +156,13 @@ extension CompressionTechnique.DNASingleBlockEncoding {
 // MARK: Decompress
 extension CompressionTechnique.DNASingleBlockEncoding { // TODO: finish
     @inlinable
-    public func decompress<C: Collection<UInt8>>(data: C, closure: (UInt8) -> Void) throws { // TODO: fix
+    public func decompress<C: Collection<UInt8>>(data: C, closure: (UInt8) -> Void) throws {
     }
 
     /// Decompress a sequence of bytes using the DNA single block encoding technique.
     /// 
     /// - Parameters:
-    ///   - data: The sequence of bytes to decompress.
+    ///   - data: Sequence of bytes to decompress.
     @inlinable
     public static func decompress(data: [UInt8]) -> [UInt8] {
         return []
