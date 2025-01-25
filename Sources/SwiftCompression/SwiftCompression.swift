@@ -42,7 +42,7 @@ extension CompressionAlgorithm {
             default: return nil
             }
         case .runLengthEncoding(let minRun, let alwaysIncludeRunCount): return CompressionTechnique.runLength(minRun: minRun, alwaysIncludeRunCount: alwaysIncludeRunCount)
-        case .snappy: return CompressionTechnique.snappy
+        case .snappy(let windowSize): return CompressionTechnique.snappy(windowSize: windowSize)
         case .snappyFramed: return CompressionTechnique.snappyFramed
 
         case .dnaBinaryEncoding(let baseBits): return CompressionTechnique.dnaBinaryEncoding(baseBits: baseBits)

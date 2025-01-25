@@ -106,10 +106,10 @@ extension CompressionTechnique.RunLengthEncoding {
         let count:Int = data.count
         var index:Int = 0, run:UInt8 = 0, character:UInt8 = 0
         while index < count {
-            run = data[data.index(data.startIndex, offsetBy: index)]
+            run = data[index]
             if run > 191 {
                 run -= 191
-                character = data[data.index(data.startIndex, offsetBy: index+1)]
+                character = data[index+1]
                 index += 2
                 for _ in 0..<run {
                     closure(character)

@@ -102,7 +102,7 @@ extension CompressionTechnique.DNASingleBlockEncoding {
         var bitIndex:Int = 0
         var controlBit:UInt8 = 0
         while index < binaryData.count {
-            let bit:UInt8 = binaryData[binaryData.index(binaryData.startIndex, offsetBy: index)]
+            let bit:UInt8 = binaryData[index]
             switch bitIndex {
                 case 0:
                     controlBit = bit

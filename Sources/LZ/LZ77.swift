@@ -76,7 +76,7 @@ extension CompressionTechnique.LZ77 {
             var offset:Int = 0, bestLength:Int = 0
             for i in 0..<windowSize {
                 var length:Int = 0
-                while length < bufferCount && window.get(window.index(window.startIndex, offsetBy: i + length)) == buffer[buffer.index(buffer.startIndex, offsetBy: length)] {
+                while length < bufferCount && window.get(window.index(window.startIndex, offsetBy: i + length)) == buffer[length] {
                     length += 1
                     if i + length >= windowCount {
                         break
@@ -89,7 +89,7 @@ extension CompressionTechnique.LZ77 {
             }
             let byte:UInt8
             if index + bestLength < count {
-                byte = data[data.index(data.startIndex, offsetBy: index + bestLength)]
+                byte = data[index + bestLength]
             } else {
                 byte = 0
             }
@@ -128,70 +128,70 @@ extension CompressionTechnique.LZ77 {
             return
         case 1:
             parseOffset = { index in
-                return UInt8(fromBits: data[data.index(data.startIndex, offsetBy: index)].bitsTuple) as? T
+                return UInt8(fromBits: data[index].bitsTuple) as? T
             }
         case 2:
             parseOffset = { index in
-                return UInt16(highBits: data[data.index(data.startIndex, offsetBy: index)].bitsTuple, lowBits: data[data.index(data.startIndex, offsetBy: index+1)].bitsTuple) as? T
+                return UInt16(highBits: data[index].bitsTuple, lowBits: data[index+1].bitsTuple) as? T
             }
         case 4:
             parseOffset = { index in
                 return UInt32(
-                    data[data.index(data.startIndex, offsetBy: index)].bitsTuple,
-                    data[data.index(data.startIndex, offsetBy: index+1)].bitsTuple,
-                    data[data.index(data.startIndex, offsetBy: index+2)].bitsTuple,
-                    data[data.index(data.startIndex, offsetBy: index+3)].bitsTuple
+                    data[index].bitsTuple,
+                    data[index+1].bitsTuple,
+                    data[index+2].bitsTuple,
+                    data[index+3].bitsTuple
                 ) as? T
             }
         case 8:
             parseOffset = { index in
                 return UInt64(
-                    data[data.index(data.startIndex, offsetBy: index)].bitsTuple,
-                    data[data.index(data.startIndex, offsetBy: index+1)].bitsTuple,
-                    data[data.index(data.startIndex, offsetBy: index+2)].bitsTuple,
-                    data[data.index(data.startIndex, offsetBy: index+3)].bitsTuple,
-                    data[data.index(data.startIndex, offsetBy: index+4)].bitsTuple,
-                    data[data.index(data.startIndex, offsetBy: index+5)].bitsTuple,
-                    data[data.index(data.startIndex, offsetBy: index+6)].bitsTuple,
-                    data[data.index(data.startIndex, offsetBy: index+7)].bitsTuple
+                    data[index].bitsTuple,
+                    data[index+1].bitsTuple,
+                    data[index+2].bitsTuple,
+                    data[index+3].bitsTuple,
+                    data[index+4].bitsTuple,
+                    data[index+5].bitsTuple,
+                    data[index+6].bitsTuple,
+                    data[index+7].bitsTuple
                 ) as? T
             }
         #if compiler(>=6.0)
         case 16:
             parseOffset = { index in
                 return UInt128(
-                    data[data.index(data.startIndex, offsetBy: index)].bitsTuple,
-                    data[data.index(data.startIndex, offsetBy: index+1)].bitsTuple,
-                    data[data.index(data.startIndex, offsetBy: index+2)].bitsTuple,
-                    data[data.index(data.startIndex, offsetBy: index+3)].bitsTuple,
-                    data[data.index(data.startIndex, offsetBy: index+4)].bitsTuple,
-                    data[data.index(data.startIndex, offsetBy: index+5)].bitsTuple,
-                    data[data.index(data.startIndex, offsetBy: index+6)].bitsTuple,
-                    data[data.index(data.startIndex, offsetBy: index+7)].bitsTuple,
-                    data[data.index(data.startIndex, offsetBy: index+8)].bitsTuple,
-                    data[data.index(data.startIndex, offsetBy: index+9)].bitsTuple,
-                    data[data.index(data.startIndex, offsetBy: index+10)].bitsTuple,
-                    data[data.index(data.startIndex, offsetBy: index+11)].bitsTuple,
-                    data[data.index(data.startIndex, offsetBy: index+12)].bitsTuple,
-                    data[data.index(data.startIndex, offsetBy: index+13)].bitsTuple,
-                    data[data.index(data.startIndex, offsetBy: index+14)].bitsTuple,
-                    data[data.index(data.startIndex, offsetBy: index+15)].bitsTuple
+                    data[index].bitsTuple,
+                    data[index+1].bitsTuple,
+                    data[index+2].bitsTuple,
+                    data[index+3].bitsTuple,
+                    data[index+4].bitsTuple,
+                    data[index+5].bitsTuple,
+                    data[index+6].bitsTuple,
+                    data[index+7].bitsTuple,
+                    data[index+8].bitsTuple,
+                    data[index+9].bitsTuple,
+                    data[index+10].bitsTuple,
+                    data[index+11].bitsTuple,
+                    data[index+12].bitsTuple,
+                    data[index+13].bitsTuple,
+                    data[index+14].bitsTuple,
+                    data[index+15].bitsTuple
                 ) as? T
             }
         #endif
         default:
             parseOffset = { index in
-                var bits:[Bool] = data[data.index(data.startIndex, offsetBy: index)].bits
+                var bits:[Bool] = data[index].bits
                 if bytesForOffset > 1 {
                     for i in 1..<bytesForOffset {
-                        bits.append(contentsOf: data[data.index(data.startIndex, offsetBy: index + i)].bits)
+                        bits.append(contentsOf: data[index + i].bits)
                     }
                 }
                 return T(fromBits: bits)
             }
         }
         while index < count {
-            let length:Int = Int(data[data.index(data.startIndex, offsetBy: index + bytesForOffset)])
+            let length:Int = Int(data[index + bytesForOffset])
             if length > 0, let offset:T = parseOffset(index) {
                 let startIndex:Int = window.count - Int(offset)
                 let endIndex:Int = min(startIndex + length, window.count)
@@ -203,7 +203,7 @@ extension CompressionTechnique.LZ77 {
                     }
                 }
             }
-            let byte:UInt8 = data[data.index(data.startIndex, offsetBy: index + byteIndexOffset)]
+            let byte:UInt8 = data[index + byteIndexOffset]
             if byte != 0 {
                 closure(byte)
                 history.append(byte)
