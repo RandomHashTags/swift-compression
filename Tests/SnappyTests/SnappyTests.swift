@@ -13,7 +13,7 @@ import Testing
 
 struct SnappyTests {
 
-    @Test func decompressSnappy() throws {
+    @Test func decompressSnappy() throws(DecompressionError) {
         let expected_result:String = "Wikipedia is a free, web-based, collaborative, multilingual encyclopedia project."
         var string:String = "51 f0 42 57 69 6b 69 70 65 64 69 61 20 69 73 20"
         string += "61 20 66 72 65 65 2c 20 77 65 62 2d 62 61 73 65"

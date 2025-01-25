@@ -22,7 +22,7 @@ extension CompressionTechnique {
 // MARK: Compress
 extension CompressionTechnique.DNASingleBlockEncoding {
     @inlinable
-    public func compress<C: Collection<UInt8>>(data: C, closure: (UInt8) -> Void) throws -> UInt8? { // TODO: fix
+    public func compress<C: Collection<UInt8>>(data: C, closure: (UInt8) -> Void) throws(CompressionError) -> UInt8? { // TODO: fix
         return nil
     }
 
@@ -156,7 +156,7 @@ extension CompressionTechnique.DNASingleBlockEncoding {
 // MARK: Decompress
 extension CompressionTechnique.DNASingleBlockEncoding { // TODO: finish
     @inlinable
-    public func decompress<C: Collection<UInt8>>(data: C, closure: (UInt8) -> Void) throws {
+    public func decompress<C: Collection<UInt8>>(data: C, closure: (UInt8) -> Void) throws(DecompressionError) {
     }
 
     /// Decompress a sequence of bytes using the DNA single block encoding technique.

@@ -26,6 +26,7 @@ extension CompressionTechnique.Snappy { // TODO: finish
     /// - Parameters:
     ///   - data: Sequence of bytes to compress.
     /// - Complexity: O(_n_) where _n_ is the length of `data`.
+    @inlinable
     public func compress<C: Collection<UInt8>>(data: C, closure: (UInt8) -> Void) -> UInt8? {
         return nil
     }

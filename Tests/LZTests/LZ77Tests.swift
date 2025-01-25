@@ -18,7 +18,7 @@ struct LZ77Tests {
     @Test func compressLZ77() {
         #expect(Self.compressed == [0, 0, 0, 97, 0, 0, 0, 98, 0, 0, 0, 114, 0, 3, 1, 99, 0, 5, 1, 100, 0, 7, 4, 32, 0, 5, 4, 99, 0, 10, 1, 100, 0, 7, 4, 0])
     }
-    @Test func decompressLZ77() throws {
+    @Test func decompressLZ77() throws(DecompressionError) {
         let result:[UInt8] = try CompressionTechnique.lz77(windowSize: 10, bufferSize: 6).decompress(data: Self.compressed)
         #expect(result == [UInt8](Self.string.utf8))
     }

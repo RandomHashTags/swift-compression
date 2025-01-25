@@ -20,7 +20,7 @@ struct DNABinaryEncodingTests {
         #expect(Self.compressed.data == [199, 231, 0, 177, 62, 112, 140, 69, 164])
     }
 
-    @Test func decompressDNABinaryEncoding() throws {
+    @Test func decompressDNABinaryEncoding() throws(DecompressionError) {
         let result:[UInt8] = try CompressionTechnique.dnaBinaryEncoding().decompress(data: Self.compressed.data)
         #expect(result == Self.data)
     }

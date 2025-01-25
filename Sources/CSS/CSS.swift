@@ -21,7 +21,7 @@ extension CompressionTechnique {
 // MARK: Compress
 extension CompressionTechnique.CSS {
     @inlinable
-    public func compress<C: Collection<UInt8>>(data: C, reserveCapacity: Int) throws -> CompressionResult<[UInt8]> {
+    public func compress<C: Collection<UInt8>>(data: C, reserveCapacity: Int) throws(CompressionError) -> CompressionResult<[UInt8]> {
         throw CompressionError.unsupportedOperation // TODO: support?
     }
 

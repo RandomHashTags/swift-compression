@@ -12,7 +12,7 @@ import Testing
 
 // MARK: Compress
 struct RunLengthEncodingTests {
-    @Test func compressRLE() throws {
+    @Test func compressRLE() throws(CompressionError) {
         var data:[UInt8] = [UInt8]("AAAAABBBBBCCCCC".utf8)
         var compressed:[UInt8] = try CompressionTechnique.RunLengthEncoding(minRun: 3, alwaysIncludeRunCount: true).compress(data: data).data
         var expected_result:[UInt8] = [196, 65, 196, 66, 196, 67]

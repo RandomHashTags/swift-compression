@@ -1,5 +1,5 @@
 //
-//  Snappy.swift
+//  SnappyFramed.swift
 //
 //
 //  Created by Evan Anderson on 1/23/25.
@@ -10,7 +10,7 @@ import SwiftCompressionUtilities
 extension CompressionTechnique {
     /// The Snappy Framed compression technique.
     /// 
-    /// https://en.wikipedia.org/wiki/Snappy_(compression)
+    /// https://en.wikipedia.org/wiki/Snappy_(compression)#Framing_format
     /// 
     /// https://github.com/google/snappy
     public static let snappyFramed:SnappyFramed = SnappyFramed()

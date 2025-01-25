@@ -23,7 +23,7 @@ public protocol Decompressor : AnyDecompressor {
     func decompress<C: Collection<UInt8>>(
         data: C,
         closure: (DecompressClosureParameters) -> Void
-    ) throws
+    ) throws(DecompressionError)
 }
 
 // MARK: Decompress
@@ -42,7 +42,7 @@ extension Decompressor where DecompressClosureParameters == UInt8 {
     public func decompress<C: Collection<UInt8>>(
         data: C,
         reserveCapacity: Int = 1024
-    ) throws -> [UInt8] {
+    ) throws(DecompressionError) -> [UInt8] {
         var decompressed:[UInt8] = []
         decompressed.reserveCapacity(reserveCapacity)
         try decompress(data: data) { decompressed.append($0) }
@@ -63,7 +63,7 @@ extension Decompressor where DecompressClosureParameters == UInt8 {
     public func decompress<C: Collection<UInt8>>(
         data: C,
         continuation: AsyncThrowingStream<UInt8, Error>.Continuation
-    ) throws {
+    ) throws(DecompressionError) {
         try decompress(data: data) { continuation.yield($0) }
     }
 }

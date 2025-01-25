@@ -21,7 +21,7 @@ extension CompressionTechnique {
 // MARK: Compress
 extension CompressionTechnique.SwiftLang {
     @inlinable
-    public func compress<C: Collection<UInt8>>(data: C, reserveCapacity: Int) throws -> CompressionResult<[UInt8]> {
+    public func compress<C: Collection<UInt8>>(data: C, reserveCapacity: Int) throws(CompressionError) -> CompressionResult<[UInt8]> {
         throw CompressionError.unsupportedOperation // TODO: support?
     }
 
@@ -36,9 +36,9 @@ extension CompressionTechnique.SwiftLang {
 }
 
 /*
-extension CompressionTechnique.SwiftProduction { // TODO: support
+extension CompressionTechnique.SwiftLang { // TODO: support
     @inlinable
-    public func compress(filePath: String) throws -> String {
+    public func compress(filePath: String) throws(CompressionError) -> String {
         return ""
     }
 }*/

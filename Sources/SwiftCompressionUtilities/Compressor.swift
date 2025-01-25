@@ -31,7 +31,7 @@ public protocol Compressor : AnyCompressor {
     func compress<C: Collection<UInt8>>(
         data: C,
         closure: (CompressClosureParameters) -> Void
-    ) throws -> UInt8?
+    ) throws(CompressionError) -> UInt8?
 }
 
 // MARK: Compress
@@ -49,7 +49,7 @@ extension Compressor {
     public func compress<C: Collection<UInt8>>(
         data: C,
         reserveCapacity: Int = 1024
-    ) throws -> CompressionResult<[UInt8]> {
+    ) throws(CompressionError) -> CompressionResult<[UInt8]> {
         var compressed:[UInt8] = []
         compressed.reserveCapacity(reserveCapacity)
         let validBitsInLastByte:UInt8 = try compress(data: data, closure: compressClosure { compressed.append($0) }) ?? 8 // TODO: fix Swift 6 error
