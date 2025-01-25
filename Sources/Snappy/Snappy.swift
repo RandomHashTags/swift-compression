@@ -141,10 +141,10 @@ extension CompressionTechnique.Snappy {
     public func decompress<C: Collection<UInt8>>(
         data: C,
         closure: (UInt8) -> Void
-    ) {
-        let totalSize:C.Index = data.index(data.startIndex, offsetBy: Int(data[data.startIndex]))
-        var index:C.Index = data.index(after: data.startIndex)
-        while index < totalSize {
+    ) throws(DecompressionError) {
+        var index:C.Index = data.startIndex
+        let totalSize:UInt32 = try decompressLength(data: data, index: &index)
+        while index < data.endIndex {
             let control:UInt8 = data[index]
             switch control & 0b11 {
             case 0: decompressLiteral(flagBits: control, index: &index, compressed: data, closure: closure)
@@ -154,6 +154,35 @@ extension CompressionTechnique.Snappy {
             default: break
             }
         }
+    }
+
+    @inlinable
+    func decompressLength<C: Collection<UInt8>>(data: C, index: inout C.Index) throws(DecompressionError) -> UInt32 {
+        var totalSize:UInt32
+        var byte:UInt8 = data[index]
+        if byte & 0b10000000 != 0 {
+            totalSize = UInt32(byte)
+            data.formIndex(after: &index)
+            guard let second:UInt8 = data.get(index) else { throw DecompressionError.malformedInput }
+            byte = second
+            var shift:Int = 7
+            while byte & 0b10000000 != 0 {
+                totalSize |= UInt32(byte) << shift
+                shift += 7
+                data.formIndex(after: &index)
+                if let next:UInt8 = data.get(index) {
+                    byte = next
+                } else {
+                    throw DecompressionError.malformedInput
+                }
+            }
+            // final length byte
+            totalSize |= UInt32(byte) << shift
+        } else {
+            totalSize = UInt32(byte)
+        }
+        data.formIndex(after: &index)
+        return totalSize
     }
 }
 
