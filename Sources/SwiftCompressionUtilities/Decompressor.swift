@@ -16,8 +16,8 @@ public protocol Decompressor : AnyDecompressor {
     ///   - closure: Logic to execute when a byte is decompressed.
     /// - Complexity: where _n_ is the length of `data`
     ///   - DNA binary encoding: O(_n_)
-    ///   - Snappy: O(_n_)
     ///   - LZ77: O(_n_)
+    ///   - Run-length encoding: O(_n_)
     ///   - Snappy: O(_n_)
     @inlinable
     func decompress<C: Collection<UInt8>>(
@@ -32,7 +32,7 @@ extension Decompressor where DecompressClosureParameters == UInt8 {
     /// 
     /// - Parameters:
     ///   - data: Collection of bytes to decompress.
-    ///   - reserveCapacity: Space to reserve for the compressed result.
+    ///   - reserveCapacity: Space to reserve for the decompressed result (if no length was decompressed).
     /// - Complexity: where _n_ is the length of `data`
     ///   - DNA binary encoding: O(_n_)
     ///   - LZ77: O(_n_)
@@ -53,7 +53,7 @@ extension Decompressor where DecompressClosureParameters == UInt8 {
     /// 
     /// - Parameters:
     ///   - data: Collection of bytes to decompress.
-    ///   - continuation: The `AsyncStream<UInt8>.Continuation`.
+    ///   - continuation: The `AsyncThrowingStream<UInt8, Error>.Continuation`.
     /// - Complexity: where _n_ is the length of `data`
     ///   - DNA binary encoding: O(_n_)
     ///   - LZ77: O(_n_)
