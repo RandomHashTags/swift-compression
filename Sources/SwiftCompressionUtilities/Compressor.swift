@@ -71,7 +71,7 @@ extension Compressor {
         continuation: AsyncStream<UInt8>.Continuation
     ) throws {
         // TODO: finish
-        let validBitsInLastByte:UInt8 = try compress(data: data, closure: compressClosure { continuation.yield($0) }) ?? 8
+        let _:UInt8 = try compress(data: data, closure: compressClosure { continuation.yield($0) }) ?? 8
     }
 }
 extension Compressor where CompressClosureParameters == UInt8 {

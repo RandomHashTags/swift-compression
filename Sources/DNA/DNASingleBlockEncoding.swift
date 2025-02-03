@@ -5,7 +5,11 @@
 //  Created by Evan Anderson on 12/18/24.
 //
 
+#if STATIC
 import SwiftCompressionUtilities
+#else
+import DynamicSwiftCompressionUtilities
+#endif
 
 extension CompressionTechnique {
     /// The DNA single block encoding compression technique.
@@ -104,20 +108,20 @@ extension CompressionTechnique.DNASingleBlockEncoding {
         while index < binaryData.count {
             let bit:UInt8 = binaryData[index]
             switch bitIndex {
-                case 0:
-                    controlBit = bit
-                    controlBits.append(bit)
-                default:
-                    if let previousBit:UInt8 = previousBits.get(bitIndex-1) {
-                        if bitIndex == 1 && previousBit == 1 {
-                            positionBlock.append(0)
-                        } else {
-                            positionBlock.append(bit != previousBit ? 1 : 0)
-                        }
-                    } else {
+            case 0:
+                controlBit = bit
+                controlBits.append(bit)
+            default:
+                if let previousBit:UInt8 = previousBits.get(bitIndex-1) {
+                    if bitIndex == 1 && previousBit == 1 {
                         positionBlock.append(0)
+                    } else {
+                        positionBlock.append(bit != previousBit ? 1 : 0)
                     }
-                    previousBits.append(bit)
+                } else {
+                    positionBlock.append(0)
+                }
+                previousBits.append(bit)
             }
             index += 1
             bitIndex += 1

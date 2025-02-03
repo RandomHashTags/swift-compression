@@ -5,7 +5,11 @@
 //  Created by Evan Anderson on 1/22/25.
 //
 
+#if STATIC
 import SwiftCompressionUtilities
+#else
+import DynamicSwiftCompressionUtilities
+#endif
 
 extension CompressionTechnique {
 

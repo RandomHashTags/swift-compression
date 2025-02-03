@@ -8,6 +8,8 @@
 // MARK: CompressionAlgorithm
 /// Collection of well-known and useful compression and decompression algorithms.
 public enum CompressionAlgorithm : Hashable, Sendable {
+    case unknown
+
     // audio
     case aac
     case mp3
@@ -77,6 +79,8 @@ extension CompressionAlgorithm {
     @inlinable
     public var rawValue : String {
         switch self {
+        case .unknown: return "unknown"
+        
         case .aac: return "aac"
         case .mp3: return "mp3"
 
@@ -124,6 +128,8 @@ extension CompressionAlgorithm {
         case .iwa: return "iwa"
 
         case .programmingLanguage: return "programmingLanguage"
+
+        @unknown default: return "unknown"
         }
     }
 }

@@ -5,12 +5,21 @@
 //  Created by Evan Anderson on 12/9/24.
 //
 
+#if STATIC
 @_exported import DNA
 @_exported import CSS
 @_exported import JavaScript
 @_exported import LZ
 @_exported import Snappy
 @_exported import SwiftCompressionUtilities
+#else
+@_exported import DynamicDNA
+@_exported import DynamicCSS
+@_exported import DynamicJavaScript
+@_exported import DynamicLZ
+@_exported import DynamicSnappy
+@_exported import DynamicSwiftCompressionUtilities
+#endif
 
 // MARK: Technique
 extension CompressionAlgorithm {
@@ -18,8 +27,18 @@ extension CompressionAlgorithm {
     @inlinable
     public var technique : (any Compressor)? {
         switch self {
+        case .unknown: return nil
+        case .aac: return nil
+        case .mp3: return nil
+
+        case .arithmetic: return nil
         case .brotli(let windowSize):
             return CompressionTechnique.brotli(windowSize: windowSize)
+        case .bwt: return nil
+        case .deflate: return nil
+        case .huffmanCoding: return nil
+        case .json: return nil
+        case .lz4: return nil
         case .lz77(let windowSize, let bufferSize, let offsetBitWidth):
             switch offsetBitWidth {
             case 8:
@@ -41,12 +60,37 @@ extension CompressionAlgorithm {
             #endif
             default: return nil
             }
+        case .lz78: return nil
+        case .lzw: return nil
+        case .mtf: return nil
         case .runLengthEncoding(let minRun, let alwaysIncludeRunCount): return CompressionTechnique.runLength(minRun: minRun, alwaysIncludeRunCount: alwaysIncludeRunCount)
         case .snappy(let windowSize): return CompressionTechnique.snappy(windowSize: windowSize)
         case .snappyFramed: return CompressionTechnique.snappyFramed
+        case .zstd: return nil
+
+        case ._7z: return nil
+        case .bzip2: return nil
+        case .gzip: return nil
+        case .rar: return nil
+
+        case .h264: return nil
+        case .h265: return nil
+        case .jpeg: return nil
+        case .jpeg2000: return nil
+
+        case .eliasDelta: return nil
+        case .eliasGamma: return nil
+        case .eliasOmega: return nil
+        case .fibonacci: return nil
 
         case .dnaBinaryEncoding(let baseBits): return CompressionTechnique.dnaBinaryEncoding(baseBits: baseBits)
         case .dnaSingleBlockEncoding: return CompressionTechnique.dnaSingleBlockEncoding
+
+        case .boringSSL: return nil
+
+        case .av1: return nil
+        case .dirac: return nil
+        case .mpeg: return nil
 
         case .iwa(let version): return CompressionTechnique.iwa(version: version)
 
@@ -55,8 +99,9 @@ extension CompressionAlgorithm {
             case .css: return CompressionTechnique.css
             case .javascript: return CompressionTechnique.javascript
             case .swift: return CompressionTechnique.swift
+            @unknown default: return nil
             }
-        default: return nil
+        @unknown default: return nil
         }
     }
 }

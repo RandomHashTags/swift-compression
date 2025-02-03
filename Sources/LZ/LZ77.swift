@@ -5,7 +5,11 @@
 //  Created by Evan Anderson on 12/12/24.
 //
 
+#if STATIC
 import SwiftCompressionUtilities
+#else
+import DynamicSwiftCompressionUtilities
+#endif
 
 extension CompressionTechnique {
     /// The LZ77 compression technique.
@@ -122,77 +126,10 @@ extension CompressionTechnique.LZ77 {
         var window:[UInt8] = []
         var index:Int = 0
         let bytesForOffset:Int = T.bitWidth / 8, byteIndexOffset:Int = bytesForOffset + 1
-        let parseOffset:(_ index: Int) -> T?
-        switch bytesForOffset {
-        case 0:
-            return
-        case 1:
-            parseOffset = { index in
-                return UInt8(fromBits: data[index].bitsTuple) as? T
-            }
-        case 2:
-            parseOffset = { index in
-                return UInt16(highBits: data[index].bitsTuple, lowBits: data[index+1].bitsTuple) as? T
-            }
-        case 4:
-            parseOffset = { index in
-                return UInt32(
-                    data[index].bitsTuple,
-                    data[index+1].bitsTuple,
-                    data[index+2].bitsTuple,
-                    data[index+3].bitsTuple
-                ) as? T
-            }
-        case 8:
-            parseOffset = { index in
-                return UInt64(
-                    data[index].bitsTuple,
-                    data[index+1].bitsTuple,
-                    data[index+2].bitsTuple,
-                    data[index+3].bitsTuple,
-                    data[index+4].bitsTuple,
-                    data[index+5].bitsTuple,
-                    data[index+6].bitsTuple,
-                    data[index+7].bitsTuple
-                ) as? T
-            }
-        #if compiler(>=6.0)
-        case 16:
-            parseOffset = { index in
-                return UInt128(
-                    data[index].bitsTuple,
-                    data[index+1].bitsTuple,
-                    data[index+2].bitsTuple,
-                    data[index+3].bitsTuple,
-                    data[index+4].bitsTuple,
-                    data[index+5].bitsTuple,
-                    data[index+6].bitsTuple,
-                    data[index+7].bitsTuple,
-                    data[index+8].bitsTuple,
-                    data[index+9].bitsTuple,
-                    data[index+10].bitsTuple,
-                    data[index+11].bitsTuple,
-                    data[index+12].bitsTuple,
-                    data[index+13].bitsTuple,
-                    data[index+14].bitsTuple,
-                    data[index+15].bitsTuple
-                ) as? T
-            }
-        #endif
-        default:
-            parseOffset = { index in
-                var bits:[Bool] = data[index].bits
-                if bytesForOffset > 1 {
-                    for i in 1..<bytesForOffset {
-                        bits.append(contentsOf: data[index + i].bits)
-                    }
-                }
-                return T(fromBits: bits)
-            }
-        }
         while index < count {
             let length:Int = Int(data[index + bytesForOffset])
-            if length > 0, let offset:T = parseOffset(index) {
+            if length > 0 {
+                let offset:T = parseOffset(data: data, index: index)
                 let startIndex:Int = window.count - Int(offset)
                 let endIndex:Int = min(startIndex + length, window.count)
                 if startIndex < endIndex {
@@ -214,5 +151,17 @@ extension CompressionTechnique.LZ77 {
             }
             index += bytesForOffset + 2
         }
+    }
+
+    @inlinable
+    func parseOffset<C: Collection<UInt8>>(data: C, index: Int) -> T {
+        var byte:T = T()
+        var offsetIndex:Int = index
+        for _ in 0...(T.bitWidth / 8)-1 {
+            byte <<= 8
+            byte += T(data[offsetIndex])
+            offsetIndex += 1
+        }
+        return byte
     }
 }

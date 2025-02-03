@@ -5,7 +5,11 @@
 //  Created by Evan Anderson on 12/12/24.
 //
 
+#if STATIC
 import SwiftCompressionUtilities
+#else
+import DynamicSwiftCompressionUtilities
+#endif
 
 extension CompressionTechnique {
     /// The Move-to-front transform compression technique.
@@ -24,7 +28,7 @@ extension CompressionTechnique.MoveToFront {
     ) -> [UInt8] {
         var sequence:[UInt8] = []
         sequence.reserveCapacity(reserveCapacity)
-        var recentlyUsed:[UInt8] = [97, 98, 99, 100, 101, 102, 103, 104, 105, 106, 107, 108, 109, 110, 111, 112, 113, 114, 115, 116, 117, 118, 119, 120, 121, 122]
+        //var recentlyUsed:[UInt8] = [97, 98, 99, 100, 101, 102, 103, 104, 105, 106, 107, 108, 109, 110, 111, 112, 113, 114, 115, 116, 117, 118, 119, 120, 121, 122]
         /*data.withUnsafeBytes { (p:UnsafeRawBufferPointer) in
             for i in 0..<p.count {
             }

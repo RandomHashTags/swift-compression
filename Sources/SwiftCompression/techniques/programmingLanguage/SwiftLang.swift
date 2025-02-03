@@ -5,7 +5,11 @@
 //  Created by Evan Anderson on 1/22/25.
 //
 
+#if STATIC
 import SwiftCompressionUtilities
+#else
+import DynamicSwiftCompressionUtilities
+#endif
 
 extension CompressionTechnique {
 
@@ -88,7 +92,7 @@ extension CompressionTechnique.SwiftLang {
         ]
         cleanup.append(contentsOf: finalCleanup)
 
-        let stringLiterals:Regex = try Regex(#"(".+")"#)
+        //let stringLiterals:Regex = try Regex(#"(".+")"#)
         var result:String = String(swiftSourceCode)
         //let stringLiteralMatches = result.matches(of: stringLiterals)
         result.replace(accessControlInternal, with: "")
@@ -113,11 +117,12 @@ extension CompressionTechnique.SwiftLang {
     }
 }
 
-extension Regex : Hashable {
+extension Regex : @retroactive Equatable {
     public static func == (lhs: Regex, rhs: Regex) -> Bool {
         false
     }
-
+}
+extension Regex : @retroactive Hashable {
     public func hash(into hasher: inout Hasher) {
     }
 }

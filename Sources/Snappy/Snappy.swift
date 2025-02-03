@@ -5,7 +5,11 @@
 //  Created by Evan Anderson on 12/9/24.
 //
 
+#if STATIC
 import SwiftCompressionUtilities
+#else
+import DynamicSwiftCompressionUtilities
+#endif
 
 extension CompressionTechnique {
     /// The Snappy (Zippy) compression technique.

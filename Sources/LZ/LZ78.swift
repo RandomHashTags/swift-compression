@@ -5,7 +5,11 @@
 //  Created by Evan Anderson on 12/25/24.
 //
 
+#if STATIC
 import SwiftCompressionUtilities
+#else
+import DynamicSwiftCompressionUtilities
+#endif
 
 extension CompressionTechnique {
     /// The LZ78 compression technique.
@@ -22,19 +26,21 @@ extension CompressionTechnique.LZ78 {
         data: S,
         endOfFileMarker: UInt8?
     ) -> [UInt8] {
+        let compressed:[UInt8] = []
+        /*
         var set:Set<UInt8> = Set(minimumCapacity: 256)
         var array:[Entry] = [(0, 0)]
         for byte in data {
             if !set.contains(byte) {
             }
         }
-        var compressed:[UInt8] = []
+        
         for (lastMatchingIndex, byte) in array {
             //compressed.append(lastMatchingIndex)
         }
         if let endOfFileMarker:UInt8 = endOfFileMarker {
             compressed.append(endOfFileMarker)
-        }
+        }*/
         return compressed
     }
 }

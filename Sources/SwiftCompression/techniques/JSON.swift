@@ -5,7 +5,11 @@
 //  Created by Evan Anderson on 12/14/24.
 //
 
+#if STATIC
 import SwiftCompressionUtilities
+#else
+import DynamicSwiftCompressionUtilities
+#endif
 
 #if canImport(Foundation)
 import Foundation
