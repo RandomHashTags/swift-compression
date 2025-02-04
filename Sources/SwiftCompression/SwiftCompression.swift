@@ -5,21 +5,12 @@
 //  Created by Evan Anderson on 12/9/24.
 //
 
-#if STATIC
 @_exported import DNA
 @_exported import CSS
 @_exported import JavaScript
 @_exported import LZ
 @_exported import Snappy
 @_exported import SwiftCompressionUtilities
-#else
-@_exported import DynamicDNA
-@_exported import DynamicCSS
-@_exported import DynamicJavaScript
-@_exported import DynamicLZ
-@_exported import DynamicSnappy
-@_exported import DynamicSwiftCompressionUtilities
-#endif
 
 // MARK: Technique
 extension CompressionAlgorithm {

@@ -5,11 +5,7 @@
 //  Created by Evan Anderson on 1/23/25.
 //
 
-#if STATIC
 import SwiftCompressionUtilities
-#else
-import DynamicSwiftCompressionUtilities
-#endif
 
 extension CompressionTechnique {
     /// The Snappy Framed compression technique.

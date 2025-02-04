@@ -5,11 +5,7 @@
 //  Created by Evan Anderson on 12/25/24.
 //
 
-#if STATIC
 import SwiftCompressionUtilities
-#else
-import DynamicSwiftCompressionUtilities
-#endif
 
 extension CompressionTechnique {
     /// The LZ78 compression technique.

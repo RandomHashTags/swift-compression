@@ -16,37 +16,31 @@ let package = Package(
     products: [
         .library(
             name: "SwiftCompression",
-            type: .static,
             targets: ["SwiftCompression"]
         ),
 
         .library(
             name: "SwiftCompressionCSS",
-            type: .static,
             targets: ["CSS"]
         ),
 
         .library(
             name: "SwiftCompressionDNA",
-            type: .static,
             targets: ["DNA"]
         ),
 
         .library(
             name: "SwiftCompressionJavaScript",
-            type: .static,
             targets: ["JavaScript"]
         ),
 
         .library(
             name: "SwiftCompressionLZ",
-            type: .static,
             targets: ["LZ"]
         ),
 
         .library(
             name: "SwiftCompressionSnappy",
-            type: .static,
             targets: ["Snappy"]
         ),
     ],
@@ -136,6 +130,7 @@ let package = Package(
     ]
 )
 
+/*
 // MARK: Add dynamic
 //
 // WARNING: MAKE SURE YOU HAVE "_DynamicX" SYMLINKS TO THE STATIC MODULES!
@@ -179,4 +174,4 @@ for target:Target in package.targets {
     }
 }
 package.products.append(contentsOf: dynamicProducts)
-package.targets.append(contentsOf: dynamicTargets)
+package.targets.append(contentsOf: dynamicTargets)*/
