@@ -33,14 +33,14 @@ coming soon...
 
 ### Products
 
-The products are broken up into their respective algorithms and link type, but the __SwiftCompression__/__DynamicSwiftCompression__ product includes all of them and is the recommended one to use in your projects.
+The products are broken up into their respective algorithms, but the __SwiftCompression__ product includes all of them and is the recommended one to use in your projects.
 
-- [Dynamic]SwiftCompression
-- [Dynamic]SwiftCompressionCSS
-- [Dynamic]SwiftCompressionDNA
-- [Dynamic]SwiftCompressionJavaScript
-- [Dynamic]SwiftCompressionLZ
-- [Dynamic]SwiftCompressionSnappy
+- SwiftCompression
+- SwiftCompressionCSS
+- SwiftCompressionDNA
+- SwiftCompressionJavaScript
+- SwiftCompressionLZ
+- SwiftCompressionSnappy
 
 ## Contributing
 
