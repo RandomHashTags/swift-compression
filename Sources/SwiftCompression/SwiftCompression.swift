@@ -46,8 +46,11 @@ extension CompressionAlgorithm {
                 return lz
             #if compiler(>=6.0)
             case 128:
-                let lz:CompressionTechnique.LZ77<UInt128> = CompressionTechnique.lz77<UInt128>(windowSize: windowSize, bufferSize: bufferSize)
-                return lz
+                if #available(macOS 15.0, iOS 18.0, watchOS 11.0, tvOS 18.0, visionOS 2.0, *) {
+                    let lz:CompressionTechnique.LZ77<UInt128> = CompressionTechnique.lz77<UInt128>(windowSize: windowSize, bufferSize: bufferSize)
+                    return lz
+                }
+                return nil
             #endif
             default: return nil
             }

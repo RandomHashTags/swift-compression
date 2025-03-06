@@ -220,6 +220,7 @@ extension UInt64 {
     }
 }
 #if compiler(>=6.0)
+@available(macOS 15.0, iOS 18.0, watchOS 11.0, tvOS 18.0, visionOS 2.0, *)
 extension UInt128 {
     public init(_ b0: Bits8, _ b1: Bits8, _ b2: Bits8, _ b3: Bits8, _ b4: Bits8, _ b5: Bits8, _ b6: Bits8, _ b7: Bits8, _ b8: Bits8, _ b9: Bits8, _ b10: Bits8, _ b11: Bits8, _ b12: Bits8, _ b13: Bits8, _ b14: Bits8, _ b15: Bits8) {
         self = Self(UInt64(b0, b1, b2, b3, b4, b5, b6, b7)) + Self(UInt64(b8, b9, b10, b11, b12, b13, b14, b15))
