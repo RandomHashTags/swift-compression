@@ -40,10 +40,11 @@ extension CompressionTechnique.JavaScript {
     /// - Complexity: O(_n_) where _n_ is the length of the collection.
     @inlinable
     public func minify<C: Collection<UInt8>>(data: C) -> [UInt8] { // TODO: optimize?
-        var index:Int = 0
-        var keep:Bool = true
-        let count:Int = data.count
-        var i:Int = 0, result:[UInt8] = [UInt8](repeating: 0, count: count)
+        var index = 0
+        var keep = true
+        let count = data.count
+        var i = 0
+        var result:[UInt8] = .init(repeating: 0, count: count)
 
         let space:UInt8 = 32
         let lineFeed:UInt8 = 10
@@ -67,7 +68,7 @@ extension CompressionTechnique.JavaScript {
         let v:UInt8 = 118
         let w:UInt8 = 119
         let y:UInt8 = 121
-        var char:UInt8 = data[i]
+        var char = data[i]
         while char == space || char == horizontalTab || char == lineFeed || char == carriageReturn {
             i += 1
             char = data[i]
@@ -79,11 +80,11 @@ extension CompressionTechnique.JavaScript {
                 horizontalTab,
                 lineFeed,
                 carriageReturn:
-                let iPlus1:UInt8? = data.get(i+1)
-                let iPlus2:UInt8? = data.get(i+2)
-                let iPlus3:UInt8? = data.get(i+3)
+                let iPlus1 = data.getPositive(i+1)
+                let iPlus2 = data.getPositive(i+2)
+                let iPlus3 = data.getPositive(i+3)
                 keep = iPlus1 == o && iPlus2 == f && iPlus3 == space // of
-                    || iPlus1 == iChar && iPlus2 == n && iPlus3 == s && data.get(i+4) == t && data.get(i+5) == a && data.get(i+6) == n && data.get(i+7) == c && data.get(i+8) == e && data.get(i+9) == o && data.get(i+10) == f && data.get(i+11) == space // instanceof
+                    || iPlus1 == iChar && iPlus2 == n && iPlus3 == s && data.getPositive(i+4) == t && data.getPositive(i+5) == a && data.getPositive(i+6) == n && data.getPositive(i+7) == c && data.getPositive(i+8) == e && data.getPositive(i+9) == o && data.getPositive(i+10) == f && data.getPositive(i+11) == space // instanceof
                 if !keep {
                     switch data.get(i-1) {
                     case r: // var
@@ -122,12 +123,12 @@ extension CompressionTechnique.JavaScript {
                     }
                 }
             case forwardSlash:
-                let iPlus1:UInt8? = data.get(i+1), isMultiline:Bool = iPlus1 == asterisk
+                let iPlus1:UInt8? = data.getPositive(i+1), isMultiline:Bool = iPlus1 == asterisk
                 if iPlus1 == forwardSlash || isMultiline {
                     let endFunction:(UInt8?, Int) -> Bool, increment:Int
                     if isMultiline {
                         endFunction = { char, index in
-                            return char == asterisk && data.get(index+1) == forwardSlash
+                            return char == asterisk && data.getPositive(index+1) == forwardSlash
                         }
                         increment = 1
                     } else {
@@ -138,7 +139,7 @@ extension CompressionTechnique.JavaScript {
                     }
                     i += 2
                     loop: for j in i..<count {
-                        if endFunction(data.get(j), j) {
+                        if endFunction(data.getPositive(j), j) {
                             i = j + increment
                             break loop
                         }
@@ -155,7 +156,7 @@ extension CompressionTechnique.JavaScript {
                 index += 1
                 i += 1
                 for j in i..<count {
-                    let value:UInt8 = data[j]
+                    let value = data[j]
                     result[index] = value
                     index += 1
                     if value == char {
@@ -172,6 +173,6 @@ extension CompressionTechnique.JavaScript {
             }
             i += 1
         }
-        return [UInt8](result[0..<index])
+        return .init(result[0..<index])
     }
 }

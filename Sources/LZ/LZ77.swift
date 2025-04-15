@@ -63,20 +63,22 @@ extension CompressionTechnique.LZ77 {
         data: C,
         closure: (UInt8) -> Void
     ) -> UInt8? {
-        let count:Int = data.count
-        var index:Int = 0
+        let count = data.count
+        var index = 0
         while index < count {
-            let bufferEndIndex:Int = min(index + bufferSize, count)
+            let bufferEndIndex = min(index + bufferSize, count)
             guard index < bufferEndIndex else { break }
             let bufferCount:Int = bufferEndIndex - index
-            let bufferRange:Range<C.Index> = data.index(data.startIndex, offsetBy: index)..<data.index(data.startIndex, offsetBy: bufferEndIndex)
-            let buffer:C.SubSequence = data[bufferRange]
-            let windowRange:Range<C.Index> = data.index(data.startIndex, offsetBy: max(0, index - windowSize))..<data.index(data.startIndex, offsetBy: index)
-            let window:C.SubSequence = data[windowRange], windowCount:Int = window.count
-            var offset:Int = 0, bestLength:Int = 0
+            let bufferRange = data.index(data.startIndex, offsetBy: index)..<data.index(data.startIndex, offsetBy: bufferEndIndex)
+            let buffer = data[bufferRange]
+            let windowRange = data.index(data.startIndex, offsetBy: max(0, index - windowSize))..<data.index(data.startIndex, offsetBy: index)
+            let window = data[windowRange]
+            let windowCount = window.count
+            var offset = 0
+            var bestLength = 0
             for i in 0..<windowSize {
-                var length:Int = 0
-                while length < bufferCount && window.get(window.index(window.startIndex, offsetBy: i + length)) == buffer[length] {
+                var length = 0
+                while length < bufferCount && window.getPositive(window.index(window.startIndex, offsetBy: i + length)) == buffer[length] {
                     length += 1
                     if i + length >= windowCount {
                         break
@@ -117,26 +119,27 @@ extension CompressionTechnique.LZ77 {
         data: C,
         closure: (UInt8) -> Void
     ) {
-        let count:Int = data.count
+        let count = data.count
         var history:[UInt8] = []
         var window:[UInt8] = []
-        var index:Int = 0
-        let bytesForOffset:Int = T.bitWidth / 8, byteIndexOffset:Int = bytesForOffset + 1
+        var index = 0
+        let bytesForOffset = T.bitWidth / 8
+        let byteIndexOffset = bytesForOffset + 1
         while index < count {
-            let length:Int = Int(data[index + bytesForOffset])
+            let length = Int(data[index + bytesForOffset])
             if length > 0 {
-                let offset:T = parseOffset(data: data, index: index)
-                let startIndex:Int = window.count - Int(offset)
-                let endIndex:Int = min(startIndex + length, window.count)
+                let offset = parseOffset(data: data, index: index)
+                let startIndex = window.count - Int(offset)
+                let endIndex = min(startIndex + length, window.count)
                 if startIndex < endIndex {
-                    let bytes:ArraySlice<UInt8> = window[startIndex..<endIndex]
+                    let bytes = window[startIndex..<endIndex]
                     for byte in bytes {
                         closure(byte)
                         history.append(byte)
                     }
                 }
             }
-            let byte:UInt8 = data[index + byteIndexOffset]
+            let byte = data[index + byteIndexOffset]
             if byte != 0 {
                 closure(byte)
                 history.append(byte)
@@ -151,8 +154,8 @@ extension CompressionTechnique.LZ77 {
 
     @inlinable
     func parseOffset<C: Collection<UInt8>>(data: C, index: Int) -> T {
-        var byte:T = T()
-        var offsetIndex:Int = index
+        var byte = T()
+        var offsetIndex = index
         for _ in 0...(T.bitWidth / 8)-1 {
             byte <<= 8
             byte += T(data[offsetIndex])

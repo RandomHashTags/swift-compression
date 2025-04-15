@@ -49,43 +49,8 @@ struct BitTests {
         #expect(UInt8(fromBits: [false, false, false, false, false, false, false, false]) == 0)
         #expect(UInt8(fromBits: [true, false]) == 2)      
         #expect(UInt8(fromBits: [true, false, false, false, false, false, false, false])  == 128)
-    }
-    @Test func uint8BitsTuple() {
-        var int:UInt8 = 0
-        var value:Bits8 = int.bitsTuple
-        #expect(!value.0)
-        #expect(!value.1)
-        #expect(!value.2)
-        #expect(!value.3)
-        #expect(!value.4)
-        #expect(!value.5)
-        #expect(!value.6)
-        #expect(!value.7)
-        #expect(UInt8(fromBits: value) == 0)
 
-        int = 1
-        value = int.bitsTuple
-        #expect(!value.0)
-        #expect(!value.1)
-        #expect(!value.2)
-        #expect(!value.3)
-        #expect(!value.4)
-        #expect(!value.5)
-        #expect(!value.6)
-        #expect(value.7)
-        #expect(UInt8(fromBits: value) == 1)
-
-        int = 255
-        value = int.bitsTuple
-        #expect(value.0)
-        #expect(value.1)
-        #expect(value.2)
-        #expect(value.3)
-        #expect(value.4)
-        #expect(value.5)
-        #expect(value.6)
-        #expect(value.7)
-        #expect(UInt8(fromBits: value) == 255)
+        #expect(UInt32(fromBits: .max, 0, 0) == 16711680)
     }
     @Test func uint16Bits() {
         var int:UInt16 = 0

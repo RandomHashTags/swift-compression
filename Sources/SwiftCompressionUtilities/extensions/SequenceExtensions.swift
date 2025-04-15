@@ -24,6 +24,13 @@ extension Collection {
         return index < endIndex && index >= startIndex ? self[index] : nil
     }
 
+    /// - Returns: The element at the given index if within bounds. Otherwise `nil`.
+    /// - Complexity: O(1).
+    @inlinable
+    package func getPositive(_ index: Index) -> Element? {
+        return index < endIndex ? self[index] : nil
+    }
+
     @inlinable
     package subscript<T: FixedWidthInteger>(_ index: T) -> Element {
         get { self[self.index(startIndex, offsetBy: Int(index))] }
@@ -33,7 +40,13 @@ extension Collection {
 extension Collection where Element == UInt8 {
     @inlinable
     package func get(_ index: Int) -> Element? {
-        guard let i:Index = self.index(startIndex, offsetBy: index, limitedBy: endIndex) else { return nil }
+        guard let i = self.index(startIndex, offsetBy: index, limitedBy: endIndex) else { return nil }
         return self.get(i)
+    }
+
+    @inlinable
+    package func getPositive(_ index: Int) -> Element? {
+        guard let i = self.index(startIndex, offsetBy: index, limitedBy: endIndex) else { return nil }
+        return self.getPositive(i)
     }
 }

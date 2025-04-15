@@ -48,11 +48,11 @@ extension CompressionTechnique.Snappy { // TODO: finish
     /// - Complexity: O(_n_) where _n_ is the length of `data`.
     @inlinable
     public func compress<C: Collection<UInt8>>(data: C, closure: (UInt8) -> Void) -> UInt8? {
-        var index:C.Index = data.startIndex
+        var index = data.startIndex
         while index != data.endIndex {
             let (length, matchLength, offset) = longestMatch(data, from: index)
             if matchLength == 0 {
-                let next:C.Index = data.index(index, offsetBy: length)
+                let next = data.index(index, offsetBy: length)
                 compressLiteral(data[index..<next], closure: closure)
                 index = next
             } else {
@@ -65,15 +65,15 @@ extension CompressionTechnique.Snappy { // TODO: finish
 
     @inlinable
     func longestMatch<C: Collection<UInt8>>(_ data: C, from startIndex: C.Index) -> (length: Int, matchLength: Int, offset: Int) {
-        let maxLength:Int = 60
-        var longestMatchLength:Int = 0
-        var offset:Int = 0
+        let maxLength = 60
+        var longestMatchLength = 0
+        var offset = 0
 
-        var length:Int = 0
-        var index:C.Index = startIndex
+        var length = 0
+        var index = startIndex
         while length < maxLength && index != data.endIndex {
-            let starts:C.Index = data.index(index, offsetBy: -min(length, windowSize), limitedBy: data.startIndex) ?? data.startIndex
-            let longestMatch:Int = longestCommonPrefix(data, index1: index, index2: starts)
+            let starts = data.index(index, offsetBy: -min(length, windowSize), limitedBy: data.startIndex) ?? data.startIndex
+            let longestMatch = longestCommonPrefix(data, index1: index, index2: starts)
             if length > longestMatchLength {
                 longestMatchLength = longestMatch
                 offset = data.distance(from: starts, to: index)
@@ -86,9 +86,9 @@ extension CompressionTechnique.Snappy { // TODO: finish
 
     @inlinable
     func longestCommonPrefix<C: Collection<UInt8>>(_ data: C, index1: C.Index, index2: C.Index) -> Int {
-        var length:Int = 0
-        var index1:C.Index = index1
-        var index2:C.Index = index2
+        var length = 0
+        var index1 = index1
+        var index2 = index2
         while index1 != data.endIndex && index2 != data.endIndex && data[index1] == data[index2] {
             length += 1
             index1 = data.index(after: index1)
@@ -102,7 +102,7 @@ extension CompressionTechnique.Snappy { // TODO: finish
 extension CompressionTechnique.Snappy {
     @inlinable
     func compressLiteral<C: Collection<UInt8>>(_ data: C, closure: (UInt8) -> Void) {
-        let count:Int = data.count
+        let count = data.count
         if count < 60 {
             closure(UInt8(count << 2))
         } else {
@@ -120,7 +120,7 @@ extension CompressionTechnique.Snappy {
     @inlinable
     func compressCopy(length: Int, offset: Int, closure: (UInt8) -> Void) {
         if length < 12 && offset < 2048 {
-            let cmd:UInt8 = UInt8((offset >> 8) << 5 | (length - 4) << 2 | 1)
+            let cmd = UInt8((offset >> 8) << 5 | (length - 4) << 2 | 1)
             closure(cmd)
             closure(UInt8(offset & 0xFF))
         } else {
@@ -142,7 +142,7 @@ extension CompressionTechnique.Snappy {
         reserveCapacity: Int = 0
     ) throws(DecompressionError) -> [UInt8] {
         var decompressed:[UInt8] = []
-        var index:C.Index = data.startIndex
+        var index = data.startIndex
         let length:Int = try decompressLength(data: data, index: &index)
         decompressed.reserveCapacity(length)
         try decompress(data: data, index: &index, amount: length) { decompressed.append($0) }
@@ -157,7 +157,7 @@ extension CompressionTechnique.Snappy {
         data: C,
         continuation: AsyncThrowingStream<UInt8, Error>.Continuation
     ) throws(DecompressionError) {
-        var index:C.Index = data.startIndex
+        var index = data.startIndex
         let length:Int = try decompressLength(data: data, index: &index)
         try decompress(data: data, index: &index, amount: length) { continuation.yield($0) }
     }
@@ -181,14 +181,14 @@ extension CompressionTechnique.Snappy {
         amount: Int,
         closure: (UInt8) -> Void
     ) throws(DecompressionError) {
-        guard let endIndex:C.Index = data.index(data.startIndex, offsetBy: amount, limitedBy: data.endIndex) else { throw DecompressionError.malformedInput }
+        guard let endIndex = data.index(data.startIndex, offsetBy: amount, limitedBy: data.endIndex) else { throw DecompressionError.malformedInput }
         while index < endIndex {
-            let control:UInt8 = data[index]
+            let control = data[index]
             switch control & 0b11 {
             case 0: decompressLiteral(flagBits: control, index: &index, compressed: data, closure: closure)
             case 1: decompressCopy1(flagBits: control, index: &index, compressed: data, closure: closure)
-            case 2: decompressCopy2(flagBits: control.bitsTuple, index: &index, compressed: data, closure: closure)
-            case 3: decompressCopy4(flagBits: control.bitsTuple, index: &index, compressed: data, closure: closure)
+            case 2: decompressCopy2(flagBits: control, index: &index, compressed: data, closure: closure)
+            case 3: decompressCopy4(flagBits: control, index: &index, compressed: data, closure: closure)
             default: throw DecompressionError.malformedInput
             }
         }
@@ -205,18 +205,18 @@ extension CompressionTechnique.Snappy {
         index: inout C.Index
     ) throws(DecompressionError) -> I {
         var totalSize:I
-        var byte:UInt8 = data[index]
+        var byte = data[index]
         if byte & 0b10000000 != 0 {
             totalSize = I(byte)
             data.formIndex(after: &index)
-            guard let second:UInt8 = data.get(index) else { throw DecompressionError.malformedInput }
+            guard let second = data.getPositive(index) else { throw DecompressionError.malformedInput }
             byte = second
-            var shift:Int = 7
+            var shift = 7
             while byte & 0b10000000 != 0 {
                 totalSize |= I(byte) << shift
                 shift += 7
                 data.formIndex(after: &index)
-                if let next:UInt8 = data.get(index) {
+                if let next = data.getPositive(index) {
                     byte = next
                 } else {
                     throw DecompressionError.malformedInput
@@ -242,7 +242,7 @@ extension CompressionTechnique.Snappy {
         compressed: C,
         closure: (_ byte: UInt8) -> Void
     ) {
-        let length:Int = decompressLiteralLength(flagBits: flagBits, index: &index, compressed: compressed)
+        let length = decompressLiteralLength(flagBits: flagBits, index: &index, compressed: compressed)
         for _ in 0...length {
             closure(compressed[index])
             compressed.formIndex(after: &index)
@@ -252,7 +252,7 @@ extension CompressionTechnique.Snappy {
     /// - Complexity: O(1).
     @inlinable
     func decompressLiteralLength<C: Collection<UInt8>>(flagBits: UInt8, index: inout C.Index, compressed: C) -> Int {
-        let length:UInt8 = flagBits >> 2 // ignore tag bits
+        let length = flagBits >> 2 // ignore tag bits
         compressed.formIndex(after: &index)
         var totalLength:Int
         if length >= 60 {
@@ -278,13 +278,12 @@ extension CompressionTechnique.Snappy {
         compressed: C,
         closure: (_ byte: UInt8) -> Void
     ) {
-        var length:UInt8 = 4 + ((flagBits >> 2) & 0b00000111)
-        let offset:Int = Int(((UInt16(flagBits) << 8) & 0b11100000) + UInt16(compressed[compressed.index(index, offsetBy: 1)]))
-        var begins:C.Index = compressed.index(index, offsetBy: -offset)
-        while length != 0 {
+        let length = 4 + ((flagBits >> 2) & 0b00000111)
+        let offset = Int(((UInt16(flagBits) << 8) & 0b11100000) + UInt16(compressed[compressed.index(index, offsetBy: 1)]))
+        var begins = compressed.index(index, offsetBy: -offset)
+        for _ in 0..<length {
             closure(compressed[begins])
             compressed.formIndex(after: &begins)
-            length -= 1
         }
         compressed.formIndex(&index, offsetBy: 2)
     }
@@ -292,53 +291,48 @@ extension CompressionTechnique.Snappy {
     /// - Complexity: O(_n_) where _n_ is the `UInt8` created from the `flagBits`.
     @inlinable
     func decompressCopy2<C: Collection<UInt8>>(
-        flagBits: Bits8,
+        flagBits: UInt8,
         index: inout C.Index,
         compressed: C,
         closure: (_ byte: UInt8) -> Void
     ) {
         //let offset:UInt16 = UInt16( UInt16(compressed[compressed.index(index, offsetBy: 1)]) << 8 | UInt16(compressed[compressed.index(index, offsetBy: 2)]) )
-        let bits0:Bits8 = compressed[compressed.index(index, offsetBy: 1)].bitsTuple
-        let bits1:Bits8 = compressed[compressed.index(index, offsetBy: 2)].bitsTuple
-        let offset:UInt16 = UInt16(fromBits: (
-            bits0.0, bits0.1, bits0.2, bits0.3, bits0.4, bits0.5, bits0.6, bits0.7,
-            bits1.0, bits1.1, bits1.2, bits1.3, bits1.4, bits1.5, bits1.6, bits1.7
-        ))
+        let offset = UInt16(fromBits: 
+            compressed[compressed.index(index, offsetBy: 1)],
+            compressed[compressed.index(index, offsetBy: 2)]
+        )
         decompressCopyN(flagBits: flagBits, index: &index, compressed: compressed, offset: offset, readBytes: 3, closure: closure)
     }
 
     /// - Complexity: O(_n_) where _n_ is the `UInt8` created from the `flagBits`.
     @inlinable
     func decompressCopy4<C: Collection<UInt8>>(
-        flagBits: Bits8,
+        flagBits: UInt8,
         index: inout C.Index,
         compressed: C,
         closure: (_ byte: UInt8) -> Void
     ) {
-        let bits0:Bits8 = compressed[compressed.index(index, offsetBy: 1)].bitsTuple
-        let bits1:Bits8 = compressed[compressed.index(index, offsetBy: 2)].bitsTuple
-        let bits2:Bits8 = compressed[compressed.index(index, offsetBy: 3)].bitsTuple
-        let offset:UInt32 = UInt32(fromBits: (
-            bits0.0, bits0.1, bits0.2, bits0.3, bits0.4, bits0.5, bits0.6, bits0.7,
-            bits1.0, bits1.1, bits1.2, bits1.3, bits1.4, bits1.5, bits1.6, bits1.7,
-            bits2.0, bits2.1, bits2.2, bits2.3, bits2.4, bits2.5, bits2.6, bits2.7
-        ))
+        let offset = UInt32.init(fromBits: 
+            compressed[compressed.index(index, offsetBy: 1)],
+            compressed[compressed.index(index, offsetBy: 2)],
+            compressed[compressed.index(index, offsetBy: 3)]
+        )
         decompressCopyN(flagBits: flagBits, index: &index, compressed: compressed, offset: offset, readBytes: 5, closure: closure)
     }
 
     /// - Complexity: O(_n_) where _n_ is the `UInt8` created from the `flagBits`.
     @inlinable
     func decompressCopyN<C: Collection<UInt8>, T: FixedWidthInteger>(
-        flagBits: Bits8,
+        flagBits: UInt8,
         index: inout C.Index,
         compressed: C,
         offset: T,
         readBytes: Int,
         closure: (_ byte: UInt8) -> Void
     ) {
-        let length:UInt8 = UInt8(fromBits: (flagBits.0, flagBits.1, flagBits.2, flagBits.3, flagBits.4, flagBits.5))
+        let length = flagBits & 0b11111100
         //print("decompressCopyN;readBytes=\(readBytes);length=\(length)")
-        var begins:C.Index = compressed.index(index, offsetBy: -Int(offset))
+        var begins = compressed.index(index, offsetBy: -Int(offset))
         for _ in 0..<length {
             closure(compressed[begins])
             compressed.formIndex(after: &begins)

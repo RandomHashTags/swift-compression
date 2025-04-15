@@ -15,7 +15,7 @@ struct SwiftLangTests {
 
     @Test
     func minifySwiftCode() throws {
-        let code:String = """
+        let code = """
         //
         //  AnyCompressor.swift
         //
@@ -32,7 +32,7 @@ struct SwiftLangTests {
             var quality : CompressionQuality { get }
         }
         """
-        let result:String = try CompressionTechnique.swift.minify(swiftSourceCode: code)
+        let result = try CompressionTechnique.swift.minify(swiftSourceCode: code)
         #expect(result == "public protocol AnyCompressor:Sendable{public var algorithm:CompressionAlgorithm{get};var quality:CompressionQuality{get}}")
     }
 }

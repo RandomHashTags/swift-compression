@@ -12,7 +12,7 @@ import Testing
 
 struct DataBuilderTests {
     @Test func dataBuilder() {
-        var builder:CompressionTechnique.DataBuilder = CompressionTechnique.DataBuilder()
+        var builder:CompressionTechnique.DataBuilder = .init()
         builder.data.reserveCapacity(100)
         builder.write(bits: [true, false, true, false])
         builder.write(bits: [true, true, true, true, true])

@@ -5,6 +5,8 @@
 //  Created by Evan Anderson on 8/15/24.
 //
 
+#if compiler(>=6.0)
+
 import Testing
 @testable import JavaScript
 @testable import SwiftCompressionUtilities
@@ -137,3 +139,5 @@ extension JSParserTests {
         #expect(JSBranch(condition: "true", body: JSBody.empty).string == "if(true){}")
     }
 }
+
+#endif

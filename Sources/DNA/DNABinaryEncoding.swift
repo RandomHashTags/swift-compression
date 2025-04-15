@@ -63,15 +63,15 @@ extension CompressionTechnique.DNABinaryEncoding {
     ) -> UInt8? {
         var bitWriter:ByteBuilder = .init()
         for base in data {
-            if let bits:[Bool] = baseBits[base] {
+            if let bits = baseBits[base] {
                 for bit in bits {
-                    if let wrote:UInt8 = bitWriter.write(bit: bit) {
+                    if let wrote = bitWriter.write(bit: bit) {
                         closure(wrote)
                     }
                 }
             }
         }
-        guard let (byte, validBits):(UInt8, UInt8) = bitWriter.flush() else { return nil }
+        guard let (byte, validBits) = bitWriter.flush() else { return nil }
         closure(byte)
         return validBits
     }
@@ -90,13 +90,13 @@ extension CompressionTechnique.DNABinaryEncoding {
         data: S,
         closure: (UInt8) -> Void
     ) {
-        let reversed:[[Bool]:UInt8] = baseBitsReversed
+        let reversed = baseBitsReversed
         for byte in data {
             var bits:[Bool] = []
             bits.reserveCapacity(4)
             for bit in byte.bits {
                 bits.append(bit)
-                if let base:UInt8 = reversed[bits] {
+                if let base = reversed[bits] {
                     closure(base)
                     bits.removeAll(keepingCapacity: true)
                 }

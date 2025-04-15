@@ -24,19 +24,19 @@ extension CompressionTechnique {
 
                 init(_ binary: (Bool, Bool)) {
                     switch binary {
-                        case (false, false): self = .stored
-                        case (false, true):  self = .staticHuffman
-                        case (true, false):  self = .dynamicHuffman
-                        case (true, true):   self = .reserved
+                    case (false, false): self = .stored
+                    case (false, true):  self = .staticHuffman
+                    case (true, false):  self = .dynamicHuffman
+                    case (true, true):   self = .reserved
                     }
                 }
 
                 var binary : (Bool, Bool) {
                     switch self {
-                        case .stored: return (false, false)
-                        case .staticHuffman: return (false, true)
-                        case .dynamicHuffman: return (true, false)
-                        case .reserved: return (true, true)
+                    case .stored: return (false, false)
+                    case .staticHuffman: return (false, true)
+                    case .dynamicHuffman: return (true, false)
+                    case .reserved: return (true, true)
                     }
                 }
             }

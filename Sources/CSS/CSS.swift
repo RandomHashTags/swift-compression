@@ -42,9 +42,10 @@ extension CompressionTechnique.CSS {
     /// Optionally removes comments and unnecessary whitespace
     @inlinable
     public func minify<C: Collection<UInt8>>(data: C, reserveCapacity: Int) -> [UInt8] {
-        var index:Int = 0
-        let count:Int = data.count
-        var i:Int = 0, result:[UInt8] = .init(repeating: 0, count: count)
+        var index = 0
+        let count = data.count
+        var i = 0
+        var result:[UInt8] = .init(repeating: 0, count: count)
 
         let space:UInt8 = 32
         let pound:UInt8 = 35
@@ -64,19 +65,19 @@ extension CompressionTechnique.CSS {
         }
         var calcDepth:UInt8 = 0
         while i < count {
-            let character:UInt8 = data[i]
-            switch character {
+            let char = data[i]
+            switch char {
             case space,
                 horizontalTab,
                 lineFeed,
                 carriageReturn:
                 if calcDepth > 0 {
-                    assign(byte: character, to: &index, in: &result)
+                    assign(byte: char, to: &index, in: &result)
                 } else {
-                    let next:UInt8 = data[i+1]
-                    let iMinus1:UInt8 = data[i-1]
+                    let next = data[i+1]
+                    let iMinus1 = data[i-1]
                     if iMinus1.char.isLetter && (next == pound || next == period || next.char.isNumber || next.char.isLetter || iMinus1 == d && data[i-2] == n && data[i-3] == a) {
-                        assign(byte: character, to: &index, in: &result)
+                        assign(byte: char, to: &index, in: &result)
                     }
                 }
             case forwardSlash:
@@ -89,24 +90,24 @@ extension CompressionTechnique.CSS {
                         }
                     }
                 } else {
-                    assign(byte: character, to: &index, in: &result)
+                    assign(byte: char, to: &index, in: &result)
                 }
             case 40: // (
                 if calcDepth > 0 || data[i-1] == c && data[i-2] == l && data[i-3] == a && data[i-4] == c { // in calc or calc( was found
                     calcDepth += 1
                 }
-                assign(byte: character, to: &index, in: &result)
+                assign(byte: char, to: &index, in: &result)
             case 41: // )
                 if calcDepth > 0 {
                     calcDepth -= 1
                 }
-                assign(byte: character, to: &index, in: &result)
+                assign(byte: char, to: &index, in: &result)
             default:
-                assign(byte: character, to: &index, in: &result)
+                assign(byte: char, to: &index, in: &result)
             }
             i += 1
         }
-        return [UInt8](result[0..<index])
+        return .init(result[0..<index])
     }
     @inlinable
     func assign(byte: UInt8, to index: inout Int, in data: inout [UInt8]) {

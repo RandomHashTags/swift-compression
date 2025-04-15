@@ -36,7 +36,7 @@ extension CompressionTechnique.DNASingleBlockEncoding {
         data: S,
         reserveCapacity: Int
     ) -> CompressionResult<[UInt8]>? { // TODO: finish
-        let results:[UInt8:[UInt8]] = compressBinary(data: data)
+        let results = compressBinary(data: data)
         for (base, _) in results {
             print("base=\(Character(Unicode.Scalar(base)));result=\(results[base]!.debugDescription)")
         }
@@ -55,18 +55,19 @@ extension CompressionTechnique.DNASingleBlockEncoding {
         data: S
     ) -> [UInt8:[UInt8]] {
         let frequencyTable:[UInt8:Int] = CompressionTechnique.buildFrequencyTable(data: data)
-        var sortedFrequencyTable:[[UInt8:Int].Element] = frequencyTable.sorted(by: {
+        var sortedFrequencyTable = frequencyTable.sorted(by: {
             guard $0.value != $1.value else { return $0.key < $1.key }
             return $0.value > $1.value
         })
         sortedFrequencyTable.removeLast()
-        var sortedIndexes:[UInt8:Int] = [:], results:[UInt8:[UInt8]] = [:]
+        var sortedIndexes:[UInt8:Int] = [:]
+        var results:[UInt8:[UInt8]] = [:]
         for (index, (key, _)) in sortedFrequencyTable.enumerated() {
             results[key] = []
             sortedIndexes[key] = index
         }
         for byte in data {
-            let sortedIndex:Int = sortedIndexes[byte] ?? sortedIndexes.count
+            let sortedIndex = sortedIndexes[byte] ?? sortedIndexes.count
             for i in 0..<sortedIndex {
                 results[sortedFrequencyTable[i].key]!.append(0)
             }
@@ -98,17 +99,17 @@ extension CompressionTechnique.DNASingleBlockEncoding {
         var positionBlock:[UInt8] = []
         positionBlock.reserveCapacity(6)
 
-        var index:Int = 0
-        var bitIndex:Int = 0
+        var index = 0
+        var bitIndex = 0
         var controlBit:UInt8 = 0
         while index < binaryData.count {
-            let bit:UInt8 = binaryData[index]
+            let bit = binaryData[index]
             switch bitIndex {
             case 0:
                 controlBit = bit
                 controlBits.append(bit)
             default:
-                if let previousBit:UInt8 = previousBits.get(bitIndex-1) {
+                if let previousBit = previousBits.get(bitIndex-1) {
                     if bitIndex == 1 && previousBit == 1 {
                         positionBlock.append(0)
                     } else {
@@ -123,8 +124,10 @@ extension CompressionTechnique.DNASingleBlockEncoding {
             bitIndex += 1
             if bitIndex == 7 {
                 compressed.append(controlBit)
-                var code0:[UInt8] = [], code1:[UInt8] = []
-                var found0:Bool = false, found1:Bool = false
+                var code0:[UInt8] = []
+                var code1:[UInt8] = []
+                var found0 = false
+                var found1 = false
                 for bit in positionBlock {
                     if bit == 0 || found0 {
                         found0 = true
