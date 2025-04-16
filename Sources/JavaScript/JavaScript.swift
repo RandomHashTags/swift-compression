@@ -90,22 +90,22 @@ extension CompressionTechnique.JavaScript {
                     case r: // var
                         keep = data.get(i-2) == a && data.get(i-3) == v
                     case t: // let, const
-                        let iMinus2:UInt8? = data.get(i-2)
-                        let iMinus3:UInt8? = data.get(i-3)
+                        let iMinus2 = data.get(i-2)
+                        let iMinus3 = data.get(i-3)
                         keep = (iMinus2 == e && iMinus3 == l) || (iMinus2 == s && iMinus3 == n && data.get(i-4) == o && data.get(i-5) == c)
                     case n: // function, return
-                        let iMinus2:UInt8? = data.get(i-2)
-                        let iMinus3:UInt8? = data.get(i-3)
-                        let iMinus4:UInt8? = data.get(i-4)
-                        let iMinus5:UInt8? = data.get(i-5)
-                        let iMinus6:UInt8? = data.get(i-6)
+                        let iMinus2 = data.get(i-2)
+                        let iMinus3 = data.get(i-3)
+                        let iMinus4 = data.get(i-4)
+                        let iMinus5 = data.get(i-5)
+                        let iMinus6 = data.get(i-6)
                         keep = (iMinus2 == o && iMinus3 == iChar && iMinus4 == t && iMinus5 == c && iMinus6 == n && data.get(i-7) == u && data.get(i-8) == f)
                                 || (iMinus2 == r && iMinus3 == u && iMinus4 == t && iMinus5 == e && iMinus6 == r)
                     case f: // of, typeof, instanceof
-                        let iMinus3:UInt8? = data.get(i-3)
-                        let iMinus4:UInt8? = data.get(i-4)
-                        let iMinus5:UInt8? = data.get(i-5)
-                        let iMinus6:UInt8? = data.get(i-6)
+                        let iMinus3 = data.get(i-3)
+                        let iMinus4 = data.get(i-4)
+                        let iMinus5 = data.get(i-5)
+                        let iMinus6 = data.get(i-6)
                         keep = data.get(i-2) == o && (iMinus3 == space
                                                 || iMinus3 == e && iMinus4 == p && iMinus5 == y && iMinus6 == t
                                                 || iMinus3 == e && iMinus4 == c && iMinus5 == n && iMinus6 == a && data.get(i-7) == t && data.get(i-8) == s && data.get(i-9) == n && data.get(i-10) == iChar
@@ -113,9 +113,9 @@ extension CompressionTechnique.JavaScript {
                     case w: // new
                         keep = data.get(i-2) == e && data.get(i-3) == n
                     case e: // else if, case 0-9
-                        let iMinus2:UInt8? = data.get(i-2)
-                        let iMinus3:UInt8? = data.get(i-3)
-                        let iMinus4:UInt8? = data.get(i-4)
+                        let iMinus2 = data.get(i-2)
+                        let iMinus3 = data.get(i-3)
+                        let iMinus4 = data.get(i-4)
                         keep = (iMinus2 == s && iMinus3 == l && iMinus4 == e) && iPlus1 == iChar && iPlus2 == f
                             || (iMinus2 == s && iMinus3 == a && iMinus4 == c && (iPlus1 != nil ? iPlus1! >= 48 && iPlus1! <= 57 : false)) // 48 = "0"; 57 = "9"
                     default:
@@ -123,7 +123,7 @@ extension CompressionTechnique.JavaScript {
                     }
                 }
             case forwardSlash:
-                let iPlus1:UInt8? = data.getPositive(i+1), isMultiline:Bool = iPlus1 == asterisk
+                let iPlus1 = data.getPositive(i+1), isMultiline:Bool = iPlus1 == asterisk
                 if iPlus1 == forwardSlash || isMultiline {
                     let endFunction:(UInt8?, Int) -> Bool, increment:Int
                     if isMultiline {
