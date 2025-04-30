@@ -39,6 +39,7 @@ extension CompressionTechnique.Huffman {
     ///   - data: Sequence of bytes to compress.
     ///   - continuation: The `AsyncStream<UInt8>.Continuation`.
     @inlinable
+    @available(macOS 10.15, iOS 13.0, watchOS 6.0, tvOS 13.0, *)
     public static func compress<S: Sequence<UInt8>>(
         data: S,
         bufferingPolicy limit: AsyncStream<UInt8>.Continuation.BufferingPolicy = .unbounded
@@ -109,6 +110,7 @@ extension CompressionTechnique.Huffman {
     ///   - continuation: The `AsyncStream<UInt8>.Continuation`.
     /// - Complexity: O(_n_) where _n_ is the length of `data`.
     @inlinable
+    @available(macOS 10.15, iOS 13.0, watchOS 6.0, tvOS 13.0, *)
     public static func decompress(
         data: [UInt8],
         root: Node?,
@@ -177,6 +179,7 @@ extension CompressionTechnique.Huffman {
     ///   - continuation: The `AsyncStream<UInt8>.Continuation`.
     // /// - Complexity: O(_n_ + _m_) where _n_ is the length of `data` and _m_ is the length of `frequencyTable`. // TODO: FIX
     @inlinable
+    @available(macOS 10.15, iOS 13.0, watchOS 6.0, tvOS 13.0, *)
     public static func decompress(
         data: [UInt8],
         frequencyTable: [Int],

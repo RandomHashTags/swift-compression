@@ -43,6 +43,7 @@ extension CompressionTechnique.SwiftLang { // TODO: support
     }
 }*/
 // MARK: Minify
+@available(macOS 13.0, iOS 16.0, watchOS 9.0, tvOS 16.0, *)
 extension CompressionTechnique.SwiftLang {
     /// Minifies Swift code to make it suitable for production-only usage, which results in the minimum binary size required to represent the same code.
     /// 
@@ -113,11 +114,14 @@ extension CompressionTechnique.SwiftLang {
     }
 }
 
+@available(macOS 13.0, iOS 16.0, watchOS 9.0, tvOS 16.0, *)
 extension Regex : @retroactive Equatable {
     public static func == (lhs: Regex, rhs: Regex) -> Bool {
         false
     }
 }
+
+@available(macOS 13.0, iOS 16.0, watchOS 9.0, tvOS 16.0, *)
 extension Regex : @retroactive Hashable {
     public func hash(into hasher: inout Hasher) {
     }

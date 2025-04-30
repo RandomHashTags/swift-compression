@@ -60,6 +60,7 @@ extension Collection where Element == UInt8 {
     /// - Returns: An `AsyncStream<UInt8>` that receives a decompressed byte.
     /// - Complexity: Varies by technique; minimum of O(_n_) where _n_ is the length of the sequence.
     @inlinable
+    @available(macOS 10.15, iOS 13.0, watchOS 6.0, tvOS 13.0, *)
     public func decompress<T: Decompressor>(
         using technique: T,
         bufferingPolicy limit: AsyncThrowingStream<UInt8, Error>.Continuation.BufferingPolicy = .unbounded

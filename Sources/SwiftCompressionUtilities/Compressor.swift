@@ -66,6 +66,7 @@ extension Compressor {
     ///   - LZ77: O(_n_)
     ///   - Snappy: O(_n_)
     @inlinable
+    @available(macOS 10.15, iOS 13.0, watchOS 6.0, tvOS 13.0, *)
     public func compress<C: Collection<UInt8>>(
         data: C,
         continuation: AsyncStream<UInt8>.Continuation

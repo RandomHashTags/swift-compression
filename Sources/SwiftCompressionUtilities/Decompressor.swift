@@ -60,6 +60,7 @@ extension Decompressor where DecompressClosureParameters == UInt8 {
     ///   - Run-length encoding: O(_n_)
     ///   - Snappy: O(_n_)
     @inlinable
+    @available(macOS 10.15, iOS 13.0, watchOS 6.0, tvOS 13.0, *)
     public func decompress<C: Collection<UInt8>>(
         data: C,
         continuation: AsyncThrowingStream<UInt8, Error>.Continuation

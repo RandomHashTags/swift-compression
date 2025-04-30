@@ -115,6 +115,7 @@ public struct ByteBuilder {
 
     /// - Complexity: O(1).
     @inlinable
+    @available(macOS 10.15, iOS 13.0, watchOS 6.0, tvOS 13.0, *)
     public mutating func flush(into stream: AsyncStream<UInt8>.Continuation) {
         guard let wrote:UInt8 = flush()?.lastByte else { return }
         stream.yield(wrote)
@@ -132,6 +133,33 @@ public struct ByteBuilder {
 
 // MARK: Stream & Data Builder
 extension CompressionTechnique {
+    public struct DataBuilder {
+        public var data:[UInt8]
+        public var builder:ByteBuilder
+
+        public init(data: [UInt8] = [], builder: ByteBuilder = ByteBuilder()) {
+            self.data = data
+            self.builder = builder
+        }
+
+        @inlinable
+        public mutating func write(bit: Bool) {
+            if let wrote:UInt8 = builder.write(bit: bit) {
+                data.append(wrote)
+            }
+        }
+        public mutating func write(bits: [Bool]) {
+            builder.write(bits: bits, closure: { data.append($0) })
+        }
+        public mutating func finalize() {
+            builder.flush(into: &data)
+        }
+    }
+}
+
+// MARK: StreamBuilder
+extension CompressionTechnique {
+    @available(macOS 10.15, iOS 13.0, watchOS 6.0, tvOS 13.0, *)
     public struct StreamBuilder {
         public var stream:AsyncStream<UInt8>.Continuation
         public var builder:ByteBuilder
@@ -153,28 +181,6 @@ extension CompressionTechnique {
         @inlinable
         public mutating func finalize() {
             builder.flush(into: stream)
-        }
-    }
-    public struct DataBuilder {
-        public var data:[UInt8]
-        public var builder:ByteBuilder
-
-        public init(data: [UInt8] = [], builder: ByteBuilder = ByteBuilder()) {
-            self.data = data
-            self.builder = builder
-        }
-
-        @inlinable
-        public mutating func write(bit: Bool) {
-            if let wrote:UInt8 = builder.write(bit: bit) {
-                data.append(wrote)
-            }
-        }
-        public mutating func write(bits: [Bool]) {
-            builder.write(bits: bits, closure: { data.append($0) })
-        }
-        public mutating func finalize() {
-            builder.flush(into: &data)
         }
     }
 }
