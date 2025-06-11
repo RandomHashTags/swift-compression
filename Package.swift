@@ -13,27 +13,27 @@ let package = Package(
 
         .library(
             name: "SwiftCompressionCSS",
-            targets: ["CSS"]
+            targets: ["CompressionCSS"]
         ),
 
         .library(
             name: "SwiftCompressionDNA",
-            targets: ["DNA"]
+            targets: ["CompressionDNA"]
         ),
 
         .library(
             name: "SwiftCompressionJavaScript",
-            targets: ["JavaScript"]
+            targets: ["CompressionJavaScript"]
         ),
 
         .library(
             name: "SwiftCompressionLZ",
-            targets: ["LZ"]
+            targets: ["CompressionLZ"]
         ),
 
         .library(
             name: "SwiftCompressionSnappy",
-            targets: ["Snappy"]
+            targets: ["CompressionSnappy"]
         ),
     ],
     // MARK: Targets
@@ -46,44 +46,49 @@ let package = Package(
             name: "SwiftCompression",
             dependencies: [
                 "SwiftCompressionUtilities",
-                "CSS",
-                "DNA",
-                "JavaScript",
-                "LZ",
-                "Snappy"
+                "CompressionCSS",
+                "CompressionDNA",
+                "CompressionJavaScript",
+                "CompressionLZ",
+                "CompressionSnappy"
             ]
         ),
 
         // MARK: Techniques
         .target(
-            name: "CSS",
+            name: "CompressionCSS",
             dependencies: [
                 "SwiftCompressionUtilities"
-            ]
+            ],
+            path: "Sources/CSS"
         ),
         .target(
-            name: "DNA",
+            name: "CompressionDNA",
             dependencies: [
                 "SwiftCompressionUtilities"
-            ]
+            ],
+            path: "Sources/DNA"
         ),
         .target(
-            name: "JavaScript",
+            name: "CompressionJavaScript",
             dependencies: [
                 "SwiftCompressionUtilities"
-            ]
+            ],
+            path: "Sources/JavaScript"
         ),
         .target(
-            name: "LZ",
+            name: "CompressionLZ",
             dependencies: [
                 "SwiftCompressionUtilities"
-            ]
+            ],
+            path: "Sources/LZ"
         ),
         .target(
-            name: "Snappy",
+            name: "CompressionSnappy",
             dependencies: [
                 "SwiftCompressionUtilities"
-            ]
+            ],
+            path: "Sources/Snappy"
         ),
 
         // MARK: Run
@@ -101,23 +106,23 @@ let package = Package(
         ),
         .testTarget(
             name: "CSSTests",
-            dependencies: ["CSS"]
+            dependencies: ["CompressionCSS"]
         ),
         .testTarget(
             name: "DNATests",
-            dependencies: ["DNA"]
+            dependencies: ["CompressionDNA"]
         ),
         .testTarget(
             name: "JavaScriptTests",
-            dependencies: ["JavaScript"]
+            dependencies: ["CompressionJavaScript"]
         ),
         .testTarget(
             name: "LZTests",
-            dependencies: ["LZ"]
+            dependencies: ["CompressionLZ"]
         ),
         .testTarget(
             name: "SnappyTests",
-            dependencies: ["Snappy"]
+            dependencies: ["CompressionSnappy"]
         )
     ]
 )

@@ -5,11 +5,11 @@
 //  Created by Evan Anderson on 12/9/24.
 //
 
-@_exported import DNA
-@_exported import CSS
-@_exported import JavaScript
-@_exported import LZ
-@_exported import Snappy
+@_exported import CompressionDNA
+@_exported import CompressionCSS
+@_exported import CompressionJavaScript
+@_exported import CompressionLZ
+@_exported import CompressionSnappy
 @_exported import SwiftCompressionUtilities
 
 // MARK: Technique
