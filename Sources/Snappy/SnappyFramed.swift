@@ -1,9 +1,3 @@
-//
-//  SnappyFramed.swift
-//
-//
-//  Created by Evan Anderson on 1/23/25.
-//
 
 import SwiftCompressionUtilities
 
@@ -15,9 +9,9 @@ extension CompressionTechnique {
     /// https://github.com/google/snappy
     public static let snappyFramed:SnappyFramed = SnappyFramed()
 
-    public struct SnappyFramed : Compressor, Decompressor {        
-        @inlinable public var algorithm : CompressionAlgorithm { .snappyFramed }
-        @inlinable public var quality : CompressionQuality { .lossless }
+    public struct SnappyFramed: Compressor, Decompressor {        
+        @inlinable public var algorithm: CompressionAlgorithm { .snappyFramed }
+        @inlinable public var quality: CompressionQuality { .lossless }
     }
 }
 
@@ -27,7 +21,7 @@ extension CompressionTechnique.SnappyFramed { // TODO: finish
     ///   - data: Sequence of bytes to compress.
     /// - Complexity: O(_n_) where _n_ is the length of `data`.
     @inlinable
-    public func compress<C: Collection<UInt8>>(data: C, closure: (UInt8) -> Void) -> UInt8? {
+    public func compress(data: some Collection<UInt8>, closure: (UInt8) -> Void) -> UInt8? {
         return nil
     }
 }
@@ -39,8 +33,8 @@ extension CompressionTechnique.SnappyFramed { // TODO: finish
     ///   - closure: Logic to execute when a byte is decompressed.
     /// - Complexity: O(_n_) where _n_ is the length of `data`.
     @inlinable
-    public func decompress<C: Collection<UInt8>>(
-        data: C,
+    public func decompress(
+        data: some Collection<UInt8>,
         closure: (UInt8) -> Void
     ) {
     }

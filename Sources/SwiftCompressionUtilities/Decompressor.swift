@@ -1,12 +1,6 @@
-//
-//  Decompressor.swift
-//
-//
-//  Created by Evan Anderson on 1/22/25.
-//
 
 // MARK: Decompressor
-public protocol Decompressor : AnyDecompressor {
+public protocol Decompressor: AnyDecompressor {
     associatedtype DecompressClosureParameters
 
     /// Decompress a collection of bytes using this technique.
@@ -20,8 +14,8 @@ public protocol Decompressor : AnyDecompressor {
     ///   - Run-length encoding: O(_n_)
     ///   - Snappy: O(_n_)
     @inlinable
-    func decompress<C: Collection<UInt8>>(
-        data: C,
+    func decompress(
+        data: some Collection<UInt8>,
         closure: (DecompressClosureParameters) -> Void
     ) throws(DecompressionError)
 }
@@ -39,11 +33,11 @@ extension Decompressor where DecompressClosureParameters == UInt8 {
     ///   - Run-length encoding: O(_n_)
     ///   - Snappy: O(_n_)
     @inlinable
-    public func decompress<C: Collection<UInt8>>(
-        data: C,
+    public func decompress(
+        data: some Collection<UInt8>,
         reserveCapacity: Int = 1024
     ) throws(DecompressionError) -> [UInt8] {
-        var decompressed:[UInt8] = []
+        var decompressed = [UInt8]()
         decompressed.reserveCapacity(reserveCapacity)
         try decompress(data: data) { decompressed.append($0) }
         return decompressed
@@ -61,8 +55,8 @@ extension Decompressor where DecompressClosureParameters == UInt8 {
     ///   - Snappy: O(_n_)
     @inlinable
     @available(macOS 10.15, iOS 13.0, watchOS 6.0, tvOS 13.0, *)
-    public func decompress<C: Collection<UInt8>>(
-        data: C,
+    public func decompress(
+        data: some Collection<UInt8>,
         continuation: AsyncThrowingStream<UInt8, Error>.Continuation
     ) throws(DecompressionError) {
         try decompress(data: data) { continuation.yield($0) }

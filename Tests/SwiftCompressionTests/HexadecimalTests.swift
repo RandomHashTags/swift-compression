@@ -1,9 +1,3 @@
-//
-//  HexadecimalTests.swift
-//
-//
-//  Created by Evan Anderson on 12/10/24.
-//
 
 #if compiler(>=6.0)
 

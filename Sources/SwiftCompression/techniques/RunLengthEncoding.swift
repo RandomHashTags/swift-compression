@@ -1,9 +1,3 @@
-//
-//  RunLengthEncoding.swift
-//
-//
-//  Created by Evan Anderson on 12/9/24.
-//
 
 import SwiftCompressionUtilities
 
@@ -17,7 +11,7 @@ extension CompressionTechnique {
         return RunLengthEncoding(minRun: minRun, alwaysIncludeRunCount: alwaysIncludeRunCount)
     }
 
-    public struct RunLengthEncoding : Compressor, Decompressor {
+    public struct RunLengthEncoding: Compressor, Decompressor {
         public typealias CompressClosureParameters = (run: Int, byte: UInt8)
 
         /// Minimum run count required to compress identical sequential bytes.
@@ -31,8 +25,8 @@ extension CompressionTechnique {
             self.alwaysIncludeRunCount = alwaysIncludeRunCount
         }
 
-        @inlinable public var algorithm : CompressionAlgorithm { .runLengthEncoding(minRun: minRun, alwaysIncludeRunCount: alwaysIncludeRunCount) }
-        @inlinable public var quality : CompressionQuality { .lossless }
+        @inlinable public var algorithm: CompressionAlgorithm { .runLengthEncoding(minRun: minRun, alwaysIncludeRunCount: alwaysIncludeRunCount) }
+        @inlinable public var quality: CompressionQuality { .lossless }
     }
 }
 
@@ -67,11 +61,12 @@ extension CompressionTechnique.RunLengthEncoding {
     ///   - closure: Logic to execute for a run.
     /// - Complexity: O(_n_) where _n_ is the length of `data`.
     @inlinable
-    public func compress<S: Sequence<UInt8>>(data: S, closure: (CompressClosureParameters) -> Void) -> UInt8? {
-        var run:Int = 0, runByte:UInt8? = nil
+    public func compress(data: some Sequence<UInt8>, closure: (CompressClosureParameters) -> Void) -> UInt8? {
+        var run = 0
+        var runByte:UInt8? = nil
         data.withContiguousStorageIfAvailable { p in
             for index in 0..<p.count {
-                let byte:UInt8 = p[index]
+                let byte = p[index]
                 if runByte == byte {
                     if run == 64 {
                         closure((run, runByte!))
@@ -80,7 +75,7 @@ extension CompressionTechnique.RunLengthEncoding {
                         run += 1
                     }
                 } else {
-                    if let runByte:UInt8 = runByte {
+                    if let runByte {
                         closure((run, runByte))
                     }
                     runByte = byte
@@ -88,7 +83,7 @@ extension CompressionTechnique.RunLengthEncoding {
                 }
             }
         }
-        if let runByte:UInt8 = runByte {
+        if let runByte {
             closure((run, runByte))
         }
         return nil
@@ -102,9 +97,11 @@ extension CompressionTechnique.RunLengthEncoding {
     ///   - closure: Logic to execute for a run.
     /// - Complexity: O(_n_) where _n_ is the length of `data`.
     @inlinable
-    public func decompress<C: Collection<UInt8>>(data: C, closure: (UInt8) -> Void) {
-        let count:Int = data.count
-        var index:Int = 0, run:UInt8 = 0, character:UInt8 = 0
+    public func decompress(data: some Collection<UInt8>, closure: (UInt8) -> Void) {
+        let count = data.count
+        var index = 0
+        var run:UInt8 = 0
+        var character:UInt8 = 0
         while index < count {
             run = data[index]
             if run > 191 {

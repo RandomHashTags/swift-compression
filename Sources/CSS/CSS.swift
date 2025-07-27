@@ -1,27 +1,21 @@
-//
-//  CSS.swift
-//
-//
-//  Created by Evan Anderson on 1/22/25.
-//
 
 import SwiftCompressionUtilities
 
 extension CompressionTechnique {
 
     /// CSS compression techniques.
-    public static let css:CSS = CSS()
+    public static let css = CSS()
 
-    public struct CSS : Compressor {
-        @inlinable public var algorithm : CompressionAlgorithm { .programmingLanguage(.css) }
-        @inlinable public var quality : CompressionQuality { .lossy }
+    public struct CSS: Compressor {
+        @inlinable public var algorithm: CompressionAlgorithm { .programmingLanguage(.css) }
+        @inlinable public var quality: CompressionQuality { .lossy }
     }
 }
 
 // MARK: Compress
 extension CompressionTechnique.CSS {
     @inlinable
-    public func compress<C: Collection<UInt8>>(data: C, reserveCapacity: Int) throws(CompressionError) -> CompressionResult<[UInt8]> {
+    public func compress(data: some Collection<UInt8>, reserveCapacity: Int) throws(CompressionError) -> CompressionResult<[UInt8]> {
         throw CompressionError.unsupportedOperation // TODO: support?
     }
 
@@ -30,7 +24,7 @@ extension CompressionTechnique.CSS {
     ///   - closure: Logic to execute for a run.
     /// - Complexity: O(_n_) where _n_ is the length of `data`.
     @inlinable
-    public func compress<S: Sequence<UInt8>>(data: S, closure: (UInt8) -> Void) -> UInt8? {
+    public func compress(data: some Sequence<UInt8>, closure: (UInt8) -> Void) -> UInt8? {
         return nil // TODO: support?
     }
 }
@@ -41,11 +35,11 @@ extension CompressionTechnique.CSS {
     /// 
     /// Optionally removes comments and unnecessary whitespace
     @inlinable
-    public func minify<C: Collection<UInt8>>(data: C, reserveCapacity: Int) -> [UInt8] {
+    public func minify(data: some Collection<UInt8>, reserveCapacity: Int) -> [UInt8] {
         var index = 0
         let count = data.count
         var i = 0
-        var result:[UInt8] = .init(repeating: 0, count: count)
+        var result = [UInt8](repeating: 0, count: count)
 
         let space:UInt8 = 32
         let pound:UInt8 = 35
@@ -117,5 +111,5 @@ extension CompressionTechnique.CSS {
 }
 
 extension UInt8 {
-    @inlinable var char : Character { Character(UnicodeScalar(self)) }
+    @inlinable var char: Character { Character(UnicodeScalar(self)) }
 }

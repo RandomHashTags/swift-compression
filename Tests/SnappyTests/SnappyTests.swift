@@ -1,9 +1,3 @@
-//
-//  SnappyTests.swift
-//
-//
-//  Created by Evan Anderson on 12/16/24.
-//
 
 #if compiler(>=6.0)
 

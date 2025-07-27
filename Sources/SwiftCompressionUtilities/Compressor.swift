@@ -1,19 +1,13 @@
-//
-//  Compressor.swift
-//
-//
-//  Created by Evan Anderson on 12/16/24.
-//
 
 // MARK: Compressor
-public protocol Compressor : AnyCompressor {
+public protocol Compressor: AnyCompressor {
     associatedtype CompressClosureParameters
 
     @inlinable func compressClosure(closure: @escaping @Sendable (UInt8) -> Void) -> @Sendable (CompressClosureParameters) -> Void
 
     @inlinable
-    func compress<C: Collection<UInt8>>(
-        data: C,
+    func compress(
+        data: some Collection<UInt8>,
         reserveCapacity: Int
     ) throws -> CompressionResult<[UInt8]>
 
@@ -28,8 +22,8 @@ public protocol Compressor : AnyCompressor {
     ///   - LZ77: O(_n_)
     ///   - Snappy: O(_n_)
     @inlinable
-    func compress<C: Collection<UInt8>>(
-        data: C,
+    func compress(
+        data: some Collection<UInt8>,
         closure: (CompressClosureParameters) -> Void
     ) throws(CompressionError) -> UInt8?
 }
@@ -46,11 +40,11 @@ extension Compressor {
     ///   - LZ77: O(_n_)
     ///   - Snappy: O(_n_)
     @inlinable
-    public func compress<C: Collection<UInt8>>(
-        data: C,
+    public func compress(
+        data: some Collection<UInt8>,
         reserveCapacity: Int = 1024
     ) throws(CompressionError) -> CompressionResult<[UInt8]> {
-        var compressed:[UInt8] = []
+        var compressed = [UInt8]()
         compressed.reserveCapacity(reserveCapacity)
         let validBitsInLastByte:UInt8 = try compress(data: data, closure: compressClosure { compressed.append($0) }) ?? 8 // TODO: fix Swift 6 error
         return CompressionResult(data: compressed, validBitsInLastByte: validBitsInLastByte)
@@ -67,8 +61,8 @@ extension Compressor {
     ///   - Snappy: O(_n_)
     @inlinable
     @available(macOS 10.15, iOS 13.0, watchOS 6.0, tvOS 13.0, *)
-    public func compress<C: Collection<UInt8>>(
-        data: C,
+    public func compress(
+        data: some Collection<UInt8>,
         continuation: AsyncStream<UInt8>.Continuation
     ) throws {
         // TODO: finish

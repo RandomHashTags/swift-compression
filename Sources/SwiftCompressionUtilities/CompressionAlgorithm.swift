@@ -1,13 +1,7 @@
-//
-//  CompressionAlgorithm.swift
-//
-//
-//  Created by Evan Anderson on 12/26/24.
-//
 
 // MARK: CompressionAlgorithm
 /// Collection of well-known and useful compression and decompression algorithms.
-public enum CompressionAlgorithm : Hashable, Sendable {
+public enum CompressionAlgorithm: Hashable, Sendable {
     case unknown
 
     // audio
@@ -77,7 +71,7 @@ public enum CompressionAlgorithm : Hashable, Sendable {
 extension CompressionAlgorithm {
     /// Case name of the algorithm.
     @inlinable
-    public var rawValue : String {
+    public var rawValue: String {
         switch self {
         case .unknown: return "unknown"
         

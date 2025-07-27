@@ -1,9 +1,3 @@
-//
-//  JSON.swift
-//
-//
-//  Created by Evan Anderson on 12/14/24.
-//
 
 import SwiftCompressionUtilities
 
@@ -20,51 +14,52 @@ extension CompressionTechnique {
 // MARK: Compress encodable
 extension CompressionTechnique.JSON {
     @inlinable
-    public static func compress<T: Encodable>(encodable: T) -> CompressionResult<[UInt8]>? {
-        guard let data:Data = try? JSONEncoder().encode(encodable) else { return nil }
-        var compressed:[UInt8] = []
+    public static func compress(encodable: some Encodable) -> CompressionResult<[UInt8]>? {
+        guard let data = try? JSONEncoder().encode(encodable) else { return nil }
+        var compressed = [UInt8]()
         compressed.reserveCapacity(data.count)
-        guard let object:Any = try? JSONSerialization.jsonObject(with: data) else { return nil }
-        let quotationMark:UInt8 = 34, comma:UInt8 = 44
+        guard let object = try? JSONSerialization.jsonObject(with: data) else { return nil }
+        let quotationMark:UInt8 = 34
+        let comma:UInt8 = 44
         func encode(_ value: Any) {
-            if var string:String = value as? String {
+            if var string = value as? String {
                 compressed.append(comma)
                 compressed.append(quotationMark)
                 while !string.isEmpty {
-                    let char:Character = string.removeFirst()
-                    if let value:UInt8 = char.asciiValue {
+                    let char = string.removeFirst()
+                    if let value = char.asciiValue {
                         compressed.append(value)
                     }
                 }
                 compressed.append(quotationMark)
-            } else if let int:any FixedWidthInteger = value as? any FixedWidthInteger {
+            } else if let int = value as? any FixedWidthInteger {
                 compressed.append(comma)
-                var builder:CompressionTechnique.DataBuilder = CompressionTechnique.DataBuilder()
+                var builder = CompressionTechnique.DataBuilder()
                 builder.write(bits: int.bits)
                 builder.finalize()
                 compressed.append(contentsOf: builder.data)
-            } else if let dic:[String:Any] = value as? [String:Any] {
+            } else if let dic = value as? [String:Any] {
                 compressed.append(comma)
                 for value in dic.values {
                     encode(value)
                 }
-            } else if let array:[Any] = value as? [Any] {
+            } else if let array = value as? [Any] {
                 compressed.append(comma)
                 for value in array {
                     encode(value)
                 }
-            } else if let bool:Bool = value as? Bool {
+            } else if let bool = value as? Bool {
                 compressed.append(comma)
                 compressed.append(contentsOf: bool ? [] : [])
             }
         }
-        if let dic:[String:Any] = object as? [String:Any] {
+        if let dic = object as? [String:Any] {
             for value in dic.values {
                 encode(value)
             }
             compressed[0] = 91 // [
             compressed.append(93) // ]
-        } else if let array:[Any] = object as? [Any] {
+        } else if let array = object as? [Any] {
             for value in array {
                 encode(value)
             }
@@ -81,7 +76,7 @@ extension CompressionTechnique.JSON {
 // MARK: Compress
 extension CompressionTechnique.JSON {
     @inlinable
-    public static func compress<S: Sequence<UInt8>>(data: S) -> CompressionResult<[UInt8]>? {
+    public static func compress(data: some Sequence<UInt8>) -> CompressionResult<[UInt8]>? {
         return nil
     }
 }

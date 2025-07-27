@@ -1,9 +1,3 @@
-//
-//  SequenceExtensions.swift
-//
-//
-//  Created by Evan Anderson on 12/10/24.
-//
 
 #if canImport(Foundation)
 import Foundation
@@ -32,7 +26,7 @@ extension Collection {
     }
 
     @inlinable
-    package subscript<T: FixedWidthInteger>(_ index: T) -> Element {
+    package subscript(_ index: some FixedWidthInteger) -> Element {
         get { self[self.index(startIndex, offsetBy: Int(index))] }
     }
 }

@@ -1,9 +1,3 @@
-//
-//  CompressionQuality.swift
-//
-//
-//  Created by Evan Anderson on 1/22/25.
-//
 
 /// Quality of the compressed data a compression algorithm uses.
 /// 

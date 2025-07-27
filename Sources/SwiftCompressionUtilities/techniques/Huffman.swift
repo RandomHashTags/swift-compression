@@ -1,9 +1,3 @@
-//
-//  Huffman.swift
-//
-//
-//  Created by Evan Anderson on 12/9/24.
-//
 
 extension CompressionTechnique {
     /// The Huffman coding compression technique.
@@ -20,11 +14,11 @@ extension CompressionTechnique.Huffman {
     /// - Parameters:
     ///   - data: Sequence of bytes to compress.
     @inlinable
-    public static func compress<S: Sequence<UInt8>>(data: S) -> CompressionResult<[UInt8]>? {
+    public static func compress(data: some Sequence<UInt8>) -> CompressionResult<[UInt8]>? {
         return compress(data: data) { frequencies, codes, root in
             var compressed:[UInt8] = [8]
             var vBitsInLastByte:UInt8 = 8
-            if let (lastByte, validBitsInLastByte):(UInt8, UInt8) = translate(data: data, codes: codes, closure: { compressed.append($0) }) {
+            if let (lastByte, validBitsInLastByte) = translate(data: data, codes: codes, closure: { compressed.append($0) }) {
                 compressed[0] = validBitsInLastByte
                 compressed.append(lastByte)
                 vBitsInLastByte = validBitsInLastByte
@@ -40,15 +34,15 @@ extension CompressionTechnique.Huffman {
     ///   - continuation: The `AsyncStream<UInt8>.Continuation`.
     @inlinable
     @available(macOS 10.15, iOS 13.0, watchOS 6.0, tvOS 13.0, *)
-    public static func compress<S: Sequence<UInt8>>(
-        data: S,
+    public static func compress(
+        data: some Sequence<UInt8>,
         bufferingPolicy limit: AsyncStream<UInt8>.Continuation.BufferingPolicy = .unbounded
     ) -> CompressionResult<AsyncStream<UInt8>>? {
         // TODO: fix
         return compress(data: data) { frequencies, codes, root in
             var vBitsInLastByte:UInt8 = 8
-            let stream:AsyncStream<UInt8> = AsyncStream(bufferingPolicy: limit) { continuation in
-                if let (lastByte, validBitsInLastByte):(UInt8, UInt8) = translate(data: data, codes: codes, closure: { continuation.yield($0) }) {
+            let stream = AsyncStream(bufferingPolicy: limit) { continuation in
+                if let (lastByte, validBitsInLastByte) = translate(data: data, codes: codes, closure: { continuation.yield($0) }) {
                     continuation.yield(lastByte)
                     vBitsInLastByte = validBitsInLastByte
                 }
@@ -59,25 +53,25 @@ extension CompressionTechnique.Huffman {
     }
 
     @inlinable
-    public static func compress<T, S: Sequence<UInt8>>(data: S, closure: ([Int], [UInt8:String], Node) -> T) -> T? {
-        var frequencies:[Int] = Array(repeating: 0, count: Int(UInt8.max-1))
+    public static func compress<T>(data: some Sequence<UInt8>, closure: ([Int], [UInt8:String], Node) -> T) -> T? {
+        var frequencies = Array(repeating: 0, count: Int(UInt8.max-1))
         for byte in data {
             frequencies[Int(byte)] += 1
         }
-        guard let root:Node = buildTree(frequencies: frequencies) else { return nil }
-        var codes:[UInt8:String] = [:]
+        guard let root = buildTree(frequencies: frequencies) else { return nil }
+        var codes = [UInt8:String]()
         generateCodes(node: root, codes: &codes)
         return closure(frequencies, codes, root)
     }
 
     /// - Complexity: O(_n_ + _m_) where _n_ is the length of `data` and _m_ is the sum of the code lengths.
     @inlinable
-    public static func translate<T: Sequence<UInt8>>(data: T, codes: [UInt8:String], closure: (UInt8) -> Void) -> (lastByte: UInt8, validBits: UInt8)? {
-        var builder:ByteBuilder = .init()
+    public static func translate(data: some Sequence<UInt8>, codes: [UInt8:String], closure: (UInt8) -> Void) -> (lastByte: UInt8, validBits: UInt8)? {
+        var builder = ByteBuilder()
         for byte in data {
-            if let tree:String = codes[byte] {
+            if let tree = codes[byte] {
                 for char in tree {
-                    if let wrote:UInt8 = builder.write(bit: char == "1") {
+                    if let wrote = builder.write(bit: char == "1") {
                         closure(wrote)
                     }
                 }
@@ -97,7 +91,7 @@ extension CompressionTechnique.Huffman {
     /// - Complexity: O(_n_) where _n_ is the length of `data`.
     @inlinable
     public static func decompress(data: [UInt8], root: Node?) -> [UInt8] {
-        var result:[UInt8] = []
+        var result = [UInt8]()
         decompress(data: data, root: root) { result.append($0) }
         return result
     }
@@ -124,33 +118,33 @@ extension CompressionTechnique.Huffman {
     /// - Complexity: O(_n_) where _n_ is the length of `data`.
     @inlinable
     public static func decompress(data: [UInt8], root: Node?, closure: (UInt8) -> Void) {
-        let countMinusOne:Int = data.count-1
-        var node:Node? = root
-        var index:Int = 1
+        let countMinusOne = data.count-1
+        var node = root
+        var index = 1
         while index < countMinusOne {
-            let bits:[Bool] = data[index].bits
+            let bits = data[index].bits
             for bit in 0..<8 {
                 if bits[bit] {
                     node = node?.right
                 } else {
                     node = node?.left
                 }
-                if let char:UInt8 = node?.character {
+                if let char = node?.character {
                     closure(char)
                     node = root
                 }
             }
             index += 1
         }
-        let validBitsInLastByte:UInt8 = data[0]
-        let lastBits:[Bool] = data[countMinusOne].bits
+        let validBitsInLastByte = data[0]
+        let lastBits = data[countMinusOne].bits
         for bit in 0..<validBitsInLastByte {
             if lastBits[Int(bit)] {
                 node = node?.right
             } else {
                 node = node?.left
             }
-            if let char:UInt8 = node?.character {
+            if let char = node?.character {
                 closure(char)
                 node = root
             }
@@ -167,7 +161,7 @@ extension CompressionTechnique.Huffman {
     // /// - Complexity: O(_n_ + _m_) where _n_ is the length of `data` and _m_ is the length of `frequencyTable`. // TODO: FIX
     @inlinable
     public static func decompress(data: [UInt8], frequencyTable: [Int]) -> [UInt8] {
-        guard let root:Node = buildTree(frequencies: frequencyTable) else { return data }
+        guard let root = buildTree(frequencies: frequencyTable) else { return data }
         return decompress(data: data, root: root)
     }
 
@@ -185,23 +179,23 @@ extension CompressionTechnique.Huffman {
         frequencyTable: [Int],
         continuation: AsyncStream<UInt8>.Continuation
     ) {
-        guard let root:Node = buildTree(frequencies: frequencyTable) else { return }
+        guard let root = buildTree(frequencies: frequencyTable) else { return }
         decompress(data: data, root: root, continuation: continuation)
     }
     
     @inlinable
     public static func decompress(data: [UInt8], frequencyTable: [Int], closure: (UInt8) -> Void) {
-        guard let root:Node = buildTree(frequencies: frequencyTable) else { return }
+        guard let root = buildTree(frequencies: frequencyTable) else { return }
         decompress(data: data, root: root, closure: closure)
     }
 
     @inlinable
     public static func decompress(data: [UInt8], codes: [[Bool]:UInt8], closure: (UInt8) -> Void) {
-        var code:[Bool] = []
+        var code = [Bool]()
         code.reserveCapacity(3)
         for bit in data {
             code.append(bit == 1)
-            if let char:UInt8 = codes[code] {
+            if let char = codes[code] {
                 closure(char)
                 code.removeAll(keepingCapacity: true)
             }
@@ -212,7 +206,7 @@ extension CompressionTechnique.Huffman {
 // MARK: Node
 extension CompressionTechnique.Huffman {
     /// A Huffman Node.
-    public final class Node : Comparable, Hashable, Sendable {
+    public final class Node: Comparable, Hashable, Sendable {
         public static func < (left: Node, right: Node) -> Bool {
             return left.frequency < right.frequency
         }
@@ -268,7 +262,7 @@ extension CompressionTechnique.Huffman {
             if heap.count == 1 {
                 return heap.removeLast()
             }
-            let root:T = heap[0]
+            let root = heap[0]
             heap[0] = heap.removeLast()
             siftDown(from: 0)
             return root
@@ -277,9 +271,9 @@ extension CompressionTechnique.Huffman {
         /// - Complexity: O(_n_) where _n_ is the distance between `0` and `index`.
         @inlinable
         mutating func siftUp(from index: Int) {
-            var index:Int = index
+            var index = index
             while index > 0 {
-                let parentIndex:Int = (index - 1) / 2
+                let parentIndex = (index - 1) / 2
                 if heap[index] >= heap[parentIndex] { break }
                 heap.swapAt(index, parentIndex)
                 index = parentIndex
@@ -288,12 +282,13 @@ extension CompressionTechnique.Huffman {
 
         @inlinable
         mutating func siftDown(from index: Int) {
-            let element:T = heap[index], count:Int = heap.count
-            var index:Int = index
+            let element = heap[index]
+            let count = heap.count
+            var index = index
             while true {
-                let leftIndex:Int = (2 * index) + 1
-                let rightIndex:Int = leftIndex + 1
-                var minIndex:Int = index
+                let leftIndex = (2 * index) + 1
+                let rightIndex = leftIndex + 1
+                var minIndex = index
                 
                 if leftIndex < count && heap[leftIndex] < heap[minIndex] {
                     minIndex = leftIndex
@@ -321,15 +316,16 @@ extension CompressionTechnique.Huffman {
     /// - Complexity: O(?)
     @inlinable
     static func buildTree(frequencies: [Int]) -> Node? {
-        var queue:PriorityQueue<Node> = .init()
+        var queue = PriorityQueue<Node>()
         for (char, freq) in frequencies.enumerated() {
             if freq != 0 {
                 queue.push(Node(character: UInt8(char), frequency: freq))
             }
         }
         while queue.heap.count > 1 {
-            let left:Node = queue.pop()!, right:Node = queue.pop()!
-            let merged:Node = Node(frequency: left.frequency + right.frequency, left: left, right: right)
+            let left = queue.pop()!
+            let right = queue.pop()!
+            let merged = Node(frequency: left.frequency + right.frequency, left: left, right: right)
             queue.push(merged)
         }
         return queue.pop()
@@ -340,8 +336,8 @@ extension CompressionTechnique.Huffman {
     /// - Complexity: O(1).
     @inlinable
     static func generateCodes(node: Node?, code: String = "", codes: inout [UInt8:String]) {
-        guard let node:Node = node else { return }
-        if let char:UInt8 = node.character {
+        guard let node else { return }
+        if let char = node.character {
             codes[char] = code
         } else {
             generateCodes(node: node.left, code: code + "0", codes: &codes)
@@ -356,7 +352,7 @@ extension StringProtocol {
     /// - Complexity: O(_n_) where _n_ is the length of the collection.
     @inlinable
     public func huffmanFrequencyTable() -> [Int] {
-        var table:[Int] = Array(repeating: 0, count: 255)
+        var table = Array(repeating: 0, count: 255)
         for char in self {
             for byte in char.utf8 {
                 table[Int(byte)] += 1

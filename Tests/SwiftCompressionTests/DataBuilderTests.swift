@@ -1,9 +1,3 @@
-//
-//  DataBuilderTests.swift
-//
-//
-//  Created by Evan Anderson on 12/14/24.
-//
 
 #if compiler(>=6.0)
 

@@ -1,11 +1,5 @@
-//
-//  CompressionResult.swift
-//
-//
-//  Created by Evan Anderson on 12/9/24.
-//
 
-public struct CompressionResult<T : Sendable> : Sendable {
+public struct CompressionResult<T: Sendable>: Sendable {
     public var data:T
     public var rootNode:CompressionTechnique.Huffman.Node?
     public var frequencyTable:[Int]?

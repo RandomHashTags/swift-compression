@@ -1,9 +1,3 @@
-//
-//  SwiftCompressionUtilities.swift
-//
-//
-//  Created by Evan Anderson on 12/9/24.
-//
 
 // MARK: Collection
 extension Collection where Element == UInt8 {
@@ -12,7 +6,7 @@ extension Collection where Element == UInt8 {
     /// - Returns: The `CompressionResult`.
     /// - Complexity: Varies by technique; minimum of O(_n_) where _n_ is the length of the sequence.
     @inlinable
-    public func compressed<T: Compressor>(using technique: T) throws(CompressionError) -> CompressionResult<[UInt8]> {
+    public func compressed(using technique: some Compressor) throws(CompressionError) -> CompressionResult<[UInt8]> {
         return try technique.compress(data: self)
     }
 
@@ -34,7 +28,7 @@ extension Array where Element == UInt8 {
     /// - Complexity: Varies by technique; minimum of O(_n_) where _n_ is the length of the sequence.
     @discardableResult
     @inlinable
-    public mutating func compress<T: Compressor>(using technique: T) throws(CompressionError) -> Self {
+    public mutating func compress(using technique: some Compressor) throws(CompressionError) -> Self {
         self = try technique.compress(data: self).data
         return self
     }

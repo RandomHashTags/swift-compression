@@ -1,9 +1,3 @@
-//
-//  SwiftLangTests.swift
-//
-//
-//  Created by Evan Anderson on 1/22/25.
-//
 
 #if compiler(>=6.0)
 
@@ -24,12 +18,12 @@ struct SwiftLangTests {
         //
 
         // MARK: AnyCompressor
-        public protocol AnyCompressor : Sendable {
+        public protocol AnyCompressor: Sendable {
             /// Compression algorithm this compressor uses.
-            public var algorithm : CompressionAlgorithm { get }
+            public var algorithm: CompressionAlgorithm { get }
 
             /// Quality of the compressed data.
-            var quality : CompressionQuality { get }
+            var quality: CompressionQuality { get }
         }
         """
         let result = try CompressionTechnique.swift.minify(swiftSourceCode: code)

@@ -1,9 +1,3 @@
-//
-//  ByteBuilder.swift
-//
-//
-//  Created by Evan Anderson on 12/24/24.
-//
 
 // MARK: ByteBuilder
 /// Outputs a byte (`UInt8`) when 8 bits are written or upon flush.

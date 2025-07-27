@@ -1,9 +1,3 @@
-//
-//  JavaScriptTests.swift
-//
-//
-//  Created by Evan Anderson on 1/22/25.
-//
 
 #if compiler(>=6.0)
 

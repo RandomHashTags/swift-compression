@@ -33,7 +33,7 @@ extension CompressionTechnique {
         return LZ77(windowSize: windowSize, bufferSize: bufferSize)
     }
     
-    public struct LZ77<T: FixedWidthInteger & Sendable> : Compressor, Decompressor {
+    public struct LZ77<T: FixedWidthInteger & Sendable>: Compressor, Decompressor {
         /// Size of the window.
         public let windowSize:Int
 
@@ -45,8 +45,8 @@ extension CompressionTechnique {
             self.bufferSize = bufferSize
         }
 
-        @inlinable public var algorithm : CompressionAlgorithm { .lz77(windowSize: windowSize, bufferSize: bufferSize, offsetBitWidth: T.bitWidth) }
-        @inlinable public var quality : CompressionQuality { .lossless }
+        @inlinable public var algorithm: CompressionAlgorithm { .lz77(windowSize: windowSize, bufferSize: bufferSize, offsetBitWidth: T.bitWidth) }
+        @inlinable public var quality: CompressionQuality { .lossless }
     }
 }
 
@@ -59,8 +59,8 @@ extension CompressionTechnique.LZ77 {
     ///   - closure: Logic to execute when a byte is compressed.
     /// - Complexity: O(_n_) where _n_ is the length of `data`.
     @inlinable
-    public func compress<C: Collection<UInt8>>(
-        data: C,
+    public func compress(
+        data: some Collection<UInt8>,
         closure: (UInt8) -> Void
     ) -> UInt8? {
         let count = data.count
@@ -68,7 +68,7 @@ extension CompressionTechnique.LZ77 {
         while index < count {
             let bufferEndIndex = min(index + bufferSize, count)
             guard index < bufferEndIndex else { break }
-            let bufferCount:Int = bufferEndIndex - index
+            let bufferCount = bufferEndIndex - index
             let bufferRange = data.index(data.startIndex, offsetBy: index)..<data.index(data.startIndex, offsetBy: bufferEndIndex)
             let buffer = data[bufferRange]
             let windowRange = data.index(data.startIndex, offsetBy: max(0, index - windowSize))..<data.index(data.startIndex, offsetBy: index)
@@ -115,13 +115,13 @@ extension CompressionTechnique.LZ77 {
     ///   - closure: Logic to execute when a byte was decompressed.
     /// - Complexity: O(_n_) where _n_ is the length of `data`.
     @inlinable
-    public func decompress<C: Collection<UInt8>>(
-        data: C,
+    public func decompress(
+        data: some Collection<UInt8>,
         closure: (UInt8) -> Void
     ) {
         let count = data.count
-        var history:[UInt8] = []
-        var window:[UInt8] = []
+        var history = [UInt8]()
+        var window = [UInt8]()
         var index = 0
         let bytesForOffset = T.bitWidth / 8
         let byteIndexOffset = bytesForOffset + 1
@@ -153,7 +153,7 @@ extension CompressionTechnique.LZ77 {
     }
 
     @inlinable
-    func parseOffset<C: Collection<UInt8>>(data: C, index: Int) -> T {
+    func parseOffset(data: some Collection<UInt8>, index: Int) -> T {
         var byte = T()
         var offsetIndex = index
         for _ in 0...(T.bitWidth / 8)-1 {

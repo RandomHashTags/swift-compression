@@ -1,9 +1,3 @@
-//
-//  DNASingleBlockEncoding.swift
-//
-//
-//  Created by Evan Anderson on 12/18/24.
-//
 
 import SwiftCompressionUtilities
 
@@ -13,16 +7,16 @@ extension CompressionTechnique {
     /// https://www.mdpi.com/1999-4893/13/4/99
     public static let dnaSingleBlockEncoding:DNASingleBlockEncoding = DNASingleBlockEncoding()
 
-    public struct DNASingleBlockEncoding : Compressor, Decompressor {
-        @inlinable public var algorithm : CompressionAlgorithm { .dnaSingleBlockEncoding }
-        @inlinable public var quality : CompressionQuality { .lossless }
+    public struct DNASingleBlockEncoding: Compressor, Decompressor {
+        @inlinable public var algorithm: CompressionAlgorithm { .dnaSingleBlockEncoding }
+        @inlinable public var quality: CompressionQuality { .lossless }
     }
 }
 
 // MARK: Compress
 extension CompressionTechnique.DNASingleBlockEncoding {
     @inlinable
-    public func compress<C: Collection<UInt8>>(data: C, closure: (UInt8) -> Void) throws(CompressionError) -> UInt8? { // TODO: fix
+    public func compress(data: some Collection<UInt8>, closure: (UInt8) -> Void) throws(CompressionError) -> UInt8? { // TODO: fix
         return nil
     }
 
@@ -32,8 +26,8 @@ extension CompressionTechnique.DNASingleBlockEncoding {
     ///   - data: Sequence of bytes to compress.
     /// - Complexity: O(_n_ + (_m_ log _m_)) where _n_ is the length of `data` and _m_ is the number of unique bytes in `data`.
     @inlinable
-    public static func compress<S: Collection<UInt8>>(
-        data: S,
+    public static func compress(
+        data: some Collection<UInt8>,
         reserveCapacity: Int
     ) -> CompressionResult<[UInt8]>? { // TODO: finish
         let results = compressBinary(data: data)
@@ -51,8 +45,8 @@ extension CompressionTechnique.DNASingleBlockEncoding {
     ///   - data: Sequence of bytes to compress.
     /// - Complexity: O(_n_ + (_m_ log _m_)) where _n_ is the length of `data` and _m_ is the number of unique bytes in `data`.
     @inlinable
-    static func compressBinary<S: Sequence<UInt8>>(
-        data: S
+    static func compressBinary(
+        data: some Sequence<UInt8>
     ) -> [UInt8:[UInt8]] {
         let frequencyTable:[UInt8:Int] = CompressionTechnique.buildFrequencyTable(data: data)
         var sortedFrequencyTable = frequencyTable.sorted(by: {
@@ -60,8 +54,8 @@ extension CompressionTechnique.DNASingleBlockEncoding {
             return $0.value > $1.value
         })
         sortedFrequencyTable.removeLast()
-        var sortedIndexes:[UInt8:Int] = [:]
-        var results:[UInt8:[UInt8]] = [:]
+        var sortedIndexes = [UInt8:Int]()
+        var results = [UInt8:[UInt8]]()
         for (index, (key, _)) in sortedFrequencyTable.enumerated() {
             results[key] = []
             sortedIndexes[key] = index
@@ -88,15 +82,15 @@ extension CompressionTechnique.DNASingleBlockEncoding {
     /// - Returns: Compressed bit blocks and the control bits.
     /// - Complexity: O(_n_) where _n_ is the length of `binaryData`.
     @inlinable
-    static func compressSBE<C: Collection<UInt8>>(
-        binaryData: C
+    static func compressSBE(
+        binaryData: some Collection<UInt8>
     ) -> (data: [UInt8], controlBits: [UInt8]) {
-        var compressed:[UInt8] = []
-        var controlBits:[UInt8] = []
+        var compressed = [UInt8]()
+        var controlBits = [UInt8]()
 
-        var previousBits:[UInt8] = []
+        var previousBits = [UInt8]()
         previousBits.reserveCapacity(6)
-        var positionBlock:[UInt8] = []
+        var positionBlock = [UInt8]()
         positionBlock.reserveCapacity(6)
 
         var index = 0
@@ -124,8 +118,8 @@ extension CompressionTechnique.DNASingleBlockEncoding {
             bitIndex += 1
             if bitIndex == 7 {
                 compressed.append(controlBit)
-                var code0:[UInt8] = []
-                var code1:[UInt8] = []
+                var code0 = [UInt8]()
+                var code1 = [UInt8]()
                 var found0 = false
                 var found1 = false
                 for bit in positionBlock {
@@ -159,7 +153,7 @@ extension CompressionTechnique.DNASingleBlockEncoding {
 // MARK: Decompress
 extension CompressionTechnique.DNASingleBlockEncoding { // TODO: finish
     @inlinable
-    public func decompress<C: Collection<UInt8>>(data: C, closure: (UInt8) -> Void) throws(DecompressionError) {
+    public func decompress(data: some Collection<UInt8>, closure: (UInt8) -> Void) throws(DecompressionError) {
     }
 
     /// Decompress a sequence of bytes using the DNA single block encoding technique.

@@ -1,9 +1,3 @@
-//
-//  SwiftCompression.swift
-//
-//
-//  Created by Evan Anderson on 12/9/24.
-//
 
 @_exported import CompressionDNA
 @_exported import CompressionCSS
@@ -16,7 +10,7 @@
 extension CompressionAlgorithm {
     /// Compressor technique used for this algorithm.
     @inlinable
-    public var technique : (any Compressor)? {
+    public var technique: (any Compressor)? {
         switch self {
         case .unknown: return nil
         case .aac: return nil

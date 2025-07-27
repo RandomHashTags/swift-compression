@@ -1,9 +1,3 @@
-//
-//  Snappy.swift
-//
-//
-//  Created by Evan Anderson on 12/9/24.
-//
 
 import SwiftCompressionUtilities
 
@@ -18,7 +12,7 @@ extension CompressionTechnique {
         return Snappy(windowSize: windowSize)
     }
 
-    public struct Snappy : Compressor, Decompressor {
+    public struct Snappy: Compressor, Decompressor {
 
         /// Size of the window.
         public let windowSize:Int
@@ -27,17 +21,17 @@ extension CompressionTechnique {
             self.windowSize = windowSize
         }
 
-        @inlinable public var algorithm : CompressionAlgorithm { .snappy(windowSize: windowSize) }
-        @inlinable public var quality : CompressionQuality { .lossless }
+        @inlinable public var algorithm: CompressionAlgorithm { .snappy(windowSize: windowSize) }
+        @inlinable public var quality: CompressionQuality { .lossless }
     }
 }
 
 // MARK: Compress
 extension CompressionTechnique.Snappy {
-    public func compress<C: Collection<UInt8>>(data: C, closure: (UInt8) -> Void) throws(CompressionError) -> UInt8? {
+    public func compress(data: some Collection<UInt8>, closure: (UInt8) -> Void) throws(CompressionError) -> UInt8? {
         return nil
     }
-    public func compress<C: Collection<UInt8>>(data: C, reserveCapacity: Int) throws -> CompressionResult<[UInt8]> {
+    public func compress(data: some Collection<UInt8>, reserveCapacity: Int) throws -> CompressionResult<[UInt8]> {
         throw CompressionError.unsupportedOperation
     }
 }
@@ -47,7 +41,7 @@ extension CompressionTechnique.Snappy { // TODO: finish
     ///   - data: Sequence of bytes to compress.
     /// - Complexity: O(_n_) where _n_ is the length of `data`.
     @inlinable
-    public func compress<C: Collection<UInt8>>(data: C, closure: (UInt8) -> Void) -> UInt8? {
+    public func compress(data: some Collection<UInt8>, closure: (UInt8) -> Void) -> UInt8? {
         var index = data.startIndex
         while index != data.endIndex {
             let (length, matchLength, offset) = longestMatch(data, from: index)
@@ -137,11 +131,11 @@ extension CompressionTechnique.Snappy {
     ///   - data: Collection of bytes to decompress.
     ///   - reserveCapacity: Ignored.
     @inlinable
-    public func decompress<C: Collection<UInt8>>(
-        data: C,
+    public func decompress(
+        data: some Collection<UInt8>,
         reserveCapacity: Int = 0
     ) throws(DecompressionError) -> [UInt8] {
-        var decompressed:[UInt8] = []
+        var decompressed = [UInt8]()
         var index = data.startIndex
         let length:Int = try decompressLength(data: data, index: &index)
         decompressed.reserveCapacity(length)
@@ -154,8 +148,8 @@ extension CompressionTechnique.Snappy {
     ///   - continuation: Yielding async throwing stream continuation.
     @inlinable
     @available(macOS 10.15, iOS 13.0, watchOS 6.0, tvOS 13.0, *)
-    public func decompress<C: Collection<UInt8>>(
-        data: C,
+    public func decompress(
+        data: some Collection<UInt8>,
         continuation: AsyncThrowingStream<UInt8, Error>.Continuation
     ) throws(DecompressionError) {
         var index = data.startIndex
@@ -165,7 +159,7 @@ extension CompressionTechnique.Snappy {
 
     /// Calling this function directly will throw a DecompressionError.unsupportedOperation.
     @available(*, deprecated, message: "Use decompress(data:index:amount:closure:) instead")
-    public func decompress<C: Collection<UInt8>>(data: C, closure: (UInt8) -> Void) throws(DecompressionError) {
+    public func decompress(data: some Collection<UInt8>, closure: (UInt8) -> Void) throws(DecompressionError) {
         throw DecompressionError.unsupportedOperation("Use decompress(data:index:amount:closure:) instead")
     }
 

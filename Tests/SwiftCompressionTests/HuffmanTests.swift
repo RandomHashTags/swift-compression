@@ -1,9 +1,3 @@
-//
-//  HuffmanTests.swift
-//
-//
-//  Created by Evan Anderson on 12/17/24.
-//
 
 #if compiler(>=6.0)
 

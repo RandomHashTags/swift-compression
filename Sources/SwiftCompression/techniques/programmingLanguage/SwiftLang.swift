@@ -1,27 +1,21 @@
-//
-//  SwiftProduction.swift
-//
-//
-//  Created by Evan Anderson on 1/22/25.
-//
 
 import SwiftCompressionUtilities
 
 extension CompressionTechnique {
 
     /// Swift compression techniques.
-    public static let swift:SwiftLang = SwiftLang()
+    public static let swift = SwiftLang()
 
-    public struct SwiftLang : Compressor {
-        @inlinable public var algorithm : CompressionAlgorithm { .programmingLanguage(.swift) }
-        @inlinable public var quality : CompressionQuality { .lossy }
+    public struct SwiftLang: Compressor {
+        @inlinable public var algorithm: CompressionAlgorithm { .programmingLanguage(.swift) }
+        @inlinable public var quality: CompressionQuality { .lossy }
     }
 }
 
 // MARK: Compress
 extension CompressionTechnique.SwiftLang {
     @inlinable
-    public func compress<C: Collection<UInt8>>(data: C, reserveCapacity: Int) throws(CompressionError) -> CompressionResult<[UInt8]> {
+    public func compress(data: some Collection<UInt8>, reserveCapacity: Int) throws(CompressionError) -> CompressionResult<[UInt8]> {
         throw CompressionError.unsupportedOperation // TODO: support?
     }
 
@@ -30,7 +24,7 @@ extension CompressionTechnique.SwiftLang {
     ///   - closure: Logic to execute for a run.
     /// - Complexity: O(_n_) where _n_ is the length of `data`.
     @inlinable
-    public func compress<S: Sequence<UInt8>>(data: S, closure: (UInt8) -> Void) -> UInt8? {
+    public func compress(data: some Sequence<UInt8>, closure: (UInt8) -> Void) -> UInt8? {
         return nil // TODO: support?
     }
 }
@@ -54,9 +48,9 @@ extension CompressionTechnique.SwiftLang {
     @inlinable
     func minify<T: StringProtocol>(swiftSourceCode: T) throws -> T {
         // TODO: finish
-        let accessControlInternal:Regex = try Regex(#"(internal\s+)"#)
-        let documentation:Regex = try Regex(#"(\/\/\/.*)"#)
-        let comments:Regex = try Regex(#"(\/\/.*)"#)
+        let accessControlInternal = try Regex(#"(internal\s+)"#)
+        let documentation = try Regex(#"(\/\/\/.*)"#)
+        let comments = try Regex(#"(\/\/.*)"#)
         
         var cleanup:[(Regex, String)] = try [
             (Regex(#"(\s*:\s*)"#), ":"),
@@ -70,8 +64,8 @@ extension CompressionTechnique.SwiftLang {
             (Regex(#"(\s*{(\s*set\s*)\s*(\s*get\s*)\s*})"#), "{set get}") // { set get }
         ]
         let recursive:[Regex:String] = try [
-            Regex(#"(\s*{\s+{)"#) : "{{",
-            Regex(#"(\s*}\s+})"#) : "}}"
+            Regex(#"(\s*{\s+{)"#): "{{",
+            Regex(#"(\s*}\s+})"#): "}}"
         ]
         let finalCleanup:[(Regex, String)] = try [
             (Regex(#"(}\s+fileprivate\s+var)"#), "};fileprivate var"),
@@ -90,7 +84,7 @@ extension CompressionTechnique.SwiftLang {
         cleanup.append(contentsOf: finalCleanup)
 
         //let stringLiterals:Regex = try Regex(#"(".+")"#)
-        var result:String = String(swiftSourceCode)
+        var result = String(swiftSourceCode)
         //let stringLiteralMatches = result.matches(of: stringLiterals)
         result.replace(accessControlInternal, with: "")
         result.replace(documentation, with: "")
@@ -115,14 +109,14 @@ extension CompressionTechnique.SwiftLang {
 }
 
 @available(macOS 13.0, iOS 16.0, watchOS 9.0, tvOS 16.0, *)
-extension Regex : @retroactive Equatable {
+extension Regex: @retroactive Equatable {
     public static func == (lhs: Regex, rhs: Regex) -> Bool {
         false
     }
 }
 
 @available(macOS 13.0, iOS 16.0, watchOS 9.0, tvOS 16.0, *)
-extension Regex : @retroactive Hashable {
+extension Regex: @retroactive Hashable {
     public func hash(into hasher: inout Hasher) {
     }
 }

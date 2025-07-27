@@ -1,9 +1,3 @@
-//
-//  DEFLATE.swift
-//
-//
-//  Created by Evan Anderson on 12/9/24.
-//
 
 import SwiftCompressionUtilities
 
@@ -16,7 +10,7 @@ extension CompressionTechnique {
             let lastBlock:Bool
             let encoding:(Bool, Bool)
 
-            enum Encoding : Equatable {
+            enum Encoding: Equatable {
                 case stored
                 case staticHuffman
                 case dynamicHuffman
@@ -31,7 +25,7 @@ extension CompressionTechnique {
                     }
                 }
 
-                var binary : (Bool, Bool) {
+                var binary: (Bool, Bool) {
                     switch self {
                     case .stored: return (false, false)
                     case .staticHuffman: return (false, true)
@@ -47,8 +41,8 @@ extension CompressionTechnique {
 // MARK: Compress
 extension CompressionTechnique.Deflate {
     @inlinable
-    public static func compress<T: Sequence<UInt8>>(
-        data: T
+    public static func compress(
+        data: some Sequence<UInt8>
     ) -> CompressionResult<[UInt8]>? {
         return nil
     }

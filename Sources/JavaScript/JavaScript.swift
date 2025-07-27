@@ -1,9 +1,3 @@
-//
-//  JavaScript.swift
-//
-//
-//  Created by Evan Anderson on 1/22/25.
-//
 
 import SwiftCompressionUtilities
 
@@ -12,16 +6,16 @@ extension CompressionTechnique {
     /// JavaScript compression techniques.
     public static let javascript:JavaScript = JavaScript()
 
-    public struct JavaScript : Compressor {
-        @inlinable public var algorithm : CompressionAlgorithm { .programmingLanguage(.javascript) }
-        @inlinable public var quality : CompressionQuality { .lossy }
+    public struct JavaScript: Compressor {
+        @inlinable public var algorithm: CompressionAlgorithm { .programmingLanguage(.javascript) }
+        @inlinable public var quality: CompressionQuality { .lossy }
     }
 }
 
 // MARK: Compress
 extension CompressionTechnique.JavaScript {
     @inlinable
-    public func compress<C: Collection<UInt8>>(data: C, reserveCapacity: Int) throws(CompressionError) -> CompressionResult<[UInt8]> {
+    public func compress(data: some Collection<UInt8>, reserveCapacity: Int) throws(CompressionError) -> CompressionResult<[UInt8]> {
         throw CompressionError.unsupportedOperation // TODO: support?
     }
 
@@ -30,7 +24,7 @@ extension CompressionTechnique.JavaScript {
     ///   - closure: Logic to execute for a run.
     /// - Complexity: O(_n_) where _n_ is the length of `data`.
     @inlinable
-    public func compress<S: Sequence<UInt8>>(data: S, closure: (UInt8) -> Void) -> UInt8? {
+    public func compress(data: some Sequence<UInt8>, closure: (UInt8) -> Void) -> UInt8? {
         return nil // TODO: support?
     }
 }
@@ -39,7 +33,7 @@ extension CompressionTechnique.JavaScript {
 extension CompressionTechnique.JavaScript {
     /// - Complexity: O(_n_) where _n_ is the length of the collection.
     @inlinable
-    public func minify<C: Collection<UInt8>>(data: C) -> [UInt8] { // TODO: optimize?
+    public func minify(data: some Collection<UInt8>) -> [UInt8] { // TODO: optimize?
         var index = 0
         var keep = true
         let count = data.count

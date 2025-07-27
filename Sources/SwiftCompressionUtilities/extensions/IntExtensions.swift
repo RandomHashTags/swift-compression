@@ -1,16 +1,10 @@
-//
-//  IntExtensions.swift
-//
-//
-//  Created by Evan Anderson on 12/9/24.
-//
 
 public typealias Bits8 = (Bool, Bool, Bool, Bool, Bool, Bool, Bool, Bool)
 
 extension FixedWidthInteger {
     /// - Complexity: O(_n_) where _n_ is `bitWidth`.
     @inlinable
-    public var bits : [Bool] {
+    public var bits: [Bool] {
         var int = self
         var bits:[Bool] = .init(repeating: false, count: bitWidth)
         for i in stride(from: bitWidth-1, through: 0, by: -1) {
@@ -22,13 +16,13 @@ extension FixedWidthInteger {
 
     /// - Complexity: O(1).
     @inlinable
-    public var bytes : [UInt8] {
+    public var bytes: [UInt8] {
         return withUnsafeBytes(of: self, Array.init)
     }
 
     /// - Complexity: O(1).
     @inlinable
-    public var reversedBytes : ReversedCollection<[UInt8]> {
+    public var reversedBytes: ReversedCollection<[UInt8]> {
         return withUnsafeBytes(of: self, Array.init).reversed()
     }
 

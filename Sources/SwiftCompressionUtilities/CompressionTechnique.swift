@@ -1,9 +1,3 @@
-//
-//  CompressionTechnique.swift
-//
-//
-//  Created by Evan Anderson on 12/9/24.
-//
 
 // MARK: CompressionTechnique
 /// Collection of well-known and useful compression and decompression technique implementations.
@@ -19,8 +13,8 @@ extension CompressionTechnique {
     /// - Returns: A universal frequency table.
     /// - Complexity: O(_n_) where _n_ is the length of `data`.
     @inlinable
-    public static func buildFrequencyTable<S: Sequence<UInt8>>(data: S) -> [Int] {
-        var table:[Int] = Array(repeating: 0, count: 255)
+    public static func buildFrequencyTable(data: some Sequence<UInt8>) -> [Int] {
+        var table = Array(repeating: 0, count: 255)
         for byte in data {
             table[Int(byte)] += 1
         }
@@ -34,8 +28,8 @@ extension CompressionTechnique {
     /// - Returns: A lookup frequency table.
     /// - Complexity: O(_n_) where _n_ is the length of `data`.
     @inlinable
-    public static func buildFrequencyTable<S: Sequence<UInt8>>(data: S) -> [UInt8:Int] {
-        var table:[UInt8:Int] = [:]
+    public static func buildFrequencyTable(data: some Sequence<UInt8>) -> [UInt8:Int] {
+        var table = [UInt8:Int]()
         for byte in data {
             table[byte, default: 0] += 1
         }
@@ -50,7 +44,7 @@ extension CompressionTechnique {
     /// - Complexity: O(_n_) where _n_ is the sum of the `Character` utf8 lengths in `chars`.
     @inlinable
     public static func buildFrequencyTable(chars: [Character:Int]) -> [Int] {
-        var table:[Int] = Array(repeating: 0, count: 255)
+        var table = Array(repeating: 0, count: 255)
         for (char, freq) in chars {
             for byte in char.utf8 {
                 table[Int(byte)] = freq

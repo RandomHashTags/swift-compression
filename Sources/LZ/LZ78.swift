@@ -18,8 +18,8 @@ extension CompressionTechnique {
 
 // MARK: Compress
 extension CompressionTechnique.LZ78 {
-    public static func compress<S: Sequence<UInt8>>(
-        data: S,
+    public static func compress(
+        data: some Sequence<UInt8>,
         endOfFileMarker: UInt8?
     ) -> [UInt8] {
         let compressed:[UInt8] = []
