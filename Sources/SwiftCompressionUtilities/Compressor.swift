@@ -2,7 +2,7 @@
 // MARK: Compressor
 public protocol Compressor: AnyCompressor {
     associatedtype CompressClosureParameters
- func compressClosure(closure: @escaping @Sendable (UInt8) -> Void) -> @Sendable (CompressClosureParameters) -> Void
+    func compressClosure(closure: @escaping @Sendable (UInt8) -> Void) -> @Sendable (CompressClosureParameters) -> Void
 
     func compress(
         data: some Collection<UInt8>,
