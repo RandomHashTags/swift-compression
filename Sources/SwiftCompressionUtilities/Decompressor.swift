@@ -13,7 +13,6 @@ public protocol Decompressor: AnyDecompressor {
     ///   - LZ77: O(_n_)
     ///   - Run-length encoding: O(_n_)
     ///   - Snappy: O(_n_)
-    @inlinable
     func decompress(
         data: some Collection<UInt8>,
         closure: (DecompressClosureParameters) -> Void
@@ -32,7 +31,6 @@ extension Decompressor where DecompressClosureParameters == UInt8 {
     ///   - LZ77: O(_n_)
     ///   - Run-length encoding: O(_n_)
     ///   - Snappy: O(_n_)
-    @inlinable
     public func decompress(
         data: some Collection<UInt8>,
         reserveCapacity: Int = 1024
@@ -53,7 +51,6 @@ extension Decompressor where DecompressClosureParameters == UInt8 {
     ///   - LZ77: O(_n_)
     ///   - Run-length encoding: O(_n_)
     ///   - Snappy: O(_n_)
-    @inlinable
     @available(macOS 10.15, iOS 13.0, watchOS 6.0, tvOS 13.0, *)
     public func decompress(
         data: some Collection<UInt8>,

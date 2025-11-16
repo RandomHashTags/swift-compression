@@ -40,7 +40,6 @@ extension CompressionTechnique {
 
 // MARK: Compress
 extension CompressionTechnique.Deflate {
-    @inlinable
     public static func compress(
         data: some Sequence<UInt8>
     ) -> CompressionResult<[UInt8]>? {
@@ -50,7 +49,6 @@ extension CompressionTechnique.Deflate {
 
 // MARK: Decompress
 extension CompressionTechnique.Deflate {
-    @inlinable
     public static func decompress(data: [UInt8]) -> [UInt8] {
         return data
     }

@@ -7,7 +7,6 @@ extension CompressionTechnique {
     /// https://en.wikipedia.org/wiki/Snappy_(compression)
     /// 
     /// https://github.com/google/snappy
-    @inlinable
     public static func snappy(windowSize: Int = Int(UInt16.max)) -> Snappy {
         return Snappy(windowSize: windowSize)
     }
@@ -21,8 +20,15 @@ extension CompressionTechnique {
             self.windowSize = windowSize
         }
 
-        @inlinable public var algorithm: CompressionAlgorithm { .snappy(windowSize: windowSize) }
-        @inlinable public var quality: CompressionQuality { .lossless }
+        @inlinable
+        public var algorithm: CompressionAlgorithm {
+            .snappy(windowSize: windowSize)
+        }
+
+        @inlinable
+        public var quality: CompressionQuality {
+            .lossless
+        }
     }
 }
 
@@ -40,7 +46,6 @@ extension CompressionTechnique.Snappy { // TODO: finish
     /// - Parameters:
     ///   - data: Sequence of bytes to compress.
     /// - Complexity: O(_n_) where _n_ is the length of `data`.
-    @inlinable
     public func compress(data: some Collection<UInt8>, closure: (UInt8) -> Void) -> UInt8? {
         var index = data.startIndex
         while index != data.endIndex {
@@ -57,7 +62,6 @@ extension CompressionTechnique.Snappy { // TODO: finish
         return nil
     }
 
-    @inlinable
     func longestMatch<C: Collection<UInt8>>(_ data: C, from startIndex: C.Index) -> (length: Int, matchLength: Int, offset: Int) {
         let maxLength = 60
         var longestMatchLength = 0
@@ -78,7 +82,6 @@ extension CompressionTechnique.Snappy { // TODO: finish
         return (length, longestMatchLength, offset: offset)
     }
 
-    @inlinable
     func longestCommonPrefix<C: Collection<UInt8>>(_ data: C, index1: C.Index, index2: C.Index) -> Int {
         var length = 0
         var index1 = index1
@@ -94,7 +97,6 @@ extension CompressionTechnique.Snappy { // TODO: finish
 
 // MARK: Literal
 extension CompressionTechnique.Snappy {
-    @inlinable
     func compressLiteral<C: Collection<UInt8>>(_ data: C, closure: (UInt8) -> Void) {
         let count = data.count
         if count < 60 {
@@ -111,7 +113,6 @@ extension CompressionTechnique.Snappy {
 
 // MARK: Copy
 extension CompressionTechnique.Snappy {
-    @inlinable
     func compressCopy(length: Int, offset: Int, closure: (UInt8) -> Void) {
         if length < 12 && offset < 2048 {
             let cmd = UInt8((offset >> 8) << 5 | (length - 4) << 2 | 1)
@@ -130,7 +131,6 @@ extension CompressionTechnique.Snappy {
     /// - Parameters:
     ///   - data: Collection of bytes to decompress.
     ///   - reserveCapacity: Ignored.
-    @inlinable
     public func decompress(
         data: some Collection<UInt8>,
         reserveCapacity: Int = 0
@@ -146,7 +146,6 @@ extension CompressionTechnique.Snappy {
     /// - Parameters:
     ///   - data: Collection of bytes to decompress.
     ///   - continuation: Yielding async throwing stream continuation.
-    @inlinable
     @available(macOS 10.15, iOS 13.0, watchOS 6.0, tvOS 13.0, *)
     public func decompress(
         data: some Collection<UInt8>,
@@ -169,7 +168,6 @@ extension CompressionTechnique.Snappy {
     ///   - amount: Number of bytes to decompress.
     ///   - closure: Logic to execute when a byte is decompressed.
     /// - Complexity: O(_n_) where _n_ is the length of `data`.
-    @inlinable
     public func decompress<C: Collection<UInt8>>(
         data: C,
         index: inout C.Index,
@@ -194,7 +192,6 @@ extension CompressionTechnique.Snappy {
     ///   - index: Where to begin parsing the uncompressed length.
     /// - Returns: The uncompressed length, as described in the `Preamble` at https://github.com/google/snappy/blob/main/format_description.txt .
     /// - Complexity: O(1).
-    @inlinable
     func decompressLength<C: Collection<UInt8>, I: FixedWidthInteger>(
         data: C,
         index: inout C.Index
@@ -204,14 +201,14 @@ extension CompressionTechnique.Snappy {
         if byte & 0b10000000 != 0 {
             totalSize = I(byte)
             data.formIndex(after: &index)
-            guard let second = data.getPositive(index) else { throw DecompressionError.malformedInput }
+            guard let second = data[positive: index] else { throw DecompressionError.malformedInput }
             byte = second
             var shift = 7
             while byte & 0b10000000 != 0 {
                 totalSize |= I(byte) << shift
                 shift += 7
                 data.formIndex(after: &index)
-                if let next = data.getPositive(index) {
+                if let next = data[positive: index] {
                     byte = next
                 } else {
                     throw DecompressionError.malformedInput
@@ -230,7 +227,6 @@ extension CompressionTechnique.Snappy {
 // MARK: Literal
 extension CompressionTechnique.Snappy {
     /// - Complexity: O(_n_) where _n_ is the length of the literal.
-    @inlinable
     func decompressLiteral<C: Collection<UInt8>>(
         flagBits: UInt8,
         index: inout C.Index,
@@ -245,7 +241,6 @@ extension CompressionTechnique.Snappy {
     }
 
     /// - Complexity: O(1).
-    @inlinable
     func decompressLiteralLength<C: Collection<UInt8>>(flagBits: UInt8, index: inout C.Index, compressed: C) -> Int {
         let length = flagBits >> 2 // ignore tag bits
         compressed.formIndex(after: &index)
@@ -266,7 +261,6 @@ extension CompressionTechnique.Snappy {
 // MARK: Copy
 extension CompressionTechnique.Snappy {
     /// - Complexity: O(_n_) where _n_ is the `UInt8` created from the `flagBits`.
-    @inlinable
     func decompressCopy1<C: Collection<UInt8>>(
         flagBits: UInt8,
         index: inout C.Index,
@@ -284,7 +278,6 @@ extension CompressionTechnique.Snappy {
     }
 
     /// - Complexity: O(_n_) where _n_ is the `UInt8` created from the `flagBits`.
-    @inlinable
     func decompressCopy2<C: Collection<UInt8>>(
         flagBits: UInt8,
         index: inout C.Index,
@@ -300,7 +293,6 @@ extension CompressionTechnique.Snappy {
     }
 
     /// - Complexity: O(_n_) where _n_ is the `UInt8` created from the `flagBits`.
-    @inlinable
     func decompressCopy4<C: Collection<UInt8>>(
         flagBits: UInt8,
         index: inout C.Index,
@@ -316,7 +308,6 @@ extension CompressionTechnique.Snappy {
     }
 
     /// - Complexity: O(_n_) where _n_ is the `UInt8` created from the `flagBits`.
-    @inlinable
     func decompressCopyN<C: Collection<UInt8>, T: FixedWidthInteger>(
         flagBits: UInt8,
         index: inout C.Index,

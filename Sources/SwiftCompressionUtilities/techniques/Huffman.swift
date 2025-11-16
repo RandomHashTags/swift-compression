@@ -13,7 +13,6 @@ extension CompressionTechnique.Huffman {
     /// 
     /// - Parameters:
     ///   - data: Sequence of bytes to compress.
-    @inlinable
     public static func compress(data: some Sequence<UInt8>) -> CompressionResult<[UInt8]>? {
         return compress(data: data) { frequencies, codes, root in
             var compressed:[UInt8] = [8]
@@ -32,7 +31,6 @@ extension CompressionTechnique.Huffman {
     /// - Parameters:
     ///   - data: Sequence of bytes to compress.
     ///   - continuation: The `AsyncStream<UInt8>.Continuation`.
-    @inlinable
     @available(macOS 10.15, iOS 13.0, watchOS 6.0, tvOS 13.0, *)
     public static func compress(
         data: some Sequence<UInt8>,
@@ -52,7 +50,6 @@ extension CompressionTechnique.Huffman {
         }
     }
 
-    @inlinable
     public static func compress<T>(data: some Sequence<UInt8>, closure: ([Int], [UInt8:String], Node) -> T) -> T? {
         var frequencies = Array(repeating: 0, count: Int(UInt8.max-1))
         for byte in data {
@@ -65,7 +62,6 @@ extension CompressionTechnique.Huffman {
     }
 
     /// - Complexity: O(_n_ + _m_) where _n_ is the length of `data` and _m_ is the sum of the code lengths.
-    @inlinable
     public static func translate(data: some Sequence<UInt8>, codes: [UInt8:String], closure: (UInt8) -> Void) -> (lastByte: UInt8, validBits: UInt8)? {
         var builder = ByteBuilder()
         for byte in data {
@@ -89,7 +85,6 @@ extension CompressionTechnique.Huffman {
     ///   - data: Sequence of bytes to decompress.
     ///   - root: The root Huffman Node.
     /// - Complexity: O(_n_) where _n_ is the length of `data`.
-    @inlinable
     public static func decompress(data: [UInt8], root: Node?) -> [UInt8] {
         var result = [UInt8]()
         decompress(data: data, root: root) { result.append($0) }
@@ -103,7 +98,6 @@ extension CompressionTechnique.Huffman {
     ///   - root: The root Huffman Node.
     ///   - continuation: The `AsyncStream<UInt8>.Continuation`.
     /// - Complexity: O(_n_) where _n_ is the length of `data`.
-    @inlinable
     @available(macOS 10.15, iOS 13.0, watchOS 6.0, tvOS 13.0, *)
     public static func decompress(
         data: [UInt8],
@@ -116,7 +110,6 @@ extension CompressionTechnique.Huffman {
     /// Decompress a sequence of bytes using the Huffman Coding technique.
     /// 
     /// - Complexity: O(_n_) where _n_ is the length of `data`.
-    @inlinable
     public static func decompress(data: [UInt8], root: Node?, closure: (UInt8) -> Void) {
         let countMinusOne = data.count-1
         var node = root
@@ -159,7 +152,6 @@ extension CompressionTechnique.Huffman {
     ///   - data: Sequence of bytes to decompress.
     ///   - frequencyTable: A Huffman frequency table of characters.
     // /// - Complexity: O(_n_ + _m_) where _n_ is the length of `data` and _m_ is the length of `frequencyTable`. // TODO: FIX
-    @inlinable
     public static func decompress(data: [UInt8], frequencyTable: [Int]) -> [UInt8] {
         guard let root = buildTree(frequencies: frequencyTable) else { return data }
         return decompress(data: data, root: root)
@@ -172,7 +164,6 @@ extension CompressionTechnique.Huffman {
     ///   - frequencyTable: A Huffman frequency table of characters.
     ///   - continuation: The `AsyncStream<UInt8>.Continuation`.
     // /// - Complexity: O(_n_ + _m_) where _n_ is the length of `data` and _m_ is the length of `frequencyTable`. // TODO: FIX
-    @inlinable
     @available(macOS 10.15, iOS 13.0, watchOS 6.0, tvOS 13.0, *)
     public static func decompress(
         data: [UInt8],
@@ -183,13 +174,11 @@ extension CompressionTechnique.Huffman {
         decompress(data: data, root: root, continuation: continuation)
     }
     
-    @inlinable
     public static func decompress(data: [UInt8], frequencyTable: [Int], closure: (UInt8) -> Void) {
         guard let root = buildTree(frequencies: frequencyTable) else { return }
         decompress(data: data, root: root, closure: closure)
     }
 
-    @inlinable
     public static func decompress(data: [UInt8], codes: [[Bool]:UInt8], closure: (UInt8) -> Void) {
         var code = [Bool]()
         code.reserveCapacity(3)
@@ -250,13 +239,11 @@ extension CompressionTechnique.Huffman {
         }
 
         /// - Complexity: O(_n_) where _n_ is the length of the sequence.
-        @inlinable
         mutating func push(_ element: T) {
             heap.append(element)
             siftUp(from: heap.count - 1)
         }
 
-        @inlinable
         mutating func pop() -> T? {
             guard !heap.isEmpty else { return nil }
             if heap.count == 1 {
@@ -269,7 +256,6 @@ extension CompressionTechnique.Huffman {
         }
 
         /// - Complexity: O(_n_) where _n_ is the distance between `0` and `index`.
-        @inlinable
         mutating func siftUp(from index: Int) {
             var index = index
             while index > 0 {
@@ -280,7 +266,6 @@ extension CompressionTechnique.Huffman {
             }
         }
 
-        @inlinable
         mutating func siftDown(from index: Int) {
             let element = heap[index]
             let count = heap.count
@@ -314,7 +299,6 @@ extension CompressionTechnique.Huffman {
     ///   - frequencies: A universal frequency table.
     /// - Returns: The root node of the Huffman tree.
     /// - Complexity: O(?)
-    @inlinable
     static func buildTree(frequencies: [Int]) -> Node? {
         var queue = PriorityQueue<Node>()
         for (char, freq) in frequencies.enumerated() {
@@ -334,7 +318,6 @@ extension CompressionTechnique.Huffman {
     /// Generates the binary codes for a node.
     /// 
     /// - Complexity: O(1).
-    @inlinable
     static func generateCodes(node: Node?, code: String = "", codes: inout [UInt8:String]) {
         guard let node else { return }
         if let char = node.character {
@@ -350,7 +333,6 @@ extension CompressionTechnique.Huffman {
 extension StringProtocol {
     /// - Returns: A Huffman frequency table for the characters.
     /// - Complexity: O(_n_) where _n_ is the length of the collection.
-    @inlinable
     public func huffmanFrequencyTable() -> [Int] {
         var table = Array(repeating: 0, count: 255)
         for char in self {

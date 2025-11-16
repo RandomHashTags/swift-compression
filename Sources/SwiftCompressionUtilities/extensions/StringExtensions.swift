@@ -1,6 +1,5 @@
 
 extension StringProtocol {
-    @inlinable
     package var hexadecimal: UnfoldSequence<UInt8, Index> { // https://stackoverflow.com/a/43360864
         sequence(state: startIndex) { startIndex in
             guard startIndex < endIndex else { return nil }

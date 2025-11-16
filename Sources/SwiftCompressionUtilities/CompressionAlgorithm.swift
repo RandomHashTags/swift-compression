@@ -70,7 +70,6 @@ public enum CompressionAlgorithm: Hashable, Sendable {
 // MARK: RawValue
 extension CompressionAlgorithm {
     /// Case name of the algorithm.
-    @inlinable
     public var rawValue: String {
         switch self {
         case .unknown: return "unknown"

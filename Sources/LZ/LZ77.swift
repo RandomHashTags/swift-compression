@@ -16,7 +16,6 @@ extension CompressionTechnique {
     ///   - bufferSize: Size of the buffer, measured in bytes.
     /// 
     /// https://en.wikipedia.org/wiki/LZ77_and_LZ78
-    @inlinable
     public static func lz77<T: FixedWidthInteger & Sendable>(windowSize: Int, bufferSize: Int) -> LZ77<T> {
         return LZ77(windowSize: windowSize, bufferSize: bufferSize)
     }
@@ -28,7 +27,6 @@ extension CompressionTechnique {
     ///   - bufferSize: Size of the buffer, measured in bytes.
     /// 
     /// https://en.wikipedia.org/wiki/LZ77_and_LZ78
-    @inlinable
     public static func lz77(windowSize: Int, bufferSize: Int) -> LZ77<UInt16> {
         return LZ77(windowSize: windowSize, bufferSize: bufferSize)
     }
@@ -45,8 +43,15 @@ extension CompressionTechnique {
             self.bufferSize = bufferSize
         }
 
-        @inlinable public var algorithm: CompressionAlgorithm { .lz77(windowSize: windowSize, bufferSize: bufferSize, offsetBitWidth: T.bitWidth) }
-        @inlinable public var quality: CompressionQuality { .lossless }
+        @inlinable
+        public var algorithm: CompressionAlgorithm {
+            .lz77(windowSize: windowSize, bufferSize: bufferSize, offsetBitWidth: T.bitWidth)
+        }
+
+        @inlinable
+        public var quality: CompressionQuality {
+            .lossless
+        }
     }
 }
 
@@ -58,7 +63,6 @@ extension CompressionTechnique.LZ77 {
     ///   - data: Collection of bytes to compress.
     ///   - closure: Logic to execute when a byte is compressed.
     /// - Complexity: O(_n_) where _n_ is the length of `data`.
-    @inlinable
     public func compress(
         data: some Collection<UInt8>,
         closure: (UInt8) -> Void
@@ -78,7 +82,7 @@ extension CompressionTechnique.LZ77 {
             var bestLength = 0
             for i in 0..<windowSize {
                 var length = 0
-                while length < bufferCount && window.getPositive(window.index(window.startIndex, offsetBy: i + length)) == buffer[length] {
+                while length < bufferCount && window[positive: window.index(window.startIndex, offsetBy: i + length)] == buffer[length] {
                     length += 1
                     if i + length >= windowCount {
                         break
@@ -114,7 +118,6 @@ extension CompressionTechnique.LZ77 {
     ///   - data: Collection of bytes to decompress.
     ///   - closure: Logic to execute when a byte was decompressed.
     /// - Complexity: O(_n_) where _n_ is the length of `data`.
-    @inlinable
     public func decompress(
         data: some Collection<UInt8>,
         closure: (UInt8) -> Void
@@ -152,7 +155,6 @@ extension CompressionTechnique.LZ77 {
         }
     }
 
-    @inlinable
     func parseOffset(data: some Collection<UInt8>, index: Int) -> T {
         var byte = T()
         var offsetIndex = index

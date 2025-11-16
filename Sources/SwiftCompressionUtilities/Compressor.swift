@@ -2,10 +2,8 @@
 // MARK: Compressor
 public protocol Compressor: AnyCompressor {
     associatedtype CompressClosureParameters
+ func compressClosure(closure: @escaping @Sendable (UInt8) -> Void) -> @Sendable (CompressClosureParameters) -> Void
 
-    @inlinable func compressClosure(closure: @escaping @Sendable (UInt8) -> Void) -> @Sendable (CompressClosureParameters) -> Void
-
-    @inlinable
     func compress(
         data: some Collection<UInt8>,
         reserveCapacity: Int
@@ -21,7 +19,6 @@ public protocol Compressor: AnyCompressor {
     ///   - DNA binary encoding: O(_n_)
     ///   - LZ77: O(_n_)
     ///   - Snappy: O(_n_)
-    @inlinable
     func compress(
         data: some Collection<UInt8>,
         closure: (CompressClosureParameters) -> Void
@@ -39,7 +36,6 @@ extension Compressor {
     ///   - DNA binary encoding: O(_n_)
     ///   - LZ77: O(_n_)
     ///   - Snappy: O(_n_)
-    @inlinable
     public func compress(
         data: some Collection<UInt8>,
         reserveCapacity: Int = 1024
@@ -59,7 +55,6 @@ extension Compressor {
     ///   - DNA binary encoding: O(_n_)
     ///   - LZ77: O(_n_)
     ///   - Snappy: O(_n_)
-    @inlinable
     @available(macOS 10.15, iOS 13.0, watchOS 6.0, tvOS 13.0, *)
     public func compress(
         data: some Collection<UInt8>,
@@ -70,5 +65,7 @@ extension Compressor {
     }
 }
 extension Compressor where CompressClosureParameters == UInt8 {
-    @inlinable public func compressClosure(closure: @escaping @Sendable (UInt8) -> Void) -> @Sendable (CompressClosureParameters) -> Void { closure }
+    public func compressClosure(closure: @escaping @Sendable (UInt8) -> Void) -> @Sendable (CompressClosureParameters) -> Void {
+        closure
+    }
 }

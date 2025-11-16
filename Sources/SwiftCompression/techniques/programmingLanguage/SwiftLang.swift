@@ -7,14 +7,20 @@ extension CompressionTechnique {
     public static let swift = SwiftLang()
 
     public struct SwiftLang: Compressor {
-        @inlinable public var algorithm: CompressionAlgorithm { .programmingLanguage(.swift) }
-        @inlinable public var quality: CompressionQuality { .lossy }
+        @inlinable
+        public var algorithm: CompressionAlgorithm {
+            .programmingLanguage(.swift)
+        }
+
+        @inlinable
+        public var quality: CompressionQuality {
+            .lossy
+        }
     }
 }
 
 // MARK: Compress
 extension CompressionTechnique.SwiftLang {
-    @inlinable
     public func compress(data: some Collection<UInt8>, reserveCapacity: Int) throws(CompressionError) -> CompressionResult<[UInt8]> {
         throw CompressionError.unsupportedOperation // TODO: support?
     }
@@ -23,7 +29,6 @@ extension CompressionTechnique.SwiftLang {
     ///   - data: Sequence of bytes to compress.
     ///   - closure: Logic to execute for a run.
     /// - Complexity: O(_n_) where _n_ is the length of `data`.
-    @inlinable
     public func compress(data: some Sequence<UInt8>, closure: (UInt8) -> Void) -> UInt8? {
         return nil // TODO: support?
     }
@@ -31,7 +36,6 @@ extension CompressionTechnique.SwiftLang {
 
 /*
 extension CompressionTechnique.SwiftLang { // TODO: support
-    @inlinable
     public func compress(filePath: String) throws(CompressionError) -> String {
         return ""
     }
@@ -45,7 +49,6 @@ extension CompressionTechnique.SwiftLang {
     /// 
     /// - Parameters:
     ///   - swiftSourceCode: Literal, valid, Swift code.
-    @inlinable
     func minify<T: StringProtocol>(swiftSourceCode: T) throws -> T {
         // TODO: finish
         let accessControlInternal = try Regex(#"(internal\s+)"#)

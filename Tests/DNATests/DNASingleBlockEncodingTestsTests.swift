@@ -8,7 +8,7 @@
 #if compiler(>=6.0)
 
 import Testing
-@testable import DNA
+@testable import CompressionDNA
 @testable import SwiftCompressionUtilities
 
 struct DNASingleBlockEncodingTests {

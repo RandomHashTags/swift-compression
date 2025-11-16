@@ -9,7 +9,6 @@ public struct ByteBuilder {
     }
 
     /// - Complexity: O(1)
-    @inlinable
     subscript(_ index: UInt8) -> Bool {
         get {
             switch index {
@@ -41,7 +40,6 @@ public struct ByteBuilder {
 
     /// - Returns: The complete byte, if all 8 bits are filled.
     /// - Complexity: O(1)
-    @inlinable
     public mutating func write(bit: Bool) -> UInt8? {
         self[index] = bit
         index += 1
@@ -55,7 +53,6 @@ public struct ByteBuilder {
         return result
     }
 
-    @inlinable
     public mutating func write(bits: [Bool], closure: (UInt8) -> Void) {
         let available_bits:UInt8 = UInt8(min(Int(8 - index), bits.count))
         for i in 0..<available_bits {
@@ -93,7 +90,6 @@ public struct ByteBuilder {
     }
 
     /// - Complexity: O(1). 
-    @inlinable
     public mutating func flush() -> (lastByte: UInt8, validBits: UInt8)? {
         guard index != 0 else { return nil }
         defer { clear() }
@@ -101,14 +97,12 @@ public struct ByteBuilder {
     }
 
     /// - Complexity: O(1).
-    @inlinable
     public mutating func flush(into data: inout [UInt8]) {
         guard let wrote:UInt8 = flush()?.lastByte else { return }
         data.append(wrote)
     }
 
     /// - Complexity: O(1).
-    @inlinable
     @available(macOS 10.15, iOS 13.0, watchOS 6.0, tvOS 13.0, *)
     public mutating func flush(into stream: AsyncStream<UInt8>.Continuation) {
         guard let wrote:UInt8 = flush()?.lastByte else { return }
@@ -118,7 +112,6 @@ public struct ByteBuilder {
     /// Assigns the `index` to zero and all bits to `false`.
     /// 
     /// - Complexity: O(1).
-    @inlinable
     public mutating func clear() {
         index = 0
         bits = (false, false, false, false, false, false, false, false)
@@ -136,7 +129,6 @@ extension CompressionTechnique {
             self.builder = builder
         }
 
-        @inlinable
         public mutating func write(bit: Bool) {
             if let wrote:UInt8 = builder.write(bit: bit) {
                 data.append(wrote)
@@ -164,7 +156,6 @@ extension CompressionTechnique {
         }
 
         /// - Complexity: O(1).
-        @inlinable
         public mutating func write(bit: Bool) {
             if let wrote:UInt8 = builder.write(bit: bit) {
                 stream.yield(wrote)
@@ -172,7 +163,6 @@ extension CompressionTechnique {
         }
 
         /// - Complexity: O(1).
-        @inlinable
         public mutating func finalize() {
             builder.flush(into: stream)
         }

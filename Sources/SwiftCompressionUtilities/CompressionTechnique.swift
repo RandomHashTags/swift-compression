@@ -12,7 +12,6 @@ extension CompressionTechnique {
     ///   - data: Sequence of raw bytes.
     /// - Returns: A universal frequency table.
     /// - Complexity: O(_n_) where _n_ is the length of `data`.
-    @inlinable
     public static func buildFrequencyTable(data: some Sequence<UInt8>) -> [Int] {
         var table = Array(repeating: 0, count: 255)
         for byte in data {
@@ -27,7 +26,6 @@ extension CompressionTechnique {
     ///   - data: Sequence of raw bytes.
     /// - Returns: A lookup frequency table.
     /// - Complexity: O(_n_) where _n_ is the length of `data`.
-    @inlinable
     public static func buildFrequencyTable(data: some Sequence<UInt8>) -> [UInt8:Int] {
         var table = [UInt8:Int]()
         for byte in data {
@@ -42,7 +40,6 @@ extension CompressionTechnique {
     ///   - chars: A frequency table that represents how many times a character is present.
     /// - Returns: A universal frequency table.
     /// - Complexity: O(_n_) where _n_ is the sum of the `Character` utf8 lengths in `chars`.
-    @inlinable
     public static func buildFrequencyTable(chars: [Character:Int]) -> [Int] {
         var table = Array(repeating: 0, count: 255)
         for (char, freq) in chars {

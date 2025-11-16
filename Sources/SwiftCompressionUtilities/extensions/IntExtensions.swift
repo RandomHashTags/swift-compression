@@ -3,7 +3,6 @@ public typealias Bits8 = (Bool, Bool, Bool, Bool, Bool, Bool, Bool, Bool)
 
 extension FixedWidthInteger {
     /// - Complexity: O(_n_) where _n_ is `bitWidth`.
-    @inlinable
     public var bits: [Bool] {
         var int = self
         var bits:[Bool] = .init(repeating: false, count: bitWidth)
@@ -15,13 +14,11 @@ extension FixedWidthInteger {
     }
 
     /// - Complexity: O(1).
-    @inlinable
     public var bytes: [UInt8] {
         return withUnsafeBytes(of: self, Array.init)
     }
 
     /// - Complexity: O(1).
-    @inlinable
     public var reversedBytes: ReversedCollection<[UInt8]> {
         return withUnsafeBytes(of: self, Array.init).reversed()
     }
@@ -29,12 +26,10 @@ extension FixedWidthInteger {
     /// - Parameters:
     ///   - fromBits: Bits to assign.
     /// - Complexity: O(_n_) where _n_ is the length of `fromBits`.
-    @inlinable
     public init?(fromBits: [Bool]) {
         guard fromBits.count <= Self.bitWidth else { return nil }
         self = fromBits.reduce(0) { 2 * $0 + ($1 ? 1 : 0) }
     }
-    @inlinable
     public init(fromBits: Bits8) {
         var value:Self = 0
         if fromBits.0 { value += 128 }
@@ -47,7 +42,6 @@ extension FixedWidthInteger {
         if fromBits.7 { value += 1 }
         self = value
     }
-    @inlinable
     public init(fromBits: UInt8...) {
         var value:Self = 0
         var offset = Self.bitWidth - ((fromBits.count - 1) * 8)

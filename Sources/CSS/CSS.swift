@@ -7,14 +7,20 @@ extension CompressionTechnique {
     public static let css = CSS()
 
     public struct CSS: Compressor {
-        @inlinable public var algorithm: CompressionAlgorithm { .programmingLanguage(.css) }
-        @inlinable public var quality: CompressionQuality { .lossy }
+        @inlinable
+        public var algorithm: CompressionAlgorithm {
+            .programmingLanguage(.css)
+        }
+
+        @inlinable
+        public var quality: CompressionQuality {
+            .lossy
+        }
     }
 }
 
 // MARK: Compress
 extension CompressionTechnique.CSS {
-    @inlinable
     public func compress(data: some Collection<UInt8>, reserveCapacity: Int) throws(CompressionError) -> CompressionResult<[UInt8]> {
         throw CompressionError.unsupportedOperation // TODO: support?
     }
@@ -23,7 +29,6 @@ extension CompressionTechnique.CSS {
     ///   - data: Sequence of bytes to compress.
     ///   - closure: Logic to execute for a run.
     /// - Complexity: O(_n_) where _n_ is the length of `data`.
-    @inlinable
     public func compress(data: some Sequence<UInt8>, closure: (UInt8) -> Void) -> UInt8? {
         return nil // TODO: support?
     }
@@ -34,7 +39,6 @@ extension CompressionTechnique.CSS {
     /// Optimizes CSS code to make it suitable for production-only usage, which results in the minimum binary size required to represent the same code.
     /// 
     /// Optionally removes comments and unnecessary whitespace
-    @inlinable
     public func minify(data: some Collection<UInt8>, reserveCapacity: Int) -> [UInt8] {
         var index = 0
         let count = data.count
@@ -103,7 +107,6 @@ extension CompressionTechnique.CSS {
         }
         return .init(result[0..<index])
     }
-    @inlinable
     func assign(byte: UInt8, to index: inout Int, in data: inout [UInt8]) {
         data[index] = byte
         index += 1
@@ -111,5 +114,7 @@ extension CompressionTechnique.CSS {
 }
 
 extension UInt8 {
-    @inlinable var char: Character { Character(UnicodeScalar(self)) }
+    var char: Character {
+        Character(UnicodeScalar(self))
+    }
 }

@@ -4,7 +4,6 @@ import SwiftCompressionUtilities
 extension CompressionTechnique {
 
     /// The DNA binary encoding compression technique.
-    @inlinable
     public static func dnaBinaryEncoding(baseBits: [UInt8:[Bool]] = [
         65: [false, false], // A
         67: [false, true],  // C
@@ -26,8 +25,15 @@ extension CompressionTechnique {
             self.baseBits = baseBits
         }
 
-        @inlinable public var algorithm: CompressionAlgorithm { .dnaBinaryEncoding(baseBits: baseBits) }
-        @inlinable public var quality: CompressionQuality { .lossless }
+        @inlinable
+        public var algorithm: CompressionAlgorithm {
+            .dnaBinaryEncoding(baseBits: baseBits)
+        }
+
+        @inlinable
+        public var quality: CompressionQuality {
+            .lossless
+        }
 
         public var baseBitsReversed: [[Bool]:UInt8] {
             var reversed = [[Bool]:UInt8]()
@@ -50,7 +56,6 @@ extension CompressionTechnique.DNABinaryEncoding {
     ///   - closure: Logic to execute when a byte was encoded.
     /// - Returns: Valid bits for the last byte, if necessary.
     /// - Complexity: O(_n_) where _n_ is the length of `data`.
-    @inlinable
     public func compress(
         data: some Collection<UInt8>,
         closure: (UInt8) -> Void
@@ -79,7 +84,6 @@ extension CompressionTechnique.DNABinaryEncoding {
     ///   - data: Collection of bytes to decompress.
     ///   - closure: Logic to execute when a given base nucleotide is found.
     /// - Complexity: O(_n_) where _n_ is the length of `data`.
-    @inlinable
     public func decompress(
         data: some Collection<UInt8>,
         closure: (UInt8) -> Void

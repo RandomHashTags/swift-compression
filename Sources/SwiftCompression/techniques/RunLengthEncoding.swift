@@ -6,7 +6,6 @@ extension CompressionTechnique {
     /// The Run-length encoding compression technique.
     /// 
     /// https://en.wikipedia.org/wiki/Run-length_encoding
-    @inlinable
     public static func runLength(minRun: Int, alwaysIncludeRunCount: Bool) -> RunLengthEncoding {
         return RunLengthEncoding(minRun: minRun, alwaysIncludeRunCount: alwaysIncludeRunCount)
     }
@@ -25,14 +24,20 @@ extension CompressionTechnique {
             self.alwaysIncludeRunCount = alwaysIncludeRunCount
         }
 
-        @inlinable public var algorithm: CompressionAlgorithm { .runLengthEncoding(minRun: minRun, alwaysIncludeRunCount: alwaysIncludeRunCount) }
-        @inlinable public var quality: CompressionQuality { .lossless }
+        @inlinable
+        public var algorithm: CompressionAlgorithm {
+            .runLengthEncoding(minRun: minRun, alwaysIncludeRunCount: alwaysIncludeRunCount)
+        }
+
+        @inlinable
+        public var quality: CompressionQuality {
+            .lossless
+        }
     }
 }
 
 // MARK: Compress
 extension CompressionTechnique.RunLengthEncoding {
-    @inlinable
     public func compressClosure(closure: @escaping (UInt8) -> Void) -> @Sendable (CompressClosureParameters) -> Void {
         if alwaysIncludeRunCount {
             return { (arg) in
@@ -60,7 +65,6 @@ extension CompressionTechnique.RunLengthEncoding {
     ///   - minRun: Minimum run count required to compress identical sequential bytes.
     ///   - closure: Logic to execute for a run.
     /// - Complexity: O(_n_) where _n_ is the length of `data`.
-    @inlinable
     public func compress(data: some Sequence<UInt8>, closure: (CompressClosureParameters) -> Void) -> UInt8? {
         var run = 0
         var runByte:UInt8? = nil
@@ -96,7 +100,6 @@ extension CompressionTechnique.RunLengthEncoding {
     ///   - data: Sequence of bytes to decompress.
     ///   - closure: Logic to execute for a run.
     /// - Complexity: O(_n_) where _n_ is the length of `data`.
-    @inlinable
     public func decompress(data: some Collection<UInt8>, closure: (UInt8) -> Void) {
         let count = data.count
         var index = 0

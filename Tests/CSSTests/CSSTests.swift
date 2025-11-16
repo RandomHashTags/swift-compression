@@ -2,7 +2,7 @@
 #if compiler(>=6.0)
 
 import Testing
-@testable import CSS
+@testable import CompressionCSS
 @testable import SwiftCompressionUtilities
 
 // MARK: CSSTests

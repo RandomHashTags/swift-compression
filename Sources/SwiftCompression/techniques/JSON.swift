@@ -13,7 +13,6 @@ extension CompressionTechnique {
 #if canImport(Foundation)
 // MARK: Compress encodable
 extension CompressionTechnique.JSON {
-    @inlinable
     public static func compress(encodable: some Encodable) -> CompressionResult<[UInt8]>? {
         guard let data = try? JSONEncoder().encode(encodable) else { return nil }
         var compressed = [UInt8]()
@@ -75,7 +74,6 @@ extension CompressionTechnique.JSON {
 
 // MARK: Compress
 extension CompressionTechnique.JSON {
-    @inlinable
     public static func compress(data: some Sequence<UInt8>) -> CompressionResult<[UInt8]>? {
         return nil
     }
@@ -83,7 +81,6 @@ extension CompressionTechnique.JSON {
 
 // MARK: Decompress
 extension CompressionTechnique.JSON {
-    @inlinable
     public static func decompress(data: [UInt8]) -> [UInt8] {
         return data
     }

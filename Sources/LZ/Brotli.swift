@@ -7,7 +7,6 @@ extension CompressionTechnique {
     /// https://github.com/google/brotli
     /// 
     /// https://en.wikipedia.org/wiki/Brotli
-    @inlinable
     public static func brotli(windowSize: Int = 32768) -> Brotli {
         return Brotli(windowSize: windowSize)
     }
@@ -23,8 +22,15 @@ extension CompressionTechnique {
             self.windowSize = windowSize
         }
 
-        @inlinable public var algorithm: CompressionAlgorithm { .brotli(windowSize: windowSize) }
-        @inlinable public var quality: CompressionQuality { .lossless }
+        @inlinable
+        public var algorithm: CompressionAlgorithm {
+            .brotli(windowSize: windowSize)
+        }
+
+        @inlinable
+        public var quality: CompressionQuality {
+            .lossless
+        }
     }
 }
 
@@ -33,7 +39,6 @@ extension CompressionTechnique.Brotli { // TODO: finish
     /// - Parameters:
     ///   - data: Sequence of bytes to compress.
     /// - Complexity: O(_n_) where _n_ is the length of `data`.
-    @inlinable
     public func compress(data: some Collection<UInt8>, closure: (UInt8) -> Void) -> UInt8? {
         return nil
     }
@@ -45,7 +50,6 @@ extension CompressionTechnique.Brotli { // TODO: finish
     ///   - data: Collection of bytes to decompress.
     ///   - closure: Logic to execute when a byte is decompressed.
     /// - Complexity: O(_n_) where _n_ is the length of `data`.
-    @inlinable
     public func decompress(
         data: some Collection<UInt8>,
         closure: (UInt8) -> Void

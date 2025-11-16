@@ -9,7 +9,6 @@
 // MARK: Technique
 extension CompressionAlgorithm {
     /// Compressor technique used for this algorithm.
-    @inlinable
     public var technique: (any Compressor)? {
         switch self {
         case .unknown: return nil
@@ -27,22 +26,17 @@ extension CompressionAlgorithm {
         case .lz77(let windowSize, let bufferSize, let offsetBitWidth):
             switch offsetBitWidth {
             case 8:
-                let lz:CompressionTechnique.LZ77<UInt8> = CompressionTechnique.lz77<UInt8>(windowSize: windowSize, bufferSize: bufferSize)
-                return lz
+                return CompressionTechnique.lz77<UInt8>(windowSize: windowSize, bufferSize: bufferSize)
             case 16:
-                let lz:CompressionTechnique.LZ77<UInt16> = CompressionTechnique.lz77<UInt16>(windowSize: windowSize, bufferSize: bufferSize)
-                return lz
+                return CompressionTechnique.lz77<UInt16>(windowSize: windowSize, bufferSize: bufferSize)
             case 32:
-                let lz:CompressionTechnique.LZ77<UInt32> = CompressionTechnique.lz77<UInt32>(windowSize: windowSize, bufferSize: bufferSize)
-                return lz
+                return CompressionTechnique.lz77<UInt32>(windowSize: windowSize, bufferSize: bufferSize)
             case 64:
-                let lz:CompressionTechnique.LZ77<UInt64> = CompressionTechnique.lz77<UInt64>(windowSize: windowSize, bufferSize: bufferSize)
-                return lz
+                return CompressionTechnique.lz77<UInt64>(windowSize: windowSize, bufferSize: bufferSize)
             #if compiler(>=6.0)
             case 128:
                 if #available(macOS 15.0, iOS 18.0, watchOS 11.0, tvOS 18.0, visionOS 2.0, *) {
-                    let lz:CompressionTechnique.LZ77<UInt128> = CompressionTechnique.lz77<UInt128>(windowSize: windowSize, bufferSize: bufferSize)
-                    return lz
+                    return CompressionTechnique.lz77<UInt128>(windowSize: windowSize, bufferSize: bufferSize)
                 }
                 return nil
             #endif
@@ -51,9 +45,12 @@ extension CompressionAlgorithm {
         case .lz78: return nil
         case .lzw: return nil
         case .mtf: return nil
-        case .runLengthEncoding(let minRun, let alwaysIncludeRunCount): return CompressionTechnique.runLength(minRun: minRun, alwaysIncludeRunCount: alwaysIncludeRunCount)
-        case .snappy(let windowSize): return CompressionTechnique.snappy(windowSize: windowSize)
-        case .snappyFramed: return CompressionTechnique.snappyFramed
+        case .runLengthEncoding(let minRun, let alwaysIncludeRunCount):
+            return CompressionTechnique.runLength(minRun: minRun, alwaysIncludeRunCount: alwaysIncludeRunCount)
+        case .snappy(let windowSize):
+            return CompressionTechnique.snappy(windowSize: windowSize)
+        case .snappyFramed:
+            return CompressionTechnique.snappyFramed
         case .zstd: return nil
 
         case ._7z: return nil
@@ -71,8 +68,10 @@ extension CompressionAlgorithm {
         case .eliasOmega: return nil
         case .fibonacci: return nil
 
-        case .dnaBinaryEncoding(let baseBits): return CompressionTechnique.dnaBinaryEncoding(baseBits: baseBits)
-        case .dnaSingleBlockEncoding: return CompressionTechnique.dnaSingleBlockEncoding
+        case .dnaBinaryEncoding(let baseBits):
+            return CompressionTechnique.dnaBinaryEncoding(baseBits: baseBits)
+        case .dnaSingleBlockEncoding:
+            return CompressionTechnique.dnaSingleBlockEncoding
 
         case .boringSSL: return nil
 
@@ -80,7 +79,8 @@ extension CompressionAlgorithm {
         case .dirac: return nil
         case .mpeg: return nil
 
-        case .iwa(let version): return CompressionTechnique.iwa(version: version)
+        case .iwa(let version):
+            return CompressionTechnique.iwa(version: version)
 
         case .programmingLanguage(let lang):
             switch lang {

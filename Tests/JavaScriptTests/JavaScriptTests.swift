@@ -2,7 +2,7 @@
 #if compiler(>=6.0)
 
 import Testing
-@testable import JavaScript
+@testable import CompressionJavaScript
 @testable import SwiftCompressionUtilities
 
 // MARK: JavaScriptTests

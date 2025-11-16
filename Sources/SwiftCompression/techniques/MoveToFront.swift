@@ -11,7 +11,6 @@ extension CompressionTechnique {
 
 // MARK: Transform
 extension CompressionTechnique.MoveToFront {
-    @inlinable
     public static func transform(
         data: some Sequence<UInt8>,
         reserveCapacity: Int = 1024

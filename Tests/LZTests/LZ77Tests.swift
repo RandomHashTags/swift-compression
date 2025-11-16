@@ -8,7 +8,7 @@
 #if compiler(>=6.0)
 
 import Testing
-@testable import LZ
+@testable import CompressionLZ
 @testable import SwiftCompressionUtilities
 
 struct LZ77Tests {

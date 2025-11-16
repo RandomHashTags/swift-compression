@@ -8,14 +8,20 @@ extension CompressionTechnique {
     public static let dnaSingleBlockEncoding:DNASingleBlockEncoding = DNASingleBlockEncoding()
 
     public struct DNASingleBlockEncoding: Compressor, Decompressor {
-        @inlinable public var algorithm: CompressionAlgorithm { .dnaSingleBlockEncoding }
-        @inlinable public var quality: CompressionQuality { .lossless }
+        @inlinable
+        public var algorithm: CompressionAlgorithm {
+            .dnaSingleBlockEncoding
+        }
+
+        @inlinable
+        public var quality: CompressionQuality {
+            .lossless
+        }
     }
 }
 
 // MARK: Compress
 extension CompressionTechnique.DNASingleBlockEncoding {
-    @inlinable
     public func compress(data: some Collection<UInt8>, closure: (UInt8) -> Void) throws(CompressionError) -> UInt8? { // TODO: fix
         return nil
     }
@@ -25,7 +31,6 @@ extension CompressionTechnique.DNASingleBlockEncoding {
     /// - Parameters:
     ///   - data: Sequence of bytes to compress.
     /// - Complexity: O(_n_ + (_m_ log _m_)) where _n_ is the length of `data` and _m_ is the number of unique bytes in `data`.
-    @inlinable
     public static func compress(
         data: some Collection<UInt8>,
         reserveCapacity: Int
@@ -44,7 +49,6 @@ extension CompressionTechnique.DNASingleBlockEncoding {
     /// - Parameters:
     ///   - data: Sequence of bytes to compress.
     /// - Complexity: O(_n_ + (_m_ log _m_)) where _n_ is the length of `data` and _m_ is the number of unique bytes in `data`.
-    @inlinable
     static func compressBinary(
         data: some Sequence<UInt8>
     ) -> [UInt8:[UInt8]] {
@@ -81,7 +85,6 @@ extension CompressionTechnique.DNASingleBlockEncoding {
     ///   - binaryData: Collection of bits to compress.
     /// - Returns: Compressed bit blocks and the control bits.
     /// - Complexity: O(_n_) where _n_ is the length of `binaryData`.
-    @inlinable
     static func compressSBE(
         binaryData: some Collection<UInt8>
     ) -> (data: [UInt8], controlBits: [UInt8]) {
@@ -152,7 +155,6 @@ extension CompressionTechnique.DNASingleBlockEncoding {
 
 // MARK: Decompress
 extension CompressionTechnique.DNASingleBlockEncoding { // TODO: finish
-    @inlinable
     public func decompress(data: some Collection<UInt8>, closure: (UInt8) -> Void) throws(DecompressionError) {
     }
 
@@ -160,7 +162,6 @@ extension CompressionTechnique.DNASingleBlockEncoding { // TODO: finish
     /// 
     /// - Parameters:
     ///   - data: Sequence of bytes to decompress.
-    @inlinable
     public static func decompress(data: [UInt8]) -> [UInt8] {
         return []
     }

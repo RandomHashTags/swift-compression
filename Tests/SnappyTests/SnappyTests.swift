@@ -2,7 +2,7 @@
 #if compiler(>=6.0)
 
 import Testing
-@testable import Snappy
+@testable import CompressionSnappy
 @testable import SwiftCompressionUtilities
 
 struct SnappyTests {
