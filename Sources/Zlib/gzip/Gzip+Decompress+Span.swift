@@ -1,13 +1,9 @@
 
-import SwiftCompressionUtilities
 import ZlibShim
 
-extension Gzip: Decompressor {
-    public typealias DecompressionConfiguration = DecompressConfiguration
-    public typealias DecompressionResult = [UInt8]?
-
+extension Gzip {
     public func decompress(
-        data: some Collection<UInt8>,
+        span: Span<UInt8>,
         configuration: DecompressConfiguration = .init()
     ) -> DecompressionResult {
         var stream = z_stream()
@@ -19,7 +15,7 @@ extension Gzip: Decompressor {
             Int32(MemoryLayout<z_stream>.size)
         )
         guard status == Z_OK else { return nil }
-        return data.withContiguousStorageIfAvailable {
+        return span.withUnsafeBufferPointer {
             return Deflate(
                 bufferSize: bufferSize,
                 level: level
@@ -30,18 +26,5 @@ extension Gzip: Decompressor {
                 stream: &stream
             )
         } ?? nil
-    }
-}
-
-// MARK: Configuration
-extension Gzip {
-    public struct DecompressConfiguration: Sendable {
-        public let reserveCapacity:Int
-
-        public init(
-            reserveCapacity: Int = 1024
-        ) {
-            self.reserveCapacity = reserveCapacity
-        }
     }
 }

@@ -1,13 +1,9 @@
 
-import SwiftCompressionUtilities
 import ZlibShim
 
-extension Gzip: Compressor {
-    public typealias CompressionConfiguration = CompressConfiguration
-    public typealias CompressionResult = [UInt8]?
-
+extension Gzip {
     public func compress(
-        data: some Collection<UInt8>,
+        span: Span<UInt8>,
         configuration: CompressionConfiguration = .init()
     ) -> CompressionResult {
         var stream = z_stream()
@@ -23,7 +19,7 @@ extension Gzip: Compressor {
             Int32(MemoryLayout<z_stream>.size)
         )
         guard status == Z_OK else { return nil }
-        return data.withContiguousStorageIfAvailable {
+        return span.withUnsafeBufferPointer {
             return Deflate(
                 bufferSize: bufferSize,
                 level: level
@@ -34,16 +30,5 @@ extension Gzip: Compressor {
                 stream: &stream
             )
         } ?? nil
-    }
-}
-
-// MARK: Configuration
-extension Gzip {
-    public struct CompressConfiguration: Sendable {
-        public let reserveCapacity:Int
-
-        public init(reserveCapacity: Int = 1024) {
-            self.reserveCapacity = reserveCapacity
-        }
     }
 }

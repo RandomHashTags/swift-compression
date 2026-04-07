@@ -13,11 +13,14 @@ extension Deflate: Compressor {
         var stream = z_stream()
         let status = deflateInit_(&stream, level, ZLIB_VERSION, Int32(MemoryLayout<z_stream>.size))
         guard status == Z_OK else { return nil }
-        return compress(data: data, configuration: configuration, stream: &stream)
+        return data.withContiguousStorageIfAvailable { rawBuffer in
+            return compress(baseAddress: rawBuffer.baseAddress, count: data.count, configuration: configuration, stream: &stream)
+        } ?? nil
     }
 
-    func compress(
-        data: some Collection<UInt8>,
+    package func compress(
+        baseAddress: UnsafePointer<UInt8>?,
+        count: Int,
         configuration: CompressionConfiguration,
         stream: inout z_stream
     ) -> CompressionResult {
@@ -26,18 +29,16 @@ extension Deflate: Compressor {
         var compressed = [UInt8]()
         compressed.reserveCapacity(configuration.reserveCapacity)
         var buffer = [UInt8](repeating: 0, count: bufferSize)
-        data.withContiguousStorageIfAvailable { rawBuffer in
-            stream.next_in = UnsafeMutablePointer(mutating: rawBuffer.baseAddress)
-            stream.avail_in = UInt32(data.count)
-            buffer.withUnsafeMutableBufferPointer { b in
-                while stream.avail_out == 0 {
-                    stream.next_out = b.baseAddress
-                    stream.avail_out = UInt32(bufferSize)
-                    deflate(&stream, Z_FINISH)
+        stream.next_in = UnsafeMutablePointer(mutating: baseAddress)
+        stream.avail_in = UInt32(count)
+        buffer.withUnsafeMutableBufferPointer { b in
+            while stream.avail_out == 0 {
+                stream.next_out = b.baseAddress
+                stream.avail_out = UInt32(bufferSize)
+                deflate(&stream, Z_FINISH)
 
-                    let count = bufferSize - Int(stream.avail_out)
-                    compressed.append(contentsOf: b[0..<count])
-                }
+                let count = bufferSize - Int(stream.avail_out)
+                compressed.append(contentsOf: b[0..<count])
             }
         }
         return compressed
