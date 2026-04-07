@@ -1,7 +1,7 @@
 
 import SwiftCompressionUtilities
 
-public struct LZ77<T: FixedWidthInteger & Sendable>: Compressor, Decompressor {
+public struct LZ77<T: FixedWidthInteger & Sendable>: Sendable {
     /// Size of the window.
     public let windowSize:Int
 

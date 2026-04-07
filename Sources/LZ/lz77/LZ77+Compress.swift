@@ -1,8 +1,11 @@
 
 import SwiftCompressionUtilities
 
-extension LZ77 {
-    /// Compress a collection of bytes using the LZ77 technique.
+extension LZ77: Compressor {
+    public typealias CompressionConfiguration = CompressConfiguration
+    public typealias CompressionResult = [UInt8]
+
+    // Compress a collection of bytes using the LZ77 technique.
     /// 
     /// - Parameters:
     ///   - data: Collection of bytes to compress.
@@ -10,8 +13,24 @@ extension LZ77 {
     /// - Complexity: O(_n_) where _n_ is the length of `data`.
     public func compress(
         data: some Collection<UInt8>,
+        configuration: CompressionConfiguration
+    ) -> CompressionResult {
+        var result = CompressionResult()
+        result.reserveCapacity(configuration.reserveCapacity)
+        compress(data: data, closure: { result.append($0) })
+        return result
+    }
+
+    /// Compress a collection of bytes using the LZ77 technique.
+    /// 
+    /// - Parameters:
+    ///   - data: Collection of bytes to compress.
+    ///   - closure: Logic to execute when a byte is compressed.
+    /// - Complexity: O(_n_) where _n_ is the length of `data`.
+    private func compress(
+        data: some Collection<UInt8>,
         closure: (UInt8) -> Void
-    ) -> UInt8? {
+    ) {
         let count = data.count
         var index = 0
         while index < count {
@@ -51,6 +70,16 @@ extension LZ77 {
             closure(byte)
             index += bestLength + 1
         }
-        return nil
+    }
+}
+
+// MARK: Configuration
+extension LZ77 {
+    public struct CompressConfiguration: Sendable {
+        public let reserveCapacity:Int
+
+        public init(reserveCapacity: Int) {
+            self.reserveCapacity = reserveCapacity
+        }
     }
 }

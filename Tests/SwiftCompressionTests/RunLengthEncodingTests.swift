@@ -6,33 +6,33 @@ import Testing
 
 // MARK: Compress
 struct RunLengthEncodingTests {
-    @Test func compressRLE() throws(CompressionError) {
+    @Test func compressRLE() {
         var data:[UInt8] = .init("AAAAABBBBBCCCCC".utf8)
-        var compressed = try RunLengthEncoding(minRun: 3, alwaysIncludeRunCount: true).compress(data: data).data
+        var compressed = RunLengthEncoding(minRun: 3, alwaysIncludeRunCount: true).compress(data: data, configuration: .init())
         var expected_result:[UInt8] = [196, 65, 196, 66, 196, 67]
         #expect(compressed == expected_result)
 
-        compressed = try RunLengthEncoding(minRun: 5, alwaysIncludeRunCount: true).compress(data: data).data
+        compressed = RunLengthEncoding(minRun: 5, alwaysIncludeRunCount: true).compress(data: data, configuration: .init())
         #expect(compressed == expected_result)
 
-        compressed = try RunLengthEncoding(minRun: 6, alwaysIncludeRunCount: true).compress(data: data).data
+        compressed = RunLengthEncoding(minRun: 6, alwaysIncludeRunCount: true).compress(data: data, configuration: .init())
         #expect(compressed == expected_result)
 
-        compressed = try RunLengthEncoding(minRun: 6, alwaysIncludeRunCount: false).compress(data: data).data
+        compressed = RunLengthEncoding(minRun: 6, alwaysIncludeRunCount: false).compress(data: data, configuration: .init())
         expected_result = data
         #expect(compressed == expected_result)
 
         data = .init(String(repeating: "A", count: 66).utf8)
-        compressed = try RunLengthEncoding(minRun: 3, alwaysIncludeRunCount: true).compress(data: data).data
+        compressed = RunLengthEncoding(minRun: 3, alwaysIncludeRunCount: true).compress(data: data, configuration: .init())
         expected_result = [255, 65, 193, 65]
         #expect(compressed == expected_result)
 
         data = [190, 191, 192]
-        compressed = try RunLengthEncoding(minRun: 3, alwaysIncludeRunCount: false).compress(data: data).data
+        compressed = RunLengthEncoding(minRun: 3, alwaysIncludeRunCount: false).compress(data: data, configuration: .init())
         expected_result = [190, 191, 192, 192]
         #expect(compressed == expected_result)
 
-        compressed = try RunLengthEncoding(minRun: 3, alwaysIncludeRunCount: true).compress(data: data).data
+        compressed = RunLengthEncoding(minRun: 3, alwaysIncludeRunCount: true).compress(data: data, configuration: .init())
         expected_result = [192, 190, 192, 191, 192, 192]
         #expect(compressed == expected_result)
     }
@@ -127,8 +127,8 @@ extension RunLengthEncodingTests {
     @Test func decompressRLE() throws {
         let string = "AAAAABBBBBCCCCC"
         let data:[UInt8] = .init(string.utf8)
-        let compressed = try RunLengthEncoding(minRun: 3, alwaysIncludeRunCount: true).compress(data: data).data
-        let decompressed = try RunLengthEncoding(minRun: 3, alwaysIncludeRunCount: true).decompress(data: compressed)
+        let compressed = RunLengthEncoding(minRun: 3, alwaysIncludeRunCount: true).compress(data: data, configuration: .init())
+        let decompressed = RunLengthEncoding(minRun: 3, alwaysIncludeRunCount: true).decompress(data: compressed, configuration: .init())
         #expect(decompressed == data)
     }
 }

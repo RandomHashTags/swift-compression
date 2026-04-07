@@ -1,7 +1,7 @@
 
 import SwiftCompressionUtilities
 
-public struct Brotli: Compressor, Decompressor { // TODO: finish
+public struct Brotli: Sendable { // TODO: finish
     /// Size of the window.
     public let windowSize:Int
 

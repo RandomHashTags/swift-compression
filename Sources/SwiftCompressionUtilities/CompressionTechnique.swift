@@ -1,7 +1,7 @@
 
 // MARK: CompressionTechnique
 /// Collection of well-known and useful compression and decompression technique implementations.
-public enum CompressionTechnique {
+public enum CompressionTechnique: Sendable {
 }
 
 // MARK: Frequency tables

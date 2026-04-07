@@ -4,7 +4,7 @@ import SwiftCompressionUtilities
 /// The Run-length encoding compression technique.
 /// 
 /// https://en.wikipedia.org/wiki/Run-length_encoding
-public struct RunLengthEncoding: Compressor, Decompressor {
+public struct RunLengthEncoding: Sendable {
     public typealias CompressClosureParameters = (run: Int, byte: UInt8)
 
     /// Minimum run count required to compress identical sequential bytes.

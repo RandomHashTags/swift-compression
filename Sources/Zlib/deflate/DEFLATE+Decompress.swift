@@ -1,10 +1,15 @@
 
+import SwiftCompressionUtilities
 import ZlibShim
 
-extension Deflate {
-    func decompress(
-        data: some Collection<UInt8>
-    ) -> [UInt8]? {
+extension Deflate: Decompressor {
+    public typealias DecompressionConfiguration = DecompressConfiguration
+    public typealias DecompressionResult = [UInt8]?
+
+    public func decompress(
+        data: some Collection<UInt8>,
+        configuration: DecompressionConfiguration
+    ) -> DecompressionResult {
         var stream = z_stream()
         let status = inflateInit_(&stream, ZLIB_VERSION, Int32(MemoryLayout<z_stream>.size))
         guard status == Z_OK else { return nil }
@@ -28,5 +33,18 @@ extension Deflate {
             }
         }
         return decompressedData
+    }
+}
+
+// MARK: Configuration
+extension Deflate {
+    public struct DecompressConfiguration: Sendable {
+        public let reserveCapacity:Int
+
+        public init(
+            reserveCapacity: Int
+        ) {
+            self.reserveCapacity = reserveCapacity
+        }
     }
 }

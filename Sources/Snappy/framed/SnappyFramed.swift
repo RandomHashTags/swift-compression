@@ -1,7 +1,7 @@
 
 import SwiftCompressionUtilities
 
-public struct SnappyFramed: Compressor, Decompressor {        
+public struct SnappyFramed: Sendable {        
     public var algorithm: CompressionAlgorithm {
         .snappyFramed
     }

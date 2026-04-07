@@ -12,9 +12,9 @@ import Testing
 @testable import SwiftCompressionUtilities
 
 struct DNASingleBlockEncodingTests {
-    static let sequence:String = "TACTTGNCTAAAAGTACNATTGNCTAAGANTACACCGGCA"
-    static let data:[UInt8] = [UInt8](sequence.utf8)
-    static let binary:[UInt8:[UInt8]] = DNASingleBlockEncoding.compressBinary(data: data)
+    static let sequence = "TACTTGNCTAAAAGTACNATTGNCTAAGANTACACCGGCA"
+    static let data = [UInt8](sequence.utf8)
+    static let binary = DNASingleBlockEncoding().compress(data: data, configuration: .init())
 
     @Test func compressDNACSingleBlockEncodingPhase1() {
         #expect(Self.binary == [

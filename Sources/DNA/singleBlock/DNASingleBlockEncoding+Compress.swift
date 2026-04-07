@@ -1,26 +1,9 @@
 
 import SwiftCompressionUtilities
 
-extension DNASingleBlockEncoding {
-    public func compress(data: some Collection<UInt8>, closure: (UInt8) -> Void) throws(CompressionError) -> UInt8? { // TODO: fix
-        return nil
-    }
-
-    /// Compress a sequence of bytes using the DNA single block encoding technique.
-    /// 
-    /// - Parameters:
-    ///   - data: Sequence of bytes to compress.
-    /// - Complexity: O(_n_ + (_m_ log _m_)) where _n_ is the length of `data` and _m_ is the number of unique bytes in `data`.
-    public static func compress(
-        data: some Collection<UInt8>,
-        reserveCapacity: Int
-    ) -> CompressionResult<[UInt8]>? { // TODO: finish
-        let results = compressBinary(data: data)
-        for (base, _) in results {
-            print("base=\(Character(Unicode.Scalar(base)));result=\(results[base]!.debugDescription)")
-        }
-        return nil
-    }
+extension DNASingleBlockEncoding: Compressor {
+    public typealias CompressionConfiguration = CompressConfiguration
+    public typealias CompressionResult = [UInt8:[UInt8]]
 }
 
 extension DNASingleBlockEncoding {
@@ -29,9 +12,10 @@ extension DNASingleBlockEncoding {
     /// - Parameters:
     ///   - data: Sequence of bytes to compress.
     /// - Complexity: O(_n_ + (_m_ log _m_)) where _n_ is the length of `data` and _m_ is the number of unique bytes in `data`.
-    static func compressBinary(
-        data: some Sequence<UInt8>
-    ) -> [UInt8:[UInt8]] {
+    public func compress(
+        data: some Sequence<UInt8>,
+        configuration: CompressConfiguration
+    ) -> CompressionResult {
         let frequencyTable:[UInt8:Int] = CompressionTechnique.buildFrequencyTable(data: data)
         var sortedFrequencyTable = frequencyTable.sorted(by: {
             guard $0.value != $1.value else { return $0.key < $1.key }
@@ -130,5 +114,13 @@ extension DNASingleBlockEncoding {
             }
         }
         return (compressed, controlBits)
+    }
+}
+
+// MARK: Configuration
+extension DNASingleBlockEncoding {
+    public struct CompressConfiguration: Sendable {
+        public init() {
+        }
     }
 }

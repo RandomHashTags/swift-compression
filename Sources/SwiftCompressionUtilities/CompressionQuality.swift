@@ -2,7 +2,7 @@
 /// Quality of the compressed data a compression algorithm uses.
 /// 
 /// https://en.wikipedia.org/wiki/Data_compression
-public enum CompressionQuality {
+public enum CompressionQuality: Sendable {
     /// Data is compressed/decompressed without losing any information.
     case lossless
 

@@ -1,7 +1,7 @@
 
 import SwiftCompressionUtilities
 
-public struct Snappy: Compressor, Decompressor {
+public struct Snappy: Sendable {
 
     /// Size of the window.
     public let windowSize:Int

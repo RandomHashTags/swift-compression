@@ -1,7 +1,10 @@
 
 import SwiftCompressionUtilities
 
-extension LZ77 {
+extension LZ77: Decompressor {
+    public typealias DecompressionConfiguration = CompressionConfiguration
+    public typealias DecompressionResult = [UInt8]
+
     /// Decompress a collection of bytes using the LZ77 technique.
     /// 
     /// - Parameters:
@@ -9,6 +12,22 @@ extension LZ77 {
     ///   - closure: Logic to execute when a byte was decompressed.
     /// - Complexity: O(_n_) where _n_ is the length of `data`.
     public func decompress(
+        data: some Collection<UInt8>,
+        configuration: DecompressionConfiguration
+    ) -> DecompressionResult {
+        var result = DecompressionResult()
+        decompress(data: data, closure: { result.append($0) })
+        result.reserveCapacity(configuration.reserveCapacity)
+        return result
+    }
+
+    /// Decompress a collection of bytes using the LZ77 technique.
+    /// 
+    /// - Parameters:
+    ///   - data: Collection of bytes to decompress.
+    ///   - closure: Logic to execute when a byte was decompressed.
+    /// - Complexity: O(_n_) where _n_ is the length of `data`.
+    private func decompress(
         data: some Collection<UInt8>,
         closure: (UInt8) -> Void
     ) {

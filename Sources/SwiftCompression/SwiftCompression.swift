@@ -15,7 +15,8 @@ extension CompressionAlgorithm {
 
         case .arithmetic: return nil
         case .brotli(let windowSize):
-            return CompressionTechnique.brotli(windowSize: windowSize)
+            //return CompressionTechnique.brotli(windowSize: windowSize)
+            return nil
         case .bwt: return nil
         case .deflate: return nil
         case .huffmanCoding: return nil
@@ -45,9 +46,11 @@ extension CompressionAlgorithm {
         case .runLengthEncoding(let minRun, let alwaysIncludeRunCount):
             return CompressionTechnique.runLength(minRun: minRun, alwaysIncludeRunCount: alwaysIncludeRunCount)
         case .snappy(let windowSize):
-            return CompressionTechnique.snappy(windowSize: windowSize)
+            //return CompressionTechnique.snappy(windowSize: windowSize)
+            return nil
         case .snappyFramed:
-            return CompressionTechnique.snappyFramed
+            //return CompressionTechnique.snappyFramed
+            return nil
         case .zstd: return nil
 
         case ._7z: return nil

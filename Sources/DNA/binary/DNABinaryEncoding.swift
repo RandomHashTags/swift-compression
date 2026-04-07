@@ -2,7 +2,7 @@
 import SwiftCompressionUtilities
 
 /// The DNA binary encoding compression technique.
-public struct DNABinaryEncoding: Compressor, Decompressor {        
+public struct DNABinaryEncoding: Sendable {        
     public let baseBits:[UInt8:[Bool]]
 
     public init(baseBits: [UInt8:[Bool]] = [

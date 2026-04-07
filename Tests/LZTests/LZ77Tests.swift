@@ -14,7 +14,7 @@ import Testing
 struct LZ77Tests {
     static let string:String = "abracadabra abracadabra"
     static let lz77:LZ77<UInt16> = CompressionTechnique.lz77(windowSize: 10, bufferSize: 6)
-    static let compressed:[UInt8] = try! lz77.compress(data: [UInt8](string.utf8)).data
+    static let compressed = lz77.compress(data: [UInt8](string.utf8), configuration: .init(reserveCapacity: 1024))
 
     @Test func compressLZ77() {
         #expect(Self.compressed == [
@@ -22,7 +22,7 @@ struct LZ77Tests {
         ])
     }
     @Test func decompressLZ77() throws(DecompressionError) {
-        let result:[UInt8] = try Self.lz77.decompress(data: Self.compressed)
+        let result = Self.lz77.decompress(data: Self.compressed, configuration: .init(reserveCapacity: 1024))
         #expect(result == [UInt8](Self.string.utf8))
     }
 }
