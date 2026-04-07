@@ -2,8 +2,7 @@
 import SwiftCompressionUtilities
 import ZlibShim
 
-// https://en.wikipedia.org/wiki/Gzip
-// https://www.rfc-editor.org/rfc/rfc1952#page-5
+// https://www.rfc-editor.org/rfc/rfc1951
 
 /// The Deflate compression technique.
 /// 

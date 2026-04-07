@@ -8,11 +8,19 @@ extension Deflate: Compressor {
 
     public func compress(
         data: some Collection<UInt8>,
-        configuration: CompressionConfiguration
+        configuration: CompressionConfiguration = .init()
     ) -> CompressionResult {
         var stream = z_stream()
         let status = deflateInit_(&stream, level, ZLIB_VERSION, Int32(MemoryLayout<z_stream>.size))
         guard status == Z_OK else { return nil }
+        return compress(data: data, configuration: configuration, stream: &stream)
+    }
+
+    func compress(
+        data: some Collection<UInt8>,
+        configuration: CompressionConfiguration,
+        stream: inout z_stream
+    ) -> CompressionResult {
         defer { deflateEnd(&stream) }
 
         var compressed = [UInt8]()
@@ -42,7 +50,7 @@ extension Deflate {
         public let reserveCapacity:Int
 
         public init(
-            reserveCapacity: Int
+            reserveCapacity: Int = 1024
         ) {
             self.reserveCapacity = reserveCapacity
         }

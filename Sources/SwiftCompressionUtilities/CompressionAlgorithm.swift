@@ -31,7 +31,7 @@ public enum CompressionAlgorithm: Hashable, Sendable {
     // files
     case _7z
     case bzip2
-    case gzip
+    case gzip(bufferSize: Int, level: Int32, memLevel: Int32, strategy: Int32)
     case rar
 
     // image

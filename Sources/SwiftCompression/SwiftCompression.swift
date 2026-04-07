@@ -57,7 +57,8 @@ extension CompressionAlgorithm {
 
         case ._7z: return nil
         case .bzip2: return nil
-        case .gzip: return nil
+        case .gzip(let bufferSize, let level, let memLevel, let strategy):
+            return Gzip(bufferSize: bufferSize, level: level, memLevel: memLevel, strategy: strategy)
         case .rar: return nil
 
         case .h264: return nil
