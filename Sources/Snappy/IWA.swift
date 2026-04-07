@@ -17,12 +17,10 @@ extension CompressionTechnique {
             self.version = version
         }
 
-        @inlinable
         public var algorithm: CompressionAlgorithm {
             .iwa(version: version)
         }
 
-        @inlinable
         public var quality: CompressionQuality {
             .lossless
         }

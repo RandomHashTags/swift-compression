@@ -1,6 +1,6 @@
 
 // MARK: AnyCompressor
-public protocol AnyCompressor: Sendable {
+public protocol AnyCompressor: Sendable, ~Copyable {
     /// Compression algorithm this compressor uses.
     var algorithm: CompressionAlgorithm { get }
 

@@ -1,27 +1,7 @@
 
 import SwiftCompressionUtilities
 
-extension CompressionTechnique {
-    /// The DNA single block encoding compression technique.
-    /// 
-    /// https://www.mdpi.com/1999-4893/13/4/99
-    public static let dnaSingleBlockEncoding:DNASingleBlockEncoding = DNASingleBlockEncoding()
-
-    public struct DNASingleBlockEncoding: Compressor, Decompressor {
-        @inlinable
-        public var algorithm: CompressionAlgorithm {
-            .dnaSingleBlockEncoding
-        }
-
-        @inlinable
-        public var quality: CompressionQuality {
-            .lossless
-        }
-    }
-}
-
-// MARK: Compress
-extension CompressionTechnique.DNASingleBlockEncoding {
+extension DNASingleBlockEncoding {
     public func compress(data: some Collection<UInt8>, closure: (UInt8) -> Void) throws(CompressionError) -> UInt8? { // TODO: fix
         return nil
     }
@@ -43,7 +23,7 @@ extension CompressionTechnique.DNASingleBlockEncoding {
     }
 }
 
-extension CompressionTechnique.DNASingleBlockEncoding {
+extension DNASingleBlockEncoding {
     /// Compress a sequence of bytes using phase one (compress data to binary) of the DNA single block encoding technique.
     /// 
     /// - Parameters:
@@ -75,7 +55,7 @@ extension CompressionTechnique.DNASingleBlockEncoding {
     }
 }
 
-extension CompressionTechnique.DNASingleBlockEncoding {
+extension DNASingleBlockEncoding {
     /// Compress a collection of bits using phase two (compress bits to bit blocks) of the DNA single block encoding technique.
     /// 
     /// https://www.mdpi.com/algorithms/algorithms-13-00099/article_deploy/html/images/algorithms-13-00099-g002.png
@@ -150,19 +130,5 @@ extension CompressionTechnique.DNASingleBlockEncoding {
             }
         }
         return (compressed, controlBits)
-    }
-}
-
-// MARK: Decompress
-extension CompressionTechnique.DNASingleBlockEncoding { // TODO: finish
-    public func decompress(data: some Collection<UInt8>, closure: (UInt8) -> Void) throws(DecompressionError) {
-    }
-
-    /// Decompress a sequence of bytes using the DNA single block encoding technique.
-    /// 
-    /// - Parameters:
-    ///   - data: Sequence of bytes to decompress.
-    public static func decompress(data: [UInt8]) -> [UInt8] {
-        return []
     }
 }

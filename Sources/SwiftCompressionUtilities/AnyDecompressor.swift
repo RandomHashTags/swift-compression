@@ -1,6 +1,6 @@
 
 // MARK: AnyDecompressor
-public protocol AnyDecompressor: Sendable {
+public protocol AnyDecompressor: Sendable, ~Copyable {
     /// Decompression algorithm this decompressor uses.
     var algorithm: CompressionAlgorithm { get }
 

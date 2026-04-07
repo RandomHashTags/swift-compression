@@ -13,7 +13,7 @@ import Testing
 
 struct LZ77Tests {
     static let string:String = "abracadabra abracadabra"
-    static let lz77:CompressionTechnique.LZ77<UInt16> = CompressionTechnique.lz77(windowSize: 10, bufferSize: 6)
+    static let lz77:LZ77<UInt16> = CompressionTechnique.lz77(windowSize: 10, bufferSize: 6)
     static let compressed:[UInt8] = try! lz77.compress(data: [UInt8](string.utf8)).data
 
     @Test func compressLZ77() {

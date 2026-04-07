@@ -1,7 +1,5 @@
 
 @_exported import CompressionDNA
-@_exported import CompressionCSS
-@_exported import CompressionJavaScript
 @_exported import CompressionLZ
 @_exported import CompressionSnappy
 @_exported import SwiftCompressionUtilities
@@ -21,22 +19,21 @@ extension CompressionAlgorithm {
         case .bwt: return nil
         case .deflate: return nil
         case .huffmanCoding: return nil
-        case .json: return nil
         case .lz4: return nil
         case .lz77(let windowSize, let bufferSize, let offsetBitWidth):
             switch offsetBitWidth {
             case 8:
-                return CompressionTechnique.LZ77<UInt8>(windowSize: windowSize, bufferSize: bufferSize)
+                return LZ77<UInt8>(windowSize: windowSize, bufferSize: bufferSize)
             case 16:
-                return CompressionTechnique.LZ77<UInt16>(windowSize: windowSize, bufferSize: bufferSize)
+                return LZ77<UInt16>(windowSize: windowSize, bufferSize: bufferSize)
             case 32:
-                return CompressionTechnique.LZ77<UInt32>(windowSize: windowSize, bufferSize: bufferSize)
+                return LZ77<UInt32>(windowSize: windowSize, bufferSize: bufferSize)
             case 64:
-                return CompressionTechnique.LZ77<UInt64>(windowSize: windowSize, bufferSize: bufferSize)
+                return LZ77<UInt64>(windowSize: windowSize, bufferSize: bufferSize)
             #if compiler(>=6.0)
             case 128:
                 if #available(macOS 15.0, iOS 18.0, watchOS 11.0, tvOS 18.0, visionOS 2.0, *) {
-                    return CompressionTechnique.LZ77<UInt128>(windowSize: windowSize, bufferSize: bufferSize)
+                    return LZ77<UInt128>(windowSize: windowSize, bufferSize: bufferSize)
                 }
                 return nil
             #endif
@@ -82,13 +79,6 @@ extension CompressionAlgorithm {
         case .iwa(let version):
             return CompressionTechnique.iwa(version: version)
 
-        case .programmingLanguage(let lang):
-            switch lang {
-            case .css: return CompressionTechnique.css
-            case .javascript: return CompressionTechnique.javascript
-            case .swift: return CompressionTechnique.swift
-            @unknown default: return nil
-            }
         @unknown default: return nil
         }
     }

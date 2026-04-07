@@ -1,8 +1,8 @@
 
 // MARK: Compressor
-public protocol Compressor: AnyCompressor {
+public protocol Compressor: AnyCompressor, ~Copyable {
     associatedtype CompressClosureParameters
-    func compressClosure(closure: @escaping @Sendable (UInt8) -> Void) -> @Sendable (CompressClosureParameters) -> Void
+    func compressClosure(closure: @escaping (UInt8) -> Void) -> (CompressClosureParameters) -> Void
 
     func compress(
         data: some Collection<UInt8>,
@@ -65,7 +65,7 @@ extension Compressor {
     }
 }
 extension Compressor where CompressClosureParameters == UInt8 {
-    public func compressClosure(closure: @escaping @Sendable (UInt8) -> Void) -> @Sendable (CompressClosureParameters) -> Void {
+    public func compressClosure(closure: @escaping (UInt8) -> Void) -> (CompressClosureParameters) -> Void {
         closure
     }
 }

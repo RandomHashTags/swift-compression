@@ -1,16 +1,14 @@
 
 import SwiftCompressionUtilities
 
-extension CompressionTechnique {
-    /// The Move-to-front transform compression technique.
-    /// 
-    /// https://en.wikipedia.org/wiki/Move-to-front_transform
-    public enum MoveToFront { // TODO: finish
-    }
+/// The Move-to-front transform compression technique.
+/// 
+/// https://en.wikipedia.org/wiki/Move-to-front_transform
+public enum MoveToFront { // TODO: finish
 }
 
 // MARK: Transform
-extension CompressionTechnique.MoveToFront {
+extension MoveToFront {
     public static func transform(
         data: some Sequence<UInt8>,
         reserveCapacity: Int = 1024
@@ -26,7 +24,7 @@ extension CompressionTechnique.MoveToFront {
     }
 }
 
-extension CompressionTechnique.MoveToFront {
+extension MoveToFront {
     struct Record {
     }
 }

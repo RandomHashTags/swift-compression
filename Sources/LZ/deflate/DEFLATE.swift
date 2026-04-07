@@ -4,19 +4,17 @@ import SwiftCompressionUtilities
 // https://en.wikipedia.org/wiki/Gzip
 // https://www.rfc-editor.org/rfc/rfc1952#page-5
 
-extension CompressionTechnique {
-    /// The Deflate compression technique.
-    /// 
-    /// https://en.wikipedia.org/wiki/Deflate
-    public enum Deflate {
-        struct Block: Sendable {
-            let head:Head
-        }
+/// The Deflate compression technique.
+/// 
+/// https://en.wikipedia.org/wiki/Deflate
+public enum Deflate {
+    struct Block: Sendable {
+        let head:Head
     }
 }
 
 // MARK: Head
-extension CompressionTechnique.Deflate {
+extension Deflate {
     struct Head: Sendable {
         let bits:UInt8
 
@@ -36,7 +34,7 @@ extension CompressionTechnique.Deflate {
 }
 
 // MARK: Encoding
-extension CompressionTechnique.Deflate {
+extension Deflate {
     public enum Encoding: ~Copyable, Sendable {
         /// A stored (a.k.a. raw or literal) section, between 0 and 65,535 bytes in length
         case stored
@@ -53,7 +51,7 @@ extension CompressionTechnique.Deflate {
 }
 
 // MARK: Flags
-extension CompressionTechnique.Deflate {
+extension Deflate {
     public struct Flags: ~Copyable, Sendable {
         let bits:UInt8
 
@@ -79,7 +77,7 @@ extension CompressionTechnique.Deflate {
 }
 
 // MARK: Quality
-extension CompressionTechnique.Deflate {
+extension Deflate {
     public enum Quality: ~Copyable, Sendable {
         case `default`
 
@@ -100,7 +98,7 @@ extension CompressionTechnique.Deflate {
 }
 
 // MARK: FileSystem
-extension CompressionTechnique.Deflate {
+extension Deflate {
     public enum FileSystem: ~Copyable, Sendable {
         case fat
         case amiga
@@ -137,42 +135,5 @@ extension CompressionTechnique.Deflate {
             case .unknown:     255
             }
         }
-    }
-}
-
-// MARK: Compress
-extension CompressionTechnique.Deflate {
-    public static func compress(
-        data: some Sequence<UInt8>,
-        flags: borrowing Flags = .init(flags: 0),
-        mtime: (UInt8, UInt8, UInt8, UInt8) = (0, 0, 0, 0),
-        quality: borrowing Quality = .default,
-        os: borrowing FileSystem = .unknown
-    ) -> CompressionResult<[UInt8]>? {
-        var result = [UInt8]()
-
-        // gzip header
-        result.append(contentsOf: [
-            0x1F,                         // ID1
-            0x8B,                         // ID2
-            0x08,                         // CM (compression method; deflate=8)
-            flags.bits,                   // FLG (flags)
-            mtime.0.littleEndian,         // MTIME byte 1 (modification time)
-            mtime.1.littleEndian,         // MTIME byte 2 (modification time)
-            mtime.2.littleEndian,         // MTIME byte 3 (modification time)
-            mtime.3.littleEndian,         // MTIME byte 4 (modification time)
-            quality.rawValue.littleEndian // XFL (extra flags)
-        ])
-        // TODO: finish
-        return .init(data: result)
-    }
-}
-
-// MARK: Decompress
-extension CompressionTechnique.Deflate {
-    public static func decompress(
-        data: [UInt8]
-    ) -> [UInt8] {
-        return data
     }
 }

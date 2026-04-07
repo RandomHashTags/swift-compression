@@ -1,6 +1,6 @@
 
 // MARK: Decompressor
-public protocol Decompressor: AnyDecompressor {
+public protocol Decompressor: AnyDecompressor, ~Copyable {
     associatedtype DecompressClosureParameters
 
     /// Decompress a collection of bytes using this technique.

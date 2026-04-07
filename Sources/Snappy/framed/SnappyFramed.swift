@@ -1,0 +1,21 @@
+
+import SwiftCompressionUtilities
+
+public struct SnappyFramed: Compressor, Decompressor {        
+    public var algorithm: CompressionAlgorithm {
+        .snappyFramed
+    }
+
+    public var quality: CompressionQuality {
+        .lossless
+    }
+}
+
+extension CompressionTechnique {
+    /// The Snappy Framed compression technique.
+    /// 
+    /// https://en.wikipedia.org/wiki/Snappy_(compression)#Framing_format
+    /// 
+    /// https://github.com/google/snappy
+    public static let snappyFramed:SnappyFramed = SnappyFramed()
+}
