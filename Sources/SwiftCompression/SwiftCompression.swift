@@ -2,6 +2,7 @@
 @_exported import CompressionDNA
 @_exported import CompressionLZ
 @_exported import CompressionSnappy
+@_exported import Zlib
 @_exported import SwiftCompressionUtilities
 
 // MARK: Technique
@@ -18,7 +19,8 @@ extension CompressionAlgorithm {
             //return CompressionTechnique.brotli(windowSize: windowSize)
             return nil
         case .bwt: return nil
-        case .deflate: return nil
+        case .deflate(let bufferSize, let level):
+            return Deflate(bufferSize: bufferSize, level: level)
         case .huffmanCoding: return nil
         case .lz4: return nil
         case .lz77(let windowSize, let bufferSize, let offsetBitWidth):

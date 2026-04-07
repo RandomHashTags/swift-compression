@@ -25,6 +25,11 @@ let package = Package(
             name: "SwiftCompressionSnappy",
             targets: ["CompressionSnappy"]
         ),
+
+        .library(
+            name: "Zlib",
+            targets: ["Zlib"]
+        ),
     ],
     // MARK: Targets
     targets: [
@@ -38,7 +43,8 @@ let package = Package(
                 "SwiftCompressionUtilities",
                 "CompressionDNA",
                 "CompressionLZ",
-                "CompressionSnappy"
+                "CompressionSnappy",
+                "Zlib"
             ]
         ),
 

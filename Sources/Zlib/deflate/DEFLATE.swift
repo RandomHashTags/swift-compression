@@ -21,7 +21,7 @@ public struct Deflate: Sendable {
     }
 
     public var algorithm: CompressionAlgorithm {
-        .deflate
+        .deflate(bufferSize: bufferSize, level: level)
     }
 
     public var quality: CompressionQuality {
