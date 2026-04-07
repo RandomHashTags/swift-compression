@@ -1,0 +1,5 @@
+module ZlibShim [system] {
+    header "/usr/include/zlib.h"
+    link "z"
+    export *
+}

@@ -43,6 +43,15 @@ let package = Package(
         ),
 
         // MARK: Techniques
+        .systemLibrary(name: "ZlibShim"),
+        .target(
+            name: "Zlib",
+            dependencies: [
+                "SwiftCompressionUtilities",
+                "ZlibShim"
+            ]
+        ),
+
         .target(
             name: "CompressionDNA",
             dependencies: [
@@ -89,6 +98,12 @@ let package = Package(
         .testTarget(
             name: "SnappyTests",
             dependencies: ["CompressionSnappy"]
+        ),
+        .testTarget(
+            name: "ZlibTests",
+            dependencies: [
+                "Zlib"
+            ]
         )
     ]
 )
