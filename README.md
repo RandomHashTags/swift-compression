@@ -9,7 +9,9 @@ Standalone compression & decompression library.
 ### Compression and decompression
 
 - [ ] [Brotli](https://github.com/google/brotli)
-- [x] [DEFLATE](https://www.rfc-editor.org/rfc/rfc1951)
+- [ ] [DEFLATE](https://www.rfc-editor.org/rfc/rfc1951)
+    - [x] via zlib
+    - [ ] via libdeflate
 - [x] [DNA Binary Encoding](https://en.wikipedia.org/wiki/DNA_digital_data_storage)
 - [ ] [DNA Single-Block Encoding](https://www.mdpi.com/1999-4893/13/4/99)
 - [x] [Huffman Coding](https://en.wikipedia.org/wiki/Huffman_coding)
