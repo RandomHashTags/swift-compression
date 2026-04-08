@@ -1,12 +1,17 @@
 
 // MARK: Compressor
 public protocol Compressor: AnyCompressor, ~Copyable {
-    associatedtype CompressionConfiguration
+    associatedtype ConcreteCompressionConfiguration:CompressionConfiguration
     associatedtype CompressionResult
-    associatedtype CompressionErrorType:Error = CompressionError
+    associatedtype ConcreteCompressionError:Error = CompressionError
 
     func compress(
         data: some Collection<UInt8>,
-        configuration: CompressionConfiguration
-    ) throws(CompressionErrorType) -> CompressionResult
+        configuration: ConcreteCompressionConfiguration
+    ) throws(ConcreteCompressionError) -> CompressionResult
+
+    func compress(
+        span: Span<UInt8>,
+        configuration: ConcreteCompressionConfiguration
+    ) throws(ConcreteCompressionError) -> CompressionResult
 }

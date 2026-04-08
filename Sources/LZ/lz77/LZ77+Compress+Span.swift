@@ -1,0 +1,22 @@
+
+import SwiftCompressionUtilities
+
+extension LZ77 {
+    // Compress a collection of bytes using the LZ77 technique.
+    /// 
+    /// - Parameters:
+    ///   - data: Collection of bytes to compress.
+    ///   - closure: Logic to execute when a byte is compressed.
+    /// - Complexity: O(_n_) where _n_ is the length of `data`.
+    public func compress(
+        span: Span<UInt8>,
+        configuration: ConcreteCompressionConfiguration
+    ) -> CompressionResult {
+        var result = CompressionResult()
+        result.reserveCapacity(configuration.reserveCapacity)
+        span.withUnsafeBufferPointer {
+            compress(buffer: $0, closure: { result.append($0) })
+        }
+        return result
+    }
+}

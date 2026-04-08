@@ -4,7 +4,7 @@ import ZlibShim
 extension Gzip {
     public func decompress(
         span: Span<UInt8>,
-        configuration: DecompressConfiguration = .init()
+        configuration: DecompressConfiguration = .default
     ) -> DecompressionResult {
         var stream = z_stream()
         let windowBits:Int32 = 15 + 16

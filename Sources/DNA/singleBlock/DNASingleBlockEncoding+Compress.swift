@@ -2,7 +2,7 @@
 import SwiftCompressionUtilities
 
 extension DNASingleBlockEncoding: Compressor {
-    public typealias CompressionConfiguration = CompressConfiguration
+    public typealias ConcreteCompressionConfiguration = CompressConfiguration
     public typealias CompressionResult = [UInt8:[UInt8]]
 }
 
@@ -13,10 +13,17 @@ extension DNASingleBlockEncoding {
     ///   - data: Sequence of bytes to compress.
     /// - Complexity: O(_n_ + (_m_ log _m_)) where _n_ is the length of `data` and _m_ is the number of unique bytes in `data`.
     public func compress(
-        data: some Sequence<UInt8>,
+        data: some Collection<UInt8>,
         configuration: CompressConfiguration
     ) -> CompressionResult {
-        let frequencyTable:[UInt8:Int] = CompressionTechnique.buildFrequencyTable(data: data)
+        return data.withContiguousStorageIfAvailable { compress(buffer: $0, configuration: configuration) } ?? .init()
+    }
+
+    func compress(
+        buffer: UnsafeBufferPointer<UInt8>,
+        configuration: CompressConfiguration
+    ) -> CompressionResult {
+        let frequencyTable:[UInt8:Int] = CompressionTechnique.buildFrequencyTable(buffer: buffer)
         var sortedFrequencyTable = frequencyTable.sorted(by: {
             guard $0.value != $1.value else { return $0.key < $1.key }
             return $0.value > $1.value
@@ -28,7 +35,7 @@ extension DNASingleBlockEncoding {
             results[key] = []
             sortedIndexes[key] = index
         }
-        for byte in data {
+        for byte in buffer {
             let sortedIndex = sortedIndexes[byte] ?? sortedIndexes.count
             for i in 0..<sortedIndex {
                 results[sortedFrequencyTable[i].key]!.append(0)
@@ -119,7 +126,9 @@ extension DNASingleBlockEncoding {
 
 // MARK: Configuration
 extension DNASingleBlockEncoding {
-    public struct CompressConfiguration: Sendable {
+    public struct CompressConfiguration: CompressionConfiguration {
+        public static var `default`: Self { .init() }
+
         public init() {
         }
     }

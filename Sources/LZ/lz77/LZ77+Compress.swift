@@ -2,7 +2,7 @@
 import SwiftCompressionUtilities
 
 extension LZ77: Compressor {
-    public typealias CompressionConfiguration = CompressConfiguration
+    public typealias ConcreteCompressionConfiguration = CompressConfiguration
     public typealias CompressionResult = [UInt8]
 
     // Compress a collection of bytes using the LZ77 technique.
@@ -13,11 +13,13 @@ extension LZ77: Compressor {
     /// - Complexity: O(_n_) where _n_ is the length of `data`.
     public func compress(
         data: some Collection<UInt8>,
-        configuration: CompressionConfiguration
+        configuration: ConcreteCompressionConfiguration
     ) -> CompressionResult {
         var result = CompressionResult()
         result.reserveCapacity(configuration.reserveCapacity)
-        compress(data: data, closure: { result.append($0) })
+        data.withContiguousStorageIfAvailable {
+            compress(buffer: $0, closure: { result.append($0) })
+        }
         return result
     }
 
@@ -27,20 +29,20 @@ extension LZ77: Compressor {
     ///   - data: Collection of bytes to compress.
     ///   - closure: Logic to execute when a byte is compressed.
     /// - Complexity: O(_n_) where _n_ is the length of `data`.
-    private func compress(
-        data: some Collection<UInt8>,
+    func compress(
+        buffer: UnsafeBufferPointer<UInt8>,
         closure: (UInt8) -> Void
     ) {
-        let count = data.count
+        let count = buffer.count
         var index = 0
         while index < count {
             let bufferEndIndex = min(index + bufferSize, count)
             guard index < bufferEndIndex else { break }
             let bufferCount = bufferEndIndex - index
-            let bufferRange = data.index(data.startIndex, offsetBy: index)..<data.index(data.startIndex, offsetBy: bufferEndIndex)
-            let buffer = data[bufferRange]
-            let windowRange = data.index(data.startIndex, offsetBy: max(0, index - windowSize))..<data.index(data.startIndex, offsetBy: index)
-            let window = data[windowRange]
+            let bufferRange = index..<bufferEndIndex
+            let buffer = buffer[bufferRange]
+            let windowRange = max(0, index - windowSize)..<index
+            let window = buffer[windowRange]
             let windowCount = window.count
             var offset = 0
             var bestLength = 0
@@ -59,7 +61,7 @@ extension LZ77: Compressor {
             }
             let byte:UInt8
             if index + bestLength < count {
-                byte = data[index + bestLength]
+                byte = buffer[index + bestLength]
             } else {
                 byte = 0
             }
@@ -75,10 +77,14 @@ extension LZ77: Compressor {
 
 // MARK: Configuration
 extension LZ77 {
-    public struct CompressConfiguration: Sendable {
+    public struct CompressConfiguration: CompressionConfiguration, DecompressionConfiguration {
+        public static var `default`: Self { .init() }
+
         public let reserveCapacity:Int
 
-        public init(reserveCapacity: Int) {
+        public init(
+            reserveCapacity: Int = 1024
+        ) {
             self.reserveCapacity = reserveCapacity
         }
     }

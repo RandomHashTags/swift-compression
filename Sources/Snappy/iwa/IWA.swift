@@ -30,7 +30,9 @@ extension CompressionTechnique {
 
 // MARK: Configuration
 extension IWA {
-    public struct Configuration: Sendable {
+    public struct Configuration: CompressionConfiguration, DecompressionConfiguration {
+        public static var `default`: Self { .init() }
+
         public init() {
         }
     }

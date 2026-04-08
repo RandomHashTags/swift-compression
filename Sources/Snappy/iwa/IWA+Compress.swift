@@ -1,6 +1,6 @@
 
 extension IWA { // TODO: finish
-    public typealias CompressionConfiguration = Configuration
+    public typealias ConcreteCompressionConfiguration = Configuration
     public typealias CompressionResult = [UInt8]
 
     /// - Parameters:
@@ -8,8 +8,15 @@ extension IWA { // TODO: finish
     /// - Complexity: O(_n_) where _n_ is the length of `data`.
     public func compress(
         data: some Collection<UInt8>,
-        configuration: CompressionConfiguration
+        configuration: ConcreteCompressionConfiguration
     ) -> CompressionResult {
+        return .init()
+    }
+
+    public func compress(
+        span: Span<UInt8>,
+        configuration: Configuration
+    ) throws(Never) -> [UInt8] {
         return .init()
     }
 }

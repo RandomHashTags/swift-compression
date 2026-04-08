@@ -2,7 +2,7 @@
 import SwiftCompressionUtilities
 
 extension LZ77: Decompressor {
-    public typealias DecompressionConfiguration = CompressionConfiguration
+    public typealias ConcreteDecompressionConfiguration = CompressConfiguration
     public typealias DecompressionResult = [UInt8]
 
     /// Decompress a collection of bytes using the LZ77 technique.
@@ -13,7 +13,7 @@ extension LZ77: Decompressor {
     /// - Complexity: O(_n_) where _n_ is the length of `data`.
     public func decompress(
         data: some Collection<UInt8>,
-        configuration: DecompressionConfiguration
+        configuration: ConcreteDecompressionConfiguration
     ) -> DecompressionResult {
         var result = DecompressionResult()
         decompress(data: data, closure: { result.append($0) })

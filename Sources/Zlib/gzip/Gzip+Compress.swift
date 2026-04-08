@@ -3,12 +3,12 @@ import SwiftCompressionUtilities
 import ZlibShim
 
 extension Gzip: Compressor {
-    public typealias CompressionConfiguration = CompressConfiguration
+    public typealias ConcreteCompressionConfiguration = CompressConfiguration
     public typealias CompressionResult = [UInt8]?
 
     public func compress(
         data: some Collection<UInt8>,
-        configuration: CompressionConfiguration = .init()
+        configuration: ConcreteCompressionConfiguration = .default
     ) -> CompressionResult {
         var stream = z_stream()
         let windowBits:Int32 = 15 + 16
@@ -39,10 +39,14 @@ extension Gzip: Compressor {
 
 // MARK: Configuration
 extension Gzip {
-    public struct CompressConfiguration: Sendable {
+    public struct CompressConfiguration: CompressionConfiguration {
+        public static var `default`: Self { .init() }
+
         public let reserveCapacity:Int
 
-        public init(reserveCapacity: Int = 1024) {
+        public init(
+            reserveCapacity: Int = 1024
+        ) {
             self.reserveCapacity = reserveCapacity
         }
     }

@@ -2,15 +2,17 @@
 import SwiftCompressionUtilities
 
 extension DNABinaryEncoding: Compressor {
-    public typealias CompressionConfiguration = CompressConfiguration
+    public typealias ConcreteCompressionConfiguration = CompressConfiguration
     public typealias CompressionResult = [UInt8]
 
     public func compress(
         data: some Collection<UInt8>,
-        configuration: CompressionConfiguration
+        configuration: ConcreteCompressionConfiguration
     ) -> CompressionResult {
         var result = CompressionResult()
-        let validBitsInLastByte = compress(data: data, closure: { result.append($0) })
+        let validBitsInLastByte = data.withContiguousStorageIfAvailable {
+            compress(buffer: $0, closure: { result.append($0) })
+        }
         return result
     }
 
@@ -22,12 +24,12 @@ extension DNABinaryEncoding: Compressor {
     ///   - closure: Logic to execute when a byte was encoded.
     /// - Returns: Valid bits for the last byte, if necessary.
     /// - Complexity: O(_n_) where _n_ is the length of `data`.
-    private func compress(
-        data: some Collection<UInt8>,
+    func compress(
+        buffer: UnsafeBufferPointer<UInt8>,
         closure: (UInt8) -> Void
     ) -> UInt8? {
         var bitWriter = ByteBuilder()
-        for base in data {
+        for base in buffer {
             if let bits = baseBits[base] {
                 for bit in bits {
                     if let wrote = bitWriter.write(bit: bit) {
@@ -44,7 +46,9 @@ extension DNABinaryEncoding: Compressor {
 
 // MARK: Configuration
 extension DNABinaryEncoding {
-    public struct CompressConfiguration: Sendable {
+    public struct CompressConfiguration: CompressionConfiguration, DecompressionConfiguration {
+        public static var `default`: Self { .init() }
+
         public init() {
         }
     }

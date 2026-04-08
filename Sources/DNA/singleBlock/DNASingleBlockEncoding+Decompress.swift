@@ -2,7 +2,7 @@
 import SwiftCompressionUtilities
 
 extension DNASingleBlockEncoding: Decompressor { // TODO: finish
-    public typealias DecompressionConfiguration = DecompressConfiguration
+    public typealias ConcreteDecompressionConfiguration = DecompressConfiguration
     public typealias DecompressionResult = [UInt8]
 
     /// Decompress a sequence of bytes using the DNA single block encoding technique.
@@ -11,7 +11,7 @@ extension DNASingleBlockEncoding: Decompressor { // TODO: finish
     ///   - data: Sequence of bytes to decompress.
     public func decompress(
         data: some Collection<UInt8>,
-        configuration: DecompressionConfiguration
+        configuration: ConcreteDecompressionConfiguration
     ) -> DecompressionResult {
         return []
     }
@@ -19,7 +19,9 @@ extension DNASingleBlockEncoding: Decompressor { // TODO: finish
 
 // MARK: Configuration
 extension DNASingleBlockEncoding {
-    public struct DecompressConfiguration: Sendable {
+    public struct DecompressConfiguration: DecompressionConfiguration {
+        public static var `default`: Self { .init() }
+
         public init() {
         }
     }

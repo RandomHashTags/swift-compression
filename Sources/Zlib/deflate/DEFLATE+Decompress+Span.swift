@@ -4,7 +4,7 @@ import ZlibShim
 extension Deflate {
     public func decompress(
         span: Span<UInt8>,
-        configuration: DecompressionConfiguration = .init()
+        configuration: ConcreteDecompressionConfiguration = .default
     ) -> DecompressionResult {
         var stream = z_stream()
         let status = inflateInit_(&stream, ZLIB_VERSION, Int32(MemoryLayout<z_stream>.size))

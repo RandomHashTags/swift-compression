@@ -34,6 +34,20 @@ extension CompressionTechnique {
         return table
     }
 
+    /// Creates a lookup frequency table from a sequence of raw bytes.
+    /// 
+    /// - Parameters:
+    ///   - data: Sequence of raw bytes.
+    /// - Returns: A lookup frequency table.
+    /// - Complexity: O(_n_) where _n_ is the length of `data`.
+    public static func buildFrequencyTable(buffer: UnsafeBufferPointer<UInt8>)-> [UInt8:Int] {
+        var table = [UInt8:Int]()
+        for byte in buffer {
+            table[byte, default: 0] += 1
+        }
+        return table
+    }
+
     /// Creates a universal frequency table from a character frequency dictionary.
     /// 
     /// - Parameters:

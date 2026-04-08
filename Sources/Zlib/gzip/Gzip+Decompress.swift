@@ -3,12 +3,12 @@ import SwiftCompressionUtilities
 import ZlibShim
 
 extension Gzip: Decompressor {
-    public typealias DecompressionConfiguration = DecompressConfiguration
+    public typealias ConcreteDecompressionConfiguration = DecompressConfiguration
     public typealias DecompressionResult = [UInt8]?
 
     public func decompress(
         data: some Collection<UInt8>,
-        configuration: DecompressConfiguration = .init()
+        configuration: ConcreteDecompressionConfiguration = .default
     ) -> DecompressionResult {
         var stream = z_stream()
         let windowBits:Int32 = 15 + 16
@@ -35,7 +35,9 @@ extension Gzip: Decompressor {
 
 // MARK: Configuration
 extension Gzip {
-    public struct DecompressConfiguration: Sendable {
+    public struct DecompressConfiguration: DecompressionConfiguration {
+        public static var `default`: Self { .init() }
+
         public let reserveCapacity:Int
 
         public init(

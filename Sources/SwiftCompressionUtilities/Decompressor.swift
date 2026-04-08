@@ -1,7 +1,7 @@
 
 // MARK: Decompressor
 public protocol Decompressor: AnyDecompressor, ~Copyable {
-    associatedtype DecompressionConfiguration
+    associatedtype ConcreteDecompressionConfiguration:DecompressionConfiguration
     associatedtype DecompressionResult
 
     /// Decompress a collection of bytes using this technique.
@@ -10,6 +10,6 @@ public protocol Decompressor: AnyDecompressor, ~Copyable {
     ///   - data: Collection of bytes to decompress.
     func decompress(
         data: some Collection<UInt8>,
-        configuration: DecompressionConfiguration
+        configuration: ConcreteDecompressionConfiguration
     ) throws(DecompressionError) -> DecompressionResult
 }

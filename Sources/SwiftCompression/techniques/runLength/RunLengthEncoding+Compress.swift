@@ -2,19 +2,21 @@
 import SwiftCompressionUtilities
 
 extension RunLengthEncoding: Compressor {
-    public typealias CompressionConfiguration = CompressConfiguration
+    public typealias ConcreteCompressionConfiguration = CompressConfiguration
     public typealias CompressionResult = [UInt8]
 
     public func compress(
         data: some Collection<UInt8>,
-        configuration: CompressionConfiguration
+        configuration: ConcreteCompressionConfiguration
     ) -> CompressionResult {
         var result = CompressionResult()
-        compress(data: data, closure: compressClosure(closure: { result.append($0) }))
+        data.withContiguousStorageIfAvailable {
+            compress(buffer: $0, closure: compressClosure(closure: { result.append($0) }))
+        }
         return result
     }
 
-    private func compressClosure(closure: @escaping (UInt8) -> Void) -> (CompressClosureParameters) -> Void {
+    func compressClosure(closure: @escaping (UInt8) -> Void) -> (CompressClosureParameters) -> Void {
         if alwaysIncludeRunCount {
             return { (arg) in
                 let (run, runByte) = arg
@@ -41,29 +43,27 @@ extension RunLengthEncoding: Compressor {
     ///   - minRun: Minimum run count required to compress identical sequential bytes.
     ///   - closure: Logic to execute for a run.
     /// - Complexity: O(_n_) where _n_ is the length of `data`.
-    private func compress(
-        data: some Sequence<UInt8>,
+    func compress(
+        buffer: UnsafeBufferPointer<UInt8>,
         closure: (CompressClosureParameters) -> Void
     ) {
         var run = 0
         var runByte:UInt8? = nil
-        data.withContiguousStorageIfAvailable { p in
-            for index in 0..<p.count {
-                let byte = p[index]
-                if runByte == byte {
-                    if run == 64 {
-                        closure((run, runByte!))
-                        run = 1
-                    } else {
-                        run += 1
-                    }
-                } else {
-                    if let runByte {
-                        closure((run, runByte))
-                    }
-                    runByte = byte
+        for index in 0..<buffer.count {
+            let byte = buffer[index]
+            if runByte == byte {
+                if run == 64 {
+                    closure((run, runByte!))
                     run = 1
+                } else {
+                    run += 1
                 }
+            } else {
+                if let runByte {
+                    closure((run, runByte))
+                }
+                runByte = byte
+                run = 1
             }
         }
         if let runByte {
@@ -74,7 +74,9 @@ extension RunLengthEncoding: Compressor {
 
 // MARK: Configuration
 extension RunLengthEncoding {
-    public struct CompressConfiguration: Sendable {
+    public struct CompressConfiguration: CompressionConfiguration, DecompressionConfiguration {
+        public static var `default`: Self { .init() }
+
         public init() {
         }
     }
