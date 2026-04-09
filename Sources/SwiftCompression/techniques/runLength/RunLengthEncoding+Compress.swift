@@ -3,7 +3,6 @@ import SwiftCompressionUtilities
 
 extension RunLengthEncoding: Compressor {
     public typealias ConcreteCompressionConfiguration = CompressConfiguration
-    public typealias ConcreteCompressionResult = [UInt8]
 
     public func compress(
         data: some Collection<UInt8>,

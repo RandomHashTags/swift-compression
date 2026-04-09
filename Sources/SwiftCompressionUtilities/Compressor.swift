@@ -1,7 +1,7 @@
 
 public protocol Compressor: AnyCompressor, ~Copyable {
     associatedtype ConcreteCompressionConfiguration:CompressionConfiguration
-    associatedtype ConcreteCompressionResult
+    associatedtype ConcreteCompressionResult = [UInt8]
     associatedtype ConcreteCompressionError:Error = CompressionError
 
     func compress(

@@ -1,7 +1,8 @@
 
+import SwiftCompressionUtilities
+
 extension IWA { // TODO: finish
     public typealias ConcreteCompressionConfiguration = Configuration
-    public typealias ConcreteCompressionResult = [UInt8]
 
     /// - Parameters:
     ///   - data: Sequence of bytes to compress.

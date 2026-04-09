@@ -8,7 +8,7 @@ Standalone compression & decompression library.
 
 ### Compression and decompression
 
-- [ ] [Brotli](https://github.com/google/brotli)
+- [x] [Brotli](https://github.com/google/brotli)
 - [ ] [DEFLATE](https://www.rfc-editor.org/rfc/rfc1951)
     - [x] via zlib
     - [ ] via libdeflate
@@ -34,7 +34,8 @@ The products are broken up into their respective algorithms, but the __SwiftComp
 - SwiftCompression
 - SwiftCompressionDNA
 - SwiftCompressionLZ
-- SwiftCompressionSnappy
+- Brotli
+- Snappy
 - Zlib
 
 ## Contributing
