@@ -1,14 +1,4 @@
 
-#if canImport(Foundation)
-import Foundation
-
-extension Sequence where Element == UInt8 {
-    package func hexadecimal(separator: String = "") -> String {
-        return map({ String.init(format: "%02X", $0) }).joined(separator: separator)
-    }
-}
-#endif
-
 extension Collection {
     /// - Returns: The element at the given index if within bounds. Otherwise `nil`.
     /// - Complexity: O(1).
