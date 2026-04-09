@@ -1,4 +1,6 @@
 
+import SwiftCompressionUtilities
+
 extension Huffman: Compressor {
     public typealias ConcreteCompressionConfiguration = CompressConfiguration
     public typealias ConcreteCompressionResult = CompressionResult<[UInt8]>?

@@ -1,4 +1,6 @@
 
+import SwiftCompressionUtilities
+
 /// The Huffman coding compression technique.
 /// 
 /// https://en.wikipedia.org/wiki/Huffman_coding

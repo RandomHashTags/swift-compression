@@ -6,35 +6,14 @@ let package = Package(
     name: "swift-compression",
     // MARK: Products
     products: [
-        .library(
-            name: "SwiftCompression",
-            targets: ["SwiftCompression"]
-        ),
+        .library(name: "SwiftCompression", targets: ["SwiftCompression"]),
 
-        .library(
-            name: "SwiftCompressionDNA",
-            targets: ["CompressionDNA"]
-        ),
-
-        .library(
-            name: "Brotli",
-            targets: ["Brotli"]
-        ),
-
-        .library(
-            name: "SwiftCompressionLZ",
-            targets: ["CompressionLZ"]
-        ),
-
-        .library(
-            name: "Snappy",
-            targets: ["Snappy"]
-        ),
-
-        .library(
-            name: "Zlib",
-            targets: ["Zlib"]
-        ),
+        .library(name: "Brotli", targets: ["Brotli"]),
+        .library(name: "SwiftCompressionDNA", targets: ["CompressionDNA"]),
+        .library(name: "SwiftCompressionLZ", targets: ["CompressionLZ"]),
+        .library(name: "Huffman", targets: ["Huffman"]),
+        .library(name: "Snappy", targets: ["Snappy"]),
+        .library(name: "Zlib", targets: ["Zlib"])
     ],
     // MARK: Targets
     targets: [
@@ -46,11 +25,12 @@ let package = Package(
             name: "SwiftCompression",
             dependencies: [
                 "Brotli",
-                "SwiftCompressionUtilities",
                 "CompressionDNA",
                 "CompressionLZ",
+                "Huffman",
                 "Snappy",
-                "Zlib"
+                "Zlib",
+                "SwiftCompressionUtilities",
             ]
         ),
 
@@ -88,6 +68,13 @@ let package = Package(
                 "SwiftCompressionUtilities"
             ],
             path: "Sources/LZ"
+        ),
+
+        .target(
+            name: "Huffman",
+            dependencies: [
+                "SwiftCompressionUtilities"
+            ]
         ),
 
         .systemLibrary(

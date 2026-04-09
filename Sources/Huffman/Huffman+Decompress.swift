@@ -1,4 +1,6 @@
 
+import SwiftCompressionUtilities
+
 extension Huffman: Decompressor {
     public typealias ConcreteDecompressionConfiguration = DecompressConfiguration
     public typealias ConcreteDecompressionResult = [UInt8]
