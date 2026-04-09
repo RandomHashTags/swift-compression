@@ -1,4 +1,5 @@
 
+import ByteBuilder
 import SwiftCompressionUtilities
 
 extension LZ77: Compressor {

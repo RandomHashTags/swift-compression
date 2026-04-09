@@ -117,6 +117,7 @@ public struct ByteBuilder {
         bits = (false, false, false, false, false, false, false, false)
     }
 }
+/*
 
 // MARK: Stream & Data Builder
 extension CompressionTechnique {
@@ -167,4 +168,4 @@ extension CompressionTechnique {
             builder.flush(into: stream)
         }
     }
-}
+}*/

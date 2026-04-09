@@ -17,9 +17,8 @@ let package = Package(
     ],
     // MARK: Targets
     targets: [
-        .target(
-            name: "SwiftCompressionUtilities"
-        ),
+        .target(name: "ByteBuilder"),
+        .target(name: "SwiftCompressionUtilities"),
 
         .target(
             name: "SwiftCompression",
@@ -58,6 +57,7 @@ let package = Package(
         .target(
             name: "CompressionDNA",
             dependencies: [
+                "ByteBuilder",
                 "SwiftCompressionUtilities"
             ],
             path: "Sources/DNA"
@@ -65,6 +65,7 @@ let package = Package(
         .target(
             name: "CompressionLZ",
             dependencies: [
+                "ByteBuilder",
                 "SwiftCompressionUtilities"
             ],
             path: "Sources/LZ"
@@ -73,6 +74,7 @@ let package = Package(
         .target(
             name: "Huffman",
             dependencies: [
+                "ByteBuilder",
                 "SwiftCompressionUtilities"
             ]
         ),
@@ -83,6 +85,7 @@ let package = Package(
         .target(
             name: "Snappy",
             dependencies: [
+                "ByteBuilder",
                 "SwiftCompressionUtilities",
                 "SnappyShim"
             ],
