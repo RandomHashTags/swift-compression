@@ -31,15 +31,3 @@ public struct DNABinaryEncoding: Sendable {
         return reversed
     }
 }
-
-extension CompressionTechnique {
-    /// The DNA binary encoding compression technique.
-    public static func dnaBinaryEncoding(baseBits: [UInt8:[Bool]] = [
-        65: [false, false], // A
-        67: [false, true],  // C
-        71: [true, false],  // G
-        84: [true, true]    // T
-    ]) -> DNABinaryEncoding {
-        return DNABinaryEncoding(baseBits: baseBits)
-    }
-}

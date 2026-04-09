@@ -2,6 +2,11 @@
 import BrotliShim
 import SwiftCompressionUtilities
 
+/// The Brotli compression technique.
+/// 
+/// https://github.com/google/brotli
+/// 
+/// https://en.wikipedia.org/wiki/Brotli
 public struct Brotli: Sendable {
     public let quality:Int32
 
@@ -26,20 +31,5 @@ public struct Brotli: Sendable {
 
     public var compressionQuality: CompressionQuality {
         .lossless
-    }
-}
-
-extension CompressionTechnique {
-    /// The Brotli compression technique.
-    /// 
-    /// https://github.com/google/brotli
-    /// 
-    /// https://en.wikipedia.org/wiki/Brotli
-    public static func brotli(
-        quality: Int32 = BROTLI_DEFAULT_QUALITY,
-        windowSize: Int32 = BROTLI_DEFAULT_WINDOW,
-        mode: UInt32 = BROTLI_MODE_GENERIC.rawValue
-    ) -> Brotli {
-        return Brotli(quality: quality, windowSize: windowSize, mode: mode)
     }
 }

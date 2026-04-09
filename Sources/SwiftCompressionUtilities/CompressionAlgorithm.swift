@@ -23,7 +23,7 @@ public enum CompressionAlgorithm: Hashable, Sendable {
     case mtf
     case runLengthEncoding(minRun: Int, alwaysIncludeRunCount: Bool)
     /// AKA Zippy
-    case snappy(windowSize: Int)
+    case snappy
     /// AKA Zippy Framed
     case snappyFramed
     case zstd

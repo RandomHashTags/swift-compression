@@ -1,9 +1,3 @@
-//
-//  LZ78.swift
-//
-//
-//  Created by Evan Anderson on 12/25/24.
-//
 
 import SwiftCompressionUtilities
 

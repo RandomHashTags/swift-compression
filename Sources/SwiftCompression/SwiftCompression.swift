@@ -46,10 +46,9 @@ extension CompressionAlgorithm {
         case .lzw: return nil
         case .mtf: return nil
         case .runLengthEncoding(let minRun, let alwaysIncludeRunCount):
-            return CompressionTechnique.runLength(minRun: minRun, alwaysIncludeRunCount: alwaysIncludeRunCount)
-        case .snappy(let windowSize):
-            //return CompressionTechnique.snappy(windowSize: windowSize)
-            return nil
+            return RunLengthEncoding(minRun: minRun, alwaysIncludeRunCount: alwaysIncludeRunCount)
+        case .snappy:
+            return Snappy()
         case .snappyFramed:
             //return CompressionTechnique.snappyFramed
             return nil
@@ -72,9 +71,9 @@ extension CompressionAlgorithm {
         case .fibonacci: return nil
 
         case .dnaBinaryEncoding(let baseBits):
-            return CompressionTechnique.dnaBinaryEncoding(baseBits: baseBits)
+            return DNABinaryEncoding(baseBits: baseBits)
         case .dnaSingleBlockEncoding:
-            return CompressionTechnique.dnaSingleBlockEncoding
+            return DNASingleBlockEncoding()
 
         case .boringSSL: return nil
 
@@ -83,7 +82,7 @@ extension CompressionAlgorithm {
         case .mpeg: return nil
 
         case .iwa(let version):
-            return CompressionTechnique.iwa(version: version)
+            return IWA(version: version)
 
         @unknown default: return nil
         }

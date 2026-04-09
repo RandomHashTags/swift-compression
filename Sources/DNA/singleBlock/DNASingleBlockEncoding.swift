@@ -16,10 +16,3 @@ public struct DNASingleBlockEncoding: Sendable {
     public init() {
     }
 }
-
-extension CompressionTechnique {
-    /// The DNA single block encoding compression technique.
-    /// 
-    /// https://www.mdpi.com/1999-4893/13/4/99
-    public static let dnaSingleBlockEncoding = DNASingleBlockEncoding()
-}

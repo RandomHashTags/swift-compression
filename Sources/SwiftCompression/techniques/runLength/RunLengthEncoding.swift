@@ -26,12 +26,3 @@ public struct RunLengthEncoding: Sendable {
         .lossless
     }
 }
-
-extension CompressionTechnique {
-    /// The Run-length encoding compression technique.
-    /// 
-    /// https://en.wikipedia.org/wiki/Run-length_encoding
-    public static func runLength(minRun: Int, alwaysIncludeRunCount: Bool) -> RunLengthEncoding {
-        return RunLengthEncoding(minRun: minRun, alwaysIncludeRunCount: alwaysIncludeRunCount)
-    }
-}
