@@ -19,10 +19,10 @@ extension Brotli: Decompressor {
         let outBuffer = UnsafeMutableBufferPointer<UInt8>.allocate(capacity: decodedSize)
         outBuffer.initialize(repeating: 0)
         defer { outBuffer.deallocate() }
-        let result = data.withContiguousStorageIfAvailable { inPtr in
+        let result = data.withContiguousStorageIfAvailable {
             BrotliDecoderDecompress(
                 compressedCount,
-                inPtr.baseAddress!,
+                $0.baseAddress,
                 &decodedSize,
                 outBuffer.baseAddress
             )
