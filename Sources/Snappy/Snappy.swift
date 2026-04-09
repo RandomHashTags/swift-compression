@@ -14,7 +14,7 @@ public struct Snappy: Sendable {
         .snappy(windowSize: windowSize)
     }
 
-    public var quality: CompressionQuality {
+    public var compressionQuality: CompressionQuality {
         .lossless
     }
 }

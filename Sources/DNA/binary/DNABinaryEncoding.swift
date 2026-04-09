@@ -18,7 +18,7 @@ public struct DNABinaryEncoding: Sendable {
         .dnaBinaryEncoding(baseBits: baseBits)
     }
 
-    public var quality: CompressionQuality {
+    public var compressionQuality: CompressionQuality {
         .lossless
     }
 

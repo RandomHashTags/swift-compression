@@ -22,7 +22,7 @@ public struct RunLengthEncoding: Sendable {
         .runLengthEncoding(minRun: minRun, alwaysIncludeRunCount: alwaysIncludeRunCount)
     }
 
-    public var quality: CompressionQuality {
+    public var compressionQuality: CompressionQuality {
         .lossless
     }
 }

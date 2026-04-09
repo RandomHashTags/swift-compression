@@ -1,0 +1,6 @@
+module BrotliShim [system] {
+    header "/usr/include/brotli/decode.h"
+    header "/usr/include/brotli/encode.h"
+    header "/usr/include/brotli/types.h"
+    export *
+}

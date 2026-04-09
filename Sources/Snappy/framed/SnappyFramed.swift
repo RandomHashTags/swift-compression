@@ -6,7 +6,7 @@ public struct SnappyFramed: Sendable {
         .snappyFramed
     }
 
-    public var quality: CompressionQuality {
+    public var compressionQuality: CompressionQuality {
         .lossless
     }
 }

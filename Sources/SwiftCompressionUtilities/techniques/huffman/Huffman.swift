@@ -2,12 +2,15 @@
 /// The Huffman coding compression technique.
 /// 
 /// https://en.wikipedia.org/wiki/Huffman_coding
-public enum Huffman: Sendable {
+public struct Huffman: Sendable {
+    public init() {
+    }
+
     public var algorithm: CompressionAlgorithm {
         .huffmanCoding
     }
 
-    public var quality: CompressionQuality {
+    public var compressionQuality: CompressionQuality {
         .lossless
     }
 }

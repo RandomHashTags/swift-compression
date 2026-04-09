@@ -17,13 +17,18 @@ let package = Package(
         ),
 
         .library(
+            name: "Brotli",
+            targets: ["Brotli"]
+        ),
+
+        .library(
             name: "SwiftCompressionLZ",
             targets: ["CompressionLZ"]
         ),
 
         .library(
-            name: "SwiftCompressionSnappy",
-            targets: ["CompressionSnappy"]
+            name: "Snappy",
+            targets: ["Snappy"]
         ),
 
         .library(
@@ -40,15 +45,27 @@ let package = Package(
         .target(
             name: "SwiftCompression",
             dependencies: [
+                "Brotli",
                 "SwiftCompressionUtilities",
                 "CompressionDNA",
                 "CompressionLZ",
-                "CompressionSnappy",
+                "Snappy",
                 "Zlib"
             ]
         ),
 
         // MARK: Techniques
+        .systemLibrary(name: "BrotliShim"),
+        .target(
+            name: "Brotli",
+            dependencies: [
+                "SwiftCompressionUtilities",
+                "BrotliShim"
+            ],
+            linkerSettings: [
+                .unsafeFlags(["-lbrotlienc", "-lbrotlidec"]),
+            ]
+        ),
         .systemLibrary(name: "ZlibShim"),
         .target(
             name: "Zlib",
@@ -73,11 +90,10 @@ let package = Package(
             path: "Sources/LZ"
         ),
         .target(
-            name: "CompressionSnappy",
+            name: "Snappy",
             dependencies: [
                 "SwiftCompressionUtilities"
-            ],
-            path: "Sources/Snappy"
+            ]
         ),
 
         // MARK: Run
@@ -94,6 +110,10 @@ let package = Package(
             dependencies: ["SwiftCompression"]
         ),
         .testTarget(
+            name: "BrotliTests",
+            dependencies: ["Brotli"]
+        ),
+        .testTarget(
             name: "DNATests",
             dependencies: ["CompressionDNA"]
         ),
@@ -103,7 +123,7 @@ let package = Package(
         ),
         .testTarget(
             name: "SnappyTests",
-            dependencies: ["CompressionSnappy"]
+            dependencies: ["Snappy"]
         ),
         .testTarget(
             name: "ZlibTests",

@@ -1,7 +1,8 @@
 
+@_exported import Brotli
 @_exported import CompressionDNA
 @_exported import CompressionLZ
-@_exported import CompressionSnappy
+@_exported import Snappy
 @_exported import Zlib
 @_exported import SwiftCompressionUtilities
 
@@ -15,9 +16,8 @@ extension CompressionAlgorithm {
         case .mp3: return nil
 
         case .arithmetic: return nil
-        case .brotli(let windowSize):
-            //return CompressionTechnique.brotli(windowSize: windowSize)
-            return nil
+        case .brotli(let quality, let windowSize, let mode):
+            return Brotli(quality: quality, windowSize: windowSize, mode: mode)
         case .bwt: return nil
         case .deflate(let bufferSize, let level):
             return Deflate(bufferSize: bufferSize, level: level)

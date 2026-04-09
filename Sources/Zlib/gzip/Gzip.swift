@@ -29,7 +29,7 @@ public struct Gzip: Sendable {
         .gzip(bufferSize: bufferSize, level: level, memLevel: memLevel, strategy: strategy)
     }
 
-    public var quality: CompressionQuality {
+    public var compressionQuality: CompressionQuality {
         .lossless
     }
 }

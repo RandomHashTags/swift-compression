@@ -23,7 +23,7 @@ public struct Deflate: Sendable {
         .deflate(bufferSize: bufferSize, level: level)
     }
 
-    public var quality: CompressionQuality {
+    public var compressionQuality: CompressionQuality {
         .lossless
     }
 }

@@ -17,7 +17,7 @@ public struct LZ77<T: FixedWidthInteger & Sendable>: Sendable {
         .lz77(windowSize: windowSize, bufferSize: bufferSize, offsetBitWidth: T.bitWidth)
     }
 
-    public var quality: CompressionQuality {
+    public var compressionQuality: CompressionQuality {
         .lossless
     }
 }

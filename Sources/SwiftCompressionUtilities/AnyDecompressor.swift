@@ -5,5 +5,5 @@ public protocol AnyDecompressor: Sendable, ~Copyable {
     var algorithm: CompressionAlgorithm { get }
 
     /// Quality of the decompressed data.
-    var quality: CompressionQuality { get }
+    var compressionQuality: CompressionQuality { get }
 }

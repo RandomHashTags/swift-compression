@@ -14,7 +14,7 @@ public struct IWA: Compressor, Decompressor {
         .iwa(version: version)
     }
 
-    public var quality: CompressionQuality {
+    public var compressionQuality: CompressionQuality {
         .lossless
     }
 }

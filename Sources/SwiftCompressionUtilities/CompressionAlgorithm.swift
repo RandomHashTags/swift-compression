@@ -10,7 +10,7 @@ public enum CompressionAlgorithm: Hashable, Sendable {
 
     // data
     case arithmetic
-    case brotli(windowSize: Int)
+    case brotli(quality: Int32, windowSize: Int32, mode: UInt32)
     /// Burrows–Wheeler transform
     case bwt
     case deflate(bufferSize: Int, level: Int32)

@@ -9,7 +9,7 @@ public struct DNASingleBlockEncoding: Sendable {
         .dnaSingleBlockEncoding
     }
 
-    public var quality: CompressionQuality {
+    public var compressionQuality: CompressionQuality {
         .lossless
     }
 
