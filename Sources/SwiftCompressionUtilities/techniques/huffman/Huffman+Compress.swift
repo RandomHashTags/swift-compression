@@ -87,7 +87,7 @@ extension Huffman: Compressor {
 
 // MARK: Configuration
 extension Huffman {
-    public struct CompressConfiguration: CompressionConfiguration {
+    public struct CompressConfiguration: CompressionConfiguration, DecompressionConfiguration {
         public static var `default`: Self { .init() }
 
         public init() {

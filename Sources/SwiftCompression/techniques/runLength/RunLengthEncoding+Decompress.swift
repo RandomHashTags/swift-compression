@@ -3,7 +3,7 @@ import SwiftCompressionUtilities
 
 extension RunLengthEncoding: Decompressor {
     public typealias ConcreteDecompressionConfiguration = CompressConfiguration
-    public typealias DecompressionResult = [UInt8]
+    public typealias ConcreteDecompressionResult = [UInt8]
 
     /// - Parameters:
     ///   - data: Sequence of bytes to decompress.
@@ -12,8 +12,8 @@ extension RunLengthEncoding: Decompressor {
     public func decompress(
         data: some Collection<UInt8>,
         configuration: ConcreteDecompressionConfiguration
-    ) -> DecompressionResult {
-        var result = DecompressionResult()
+    ) -> ConcreteDecompressionResult {
+        var result = ConcreteDecompressionResult()
         decompress(data: data, closure: { result.append($0) })
         return result
     }

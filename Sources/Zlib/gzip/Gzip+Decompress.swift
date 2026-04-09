@@ -4,12 +4,12 @@ import ZlibShim
 
 extension Gzip: Decompressor {
     public typealias ConcreteDecompressionConfiguration = DecompressConfiguration
-    public typealias DecompressionResult = [UInt8]?
+    public typealias ConcreteDecompressionResult = [UInt8]?
 
     public func decompress(
         data: some Collection<UInt8>,
         configuration: ConcreteDecompressionConfiguration = .default
-    ) -> DecompressionResult {
+    ) -> ConcreteDecompressionResult {
         var stream = z_stream()
         let windowBits:Int32 = 15 + 16
         let status = inflateInit2_(
