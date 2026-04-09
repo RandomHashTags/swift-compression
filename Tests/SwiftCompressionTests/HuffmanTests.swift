@@ -1,8 +1,8 @@
 
 #if compiler(>=6.0)
 
+import Huffman
 import Testing
-@testable import SwiftCompressionUtilities
 
 struct HuffmanTests {
     static let scoobyDooString = "ruh roh raggy!"

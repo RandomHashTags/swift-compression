@@ -1,19 +1,13 @@
-//
-//  LZ77Tests.swift
-//
-//
-//  Created by Evan Anderson on 12/24/24.
-//
 
 #if compiler(>=6.0)
 
-import Testing
 @testable import CompressionLZ
 @testable import SwiftCompressionUtilities
+import Testing
 
 struct LZ77Tests {
     static let string:String = "abracadabra abracadabra"
-    static let lz77:LZ77<UInt16> = CompressionTechnique.lz77(windowSize: 10, bufferSize: 6)
+    static let lz77 = LZ77<UInt16>(windowSize: 10, bufferSize: 6)
     static let compressed = lz77.compress(data: [UInt8](string.utf8), configuration: .init(reserveCapacity: 1024))
 
     @Test func compressLZ77() {

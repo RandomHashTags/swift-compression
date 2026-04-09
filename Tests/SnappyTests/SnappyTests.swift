@@ -28,7 +28,7 @@ struct SnappyTests {
     }
 
     @Test func decompressSnappyLength() throws(DecompressionError) {
-        let snappy = CompressionTechnique.snappy()
+        let snappy = Snappy()
         var data:[UInt8] = [254, 255, 127]
         var index = data.startIndex
         var length:UInt32 = try snappy.decompressLength(data: data, index: &index)
@@ -50,7 +50,7 @@ struct SnappyTests {
     }
 
     @Test func decompressSnappy() throws(DecompressionError) {
-        let decompressed = try CompressionTechnique.snappy().decompress(data: Self.wikipediaCompressedData)
+        let decompressed = try Snappy().decompress(data: Self.wikipediaCompressedData)
         #expect(decompressed == [UInt8](Self.wikipedia.utf8))
     }
 }

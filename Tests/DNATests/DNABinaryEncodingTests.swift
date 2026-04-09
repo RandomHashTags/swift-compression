@@ -8,14 +8,14 @@ import Testing
 struct DNABinaryEncodingTests {
     static let sequence = "TACTTGCTAAAAGTACATTGCTAAGATACACCGGCA"
     static let data = [UInt8](sequence.utf8)
-    static let compressed = CompressionTechnique.dnaBinaryEncoding().compress(data: data, configuration: .init())
+    static let compressed = DNABinaryEncoding().compress(data: data, configuration: .init())
 
     @Test func compressDNABinaryEncoding() {
         #expect(Self.compressed == [199, 231, 0, 177, 62, 112, 140, 69, 164])
     }
 
     @Test func decompressDNABinaryEncoding() throws(DecompressionError) {
-        let result = CompressionTechnique.dnaBinaryEncoding().decompress(data: Self.compressed, configuration: .init())
+        let result = DNABinaryEncoding().decompress(data: Self.compressed, configuration: .init())
         #expect(result == Self.data)
     }
 }
