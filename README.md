@@ -19,7 +19,7 @@ Standalone compression & decompression library.
 - [ ] [LZ77 & LZ78](https://en.wikipedia.org/wiki/LZ77_and_LZ78)
 - [x] [Move-to-front](https://en.wikipedia.org/wiki/Move-to-front_transform)
 - [x] [Run-Length Encoding](https://en.wikipedia.org/wiki/Run-length_encoding)
-- [ ] [Snappy](https://github.com/google/snappy)
+- [x] [Snappy](https://github.com/google/snappy)
 - [ ] [Snappy Framed](https://github.com/google/snappy/blob/main/framing_format.txt)
 - [ ] [Zstd](https://github.com/facebook/zstd)
 

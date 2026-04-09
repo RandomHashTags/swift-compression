@@ -2,20 +2,17 @@
 import SnappyShim
 import SwiftCompressionUtilities
 
-extension Snappy: Compressor {
-    public typealias ConcreteCompressionConfiguration = CompressConfiguration
-    public typealias ConcreteCompressionResult = [UInt8]?
-
+extension Snappy {
     public func compress(
-        data: some Collection<UInt8>,
+        span: Span<UInt8>,
         configuration: ConcreteCompressionConfiguration
     ) -> ConcreteCompressionResult {
-        let inputSize = data.count
+        let inputSize = span.count
         var outputSize = snappy_max_compressed_length(inputSize)
         let buffer = UnsafeMutableBufferPointer<UInt8>.allocate(capacity: outputSize)
         buffer.initialize(repeating: 0)
         defer { buffer.deallocate() }
-        let result = data.withContiguousStorageIfAvailable {
+        let result = span.withUnsafeBufferPointer {
             snappy_compress(
                 $0.baseAddress,
                 inputSize,
@@ -25,15 +22,5 @@ extension Snappy: Compressor {
         }
         guard result == SNAPPY_OK else { return nil }
         return [UInt8](buffer.prefix(outputSize))
-    }
-}
-
-// MARK: Configuration
-extension Snappy {
-    public struct CompressConfiguration: CompressionConfiguration, DecompressionConfiguration {
-        public static var `default`: Self { .init() }
-
-        public init() {
-        }
     }
 }

@@ -1,13 +1,16 @@
 
 import SwiftCompressionUtilities
 
-extension Snappy {
+extension Snappy: Decompressor {
+    public typealias ConcreteDecompressionConfiguration = CompressConfiguration
+    public typealias ConcreteDecompressionResult = [UInt8]
+
     /// - Parameters:
     ///   - data: Collection of bytes to decompress.
     ///   - reserveCapacity: Ignored.
     public func decompress(
         data: some Collection<UInt8>,
-        reserveCapacity: Int = 0
+        configuration: ConcreteDecompressionConfiguration = .default
     ) throws(DecompressionError) -> [UInt8] {
         var decompressed = [UInt8]()
         var index = data.startIndex
@@ -19,30 +22,11 @@ extension Snappy {
 
     /// - Parameters:
     ///   - data: Collection of bytes to decompress.
-    ///   - continuation: Yielding async throwing stream continuation.
-    @available(macOS 10.15, iOS 13.0, watchOS 6.0, tvOS 13.0, *)
-    public func decompress(
-        data: some Collection<UInt8>,
-        continuation: AsyncThrowingStream<UInt8, Error>.Continuation
-    ) throws(DecompressionError) {
-        var index = data.startIndex
-        let length:Int = try decompressLength(data: data, index: &index)
-        try decompress(data: data, index: &index, amount: length) { continuation.yield($0) }
-    }
-
-    /// Calling this function directly will throw a DecompressionError.unsupportedOperation.
-    @available(*, deprecated, message: "Use decompress(data:index:amount:closure:) instead")
-    public func decompress(data: some Collection<UInt8>, closure: (UInt8) -> Void) throws(DecompressionError) {
-        throw DecompressionError.unsupportedOperation
-    }
-
-    /// - Parameters:
-    ///   - data: Collection of bytes to decompress.
     ///   - index: Where to begin decompressing data.
     ///   - amount: Number of bytes to decompress.
     ///   - closure: Logic to execute when a byte is decompressed.
     /// - Complexity: O(_n_) where _n_ is the length of `data`.
-    public func decompress<C: Collection<UInt8>>(
+    func decompress<C: Collection<UInt8>>(
         data: C,
         index: inout C.Index,
         amount: Int,
@@ -198,5 +182,21 @@ extension Snappy {
             compressed.formIndex(after: &begins)
         }
         compressed.formIndex(&index, offsetBy: readBytes)
+    }
+}
+
+// MARK: Stream
+extension Snappy {
+    /// - Parameters:
+    ///   - data: Collection of bytes to decompress.
+    ///   - continuation: Yielding async throwing stream continuation.
+    @available(macOS 10.15, iOS 13.0, watchOS 6.0, tvOS 13.0, *)
+    public func decompress(
+        data: some Collection<UInt8>,
+        continuation: AsyncThrowingStream<UInt8, Error>.Continuation
+    ) throws(DecompressionError) {
+        var index = data.startIndex
+        let length:Int = try decompressLength(data: data, index: &index)
+        try decompress(data: data, index: &index, amount: length) { continuation.yield($0) }
     }
 }

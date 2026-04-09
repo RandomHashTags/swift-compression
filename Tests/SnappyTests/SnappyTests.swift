@@ -8,13 +8,23 @@ import Testing
 struct SnappyTests {
 
     static let wikipedia:String = "Wikipedia is a free, web-based, collaborative, multilingual encyclopedia project."
-    static let wikipediaHexadecimalLiteral:String = "51f04257696b697065646961206973206120667265652c207765622d62617365642c20636f6c6c61626f7261746976652c206d756c74696c696e6775616c20656e6379636c6f093f1c70726f6a6563742e"
+    static let wikipediaHexadecimalLiteral:String = "51F05057696B697065646961206973206120667265652C207765622D62617365642C20636F6C6C61626F7261746976652C206D756C74696C696E6775616C20656E6379636C6F70656469612070726F6A6563742E"
     static let wikipediaHexadecimal:UnfoldSequence<UInt8, String.Index> = wikipediaHexadecimalLiteral.hexadecimal
     static let wikipediaCompressedData:[UInt8] = .init(wikipediaHexadecimal)
 
     @Test func compressSnappy() throws(CompressionError) {
-        /*let compressed:[UInt8] = try Self.wikipedia.compressed(using: CompressionTechnique.snappy()).data
-        #expect(compressed == Self.wikipediaCompressedData)*/
+        guard let compressed:[UInt8] = Snappy().compress(span: Self.wikipedia.utf8Span.span, configuration: .init()) else {
+            #expect(Bool(false))
+            return
+        }
+        #expect(compressed == Self.wikipediaCompressedData)
+
+        guard var decompressed = try? Snappy().decompress(data: compressed) else {
+            #expect(Bool(false))
+            return
+        }
+        decompressed.append(0)
+        #expect(String(cString: decompressed) == Self.wikipedia)
     }
 
     @Test func decompressSnappyLength() throws(DecompressionError) {

@@ -89,10 +89,18 @@ let package = Package(
             ],
             path: "Sources/LZ"
         ),
+
+        .systemLibrary(
+            name: "SnappyShim"
+        ),
         .target(
             name: "Snappy",
             dependencies: [
-                "SwiftCompressionUtilities"
+                "SwiftCompressionUtilities",
+                "SnappyShim"
+            ],
+            linkerSettings: [
+                .unsafeFlags(["-lsnappy"])
             ]
         ),
 
