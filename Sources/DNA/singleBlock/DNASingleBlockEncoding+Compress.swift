@@ -1,4 +1,5 @@
 
+import FrequencyTables
 import SwiftCompressionUtilities
 
 extension DNASingleBlockEncoding: Compressor {
@@ -23,7 +24,7 @@ extension DNASingleBlockEncoding {
         buffer: UnsafeBufferPointer<UInt8>,
         configuration: CompressConfiguration
     ) -> ConcreteCompressionResult {
-        let frequencyTable:[UInt8:Int] = CompressionTechnique.buildFrequencyTable(buffer: buffer)
+        let frequencyTable:[UInt8:Int] = buildFrequencyTable(buffer: buffer)
         var sortedFrequencyTable = frequencyTable.sorted(by: {
             guard $0.value != $1.value else { return $0.key < $1.key }
             return $0.value > $1.value

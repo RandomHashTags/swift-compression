@@ -18,6 +18,7 @@ let package = Package(
     // MARK: Targets
     targets: [
         .target(name: "ByteBuilder"),
+        .target(name: "FrequencyTables"),
         .target(name: "SwiftCompressionUtilities"),
 
         .target(
@@ -58,6 +59,7 @@ let package = Package(
             name: "CompressionDNA",
             dependencies: [
                 "ByteBuilder",
+                "FrequencyTables",
                 "SwiftCompressionUtilities"
             ],
             path: "Sources/DNA"
@@ -79,9 +81,7 @@ let package = Package(
             ]
         ),
 
-        .systemLibrary(
-            name: "SnappyShim"
-        ),
+        .systemLibrary(name: "SnappyShim"),
         .target(
             name: "Snappy",
             dependencies: [
@@ -103,32 +103,12 @@ let package = Package(
         ),
 
         // MARK: Unit tests
-        .testTarget(
-            name: "SwiftCompressionTests",
-            dependencies: ["SwiftCompression"]
-        ),
-        .testTarget(
-            name: "BrotliTests",
-            dependencies: ["Brotli"]
-        ),
-        .testTarget(
-            name: "DNATests",
-            dependencies: ["CompressionDNA"]
-        ),
-        .testTarget(
-            name: "LZTests",
-            dependencies: ["CompressionLZ"]
-        ),
-        .testTarget(
-            name: "SnappyTests",
-            dependencies: ["Snappy"]
-        ),
-        .testTarget(
-            name: "ZlibTests",
-            dependencies: [
-                "Zlib"
-            ]
-        )
+        .testTarget(name: "SwiftCompressionTests", dependencies: ["SwiftCompression"]),
+        .testTarget(name: "BrotliTests", dependencies: ["Brotli"]),
+        .testTarget(name: "DNATests", dependencies: ["CompressionDNA"]),
+        .testTarget(name: "LZTests", dependencies: ["CompressionLZ"]),
+        .testTarget(name: "SnappyTests", dependencies: ["Snappy"]),
+        .testTarget(name: "ZlibTests", dependencies: ["Zlib"])
     ]
 )
 
