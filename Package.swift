@@ -7,6 +7,7 @@ let package = Package(
     // MARK: Products
     products: [
         .library(name: "SwiftCompression", targets: ["SwiftCompression"]),
+        .library(name: "SwiftCompressionUtilities", targets: ["SwiftCompressionUtilities"]),
 
         .library(name: "Brotli", targets: ["Brotli"]),
         .library(name: "SwiftCompressionDNA", targets: ["CompressionDNA"]),
