@@ -5,7 +5,7 @@ extension Deflate {
     public func compress(
         span: Span<UInt8>,
         configuration: ConcreteCompressionConfiguration = .default
-    ) -> CompressionResult {
+    ) -> ConcreteCompressionResult {
         var stream = z_stream()
         let status = deflateInit_(&stream, level, ZLIB_VERSION, Int32(MemoryLayout<z_stream>.size))
         guard status == Z_OK else { return nil }

@@ -5,7 +5,7 @@ extension Gzip {
     public func compress(
         span: Span<UInt8>,
         configuration: ConcreteCompressionConfiguration = .default
-    ) -> CompressionResult {
+    ) -> ConcreteCompressionResult {
         var stream = z_stream()
         let windowBits:Int32 = 15 + 16
         let status = deflateInit2_(

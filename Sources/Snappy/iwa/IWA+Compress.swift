@@ -1,7 +1,7 @@
 
 extension IWA { // TODO: finish
     public typealias ConcreteCompressionConfiguration = Configuration
-    public typealias CompressionResult = [UInt8]
+    public typealias ConcreteCompressionResult = [UInt8]
 
     /// - Parameters:
     ///   - data: Sequence of bytes to compress.
@@ -9,7 +9,7 @@ extension IWA { // TODO: finish
     public func compress(
         data: some Collection<UInt8>,
         configuration: ConcreteCompressionConfiguration
-    ) -> CompressionResult {
+    ) -> ConcreteCompressionResult {
         return .init()
     }
 

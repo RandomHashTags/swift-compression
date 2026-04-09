@@ -3,7 +3,7 @@ import SwiftCompressionUtilities
 
 extension DNASingleBlockEncoding: Compressor {
     public typealias ConcreteCompressionConfiguration = CompressConfiguration
-    public typealias CompressionResult = [UInt8:[UInt8]]
+    public typealias ConcreteCompressionResult = [UInt8:[UInt8]]
 }
 
 extension DNASingleBlockEncoding {
@@ -15,14 +15,14 @@ extension DNASingleBlockEncoding {
     public func compress(
         data: some Collection<UInt8>,
         configuration: CompressConfiguration
-    ) -> CompressionResult {
+    ) -> ConcreteCompressionResult {
         return data.withContiguousStorageIfAvailable { compress(buffer: $0, configuration: configuration) } ?? .init()
     }
 
     func compress(
         buffer: UnsafeBufferPointer<UInt8>,
         configuration: CompressConfiguration
-    ) -> CompressionResult {
+    ) -> ConcreteCompressionResult {
         let frequencyTable:[UInt8:Int] = CompressionTechnique.buildFrequencyTable(buffer: buffer)
         var sortedFrequencyTable = frequencyTable.sorted(by: {
             guard $0.value != $1.value else { return $0.key < $1.key }

@@ -4,12 +4,12 @@ import ZlibShim
 
 extension Deflate: Compressor {
     public typealias ConcreteCompressionConfiguration = CompressConfiguration
-    public typealias CompressionResult = [UInt8]?
+    public typealias ConcreteCompressionResult = [UInt8]?
 
     public func compress(
         data: some Collection<UInt8>,
         configuration: ConcreteCompressionConfiguration = .default
-    ) -> CompressionResult {
+    ) -> ConcreteCompressionResult {
         var stream = z_stream()
         let status = deflateInit_(&stream, level, ZLIB_VERSION, Int32(MemoryLayout<z_stream>.size))
         guard status == Z_OK else { return nil }
@@ -23,7 +23,7 @@ extension Deflate: Compressor {
         count: Int,
         configuration: ConcreteCompressionConfiguration,
         stream: inout z_stream
-    ) -> CompressionResult {
+    ) -> ConcreteCompressionResult {
         defer { deflateEnd(&stream) }
 
         var compressed = [UInt8]()

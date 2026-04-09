@@ -3,13 +3,13 @@ import SwiftCompressionUtilities
 
 extension DNABinaryEncoding: Compressor {
     public typealias ConcreteCompressionConfiguration = CompressConfiguration
-    public typealias CompressionResult = [UInt8]
+    public typealias ConcreteCompressionResult = [UInt8]
 
     public func compress(
         data: some Collection<UInt8>,
         configuration: ConcreteCompressionConfiguration
-    ) -> CompressionResult {
-        var result = CompressionResult()
+    ) -> ConcreteCompressionResult {
+        var result = ConcreteCompressionResult()
         let validBitsInLastByte = data.withContiguousStorageIfAvailable {
             compress(buffer: $0, closure: { result.append($0) })
         }

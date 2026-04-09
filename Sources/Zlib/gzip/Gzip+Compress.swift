@@ -4,12 +4,12 @@ import ZlibShim
 
 extension Gzip: Compressor {
     public typealias ConcreteCompressionConfiguration = CompressConfiguration
-    public typealias CompressionResult = [UInt8]?
+    public typealias ConcreteCompressionResult = [UInt8]?
 
     public func compress(
         data: some Collection<UInt8>,
         configuration: ConcreteCompressionConfiguration = .default
-    ) -> CompressionResult {
+    ) -> ConcreteCompressionResult {
         var stream = z_stream()
         let windowBits:Int32 = 15 + 16
         let status = deflateInit2_(

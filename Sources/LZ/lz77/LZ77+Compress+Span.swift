@@ -11,8 +11,8 @@ extension LZ77 {
     public func compress(
         span: Span<UInt8>,
         configuration: ConcreteCompressionConfiguration
-    ) -> CompressionResult {
-        var result = CompressionResult()
+    ) -> ConcreteCompressionResult {
+        var result = ConcreteCompressionResult()
         result.reserveCapacity(configuration.reserveCapacity)
         span.withUnsafeBufferPointer {
             compress(buffer: $0, closure: { result.append($0) })

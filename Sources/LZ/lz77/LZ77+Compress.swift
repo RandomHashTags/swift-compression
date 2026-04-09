@@ -3,7 +3,7 @@ import SwiftCompressionUtilities
 
 extension LZ77: Compressor {
     public typealias ConcreteCompressionConfiguration = CompressConfiguration
-    public typealias CompressionResult = [UInt8]
+    public typealias ConcreteCompressionResult = [UInt8]
 
     // Compress a collection of bytes using the LZ77 technique.
     /// 
@@ -14,8 +14,8 @@ extension LZ77: Compressor {
     public func compress(
         data: some Collection<UInt8>,
         configuration: ConcreteCompressionConfiguration
-    ) -> CompressionResult {
-        var result = CompressionResult()
+    ) -> ConcreteCompressionResult {
+        var result = ConcreteCompressionResult()
         result.reserveCapacity(configuration.reserveCapacity)
         data.withContiguousStorageIfAvailable {
             compress(buffer: $0, closure: { result.append($0) })

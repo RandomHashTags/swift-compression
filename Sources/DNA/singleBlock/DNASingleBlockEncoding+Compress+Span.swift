@@ -5,7 +5,7 @@ extension DNASingleBlockEncoding {
     public func compress(
         span: Span<UInt8>,
         configuration: ConcreteCompressionConfiguration = .default
-    ) -> CompressionResult {
+    ) -> ConcreteCompressionResult {
         return span.withUnsafeBufferPointer { compress(buffer: $0, configuration: configuration) }
     }
 }

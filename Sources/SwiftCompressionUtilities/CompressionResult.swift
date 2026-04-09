@@ -1,13 +1,13 @@
 
 public struct CompressionResult<T: Sendable>: Sendable {
     public var data:T
-    public var rootNode:CompressionTechnique.Huffman.Node?
+    public var rootNode:Huffman.Node?
     public var frequencyTable:[Int]?
     public var validBitsInLastByte:UInt8
 
     public init(
         data: T,
-        rootNode: CompressionTechnique.Huffman.Node? = nil,
+        rootNode: Huffman.Node? = nil,
         frequencyTable: [Int]? = nil,
         validBitsInLastByte: UInt8 = 8
     ) {
