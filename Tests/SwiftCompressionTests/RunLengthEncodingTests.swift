@@ -44,7 +44,7 @@ extension RunLengthEncodingTests {
     @Test func compressRLEAsyncStream() async {
         var data:[UInt8] = [UInt8]("AAAAABBBBBCCCCC".utf8)
         var stream:AsyncStream<UInt8> = AsyncStream {
-            CompressionTechnique.runLength(minRun: 3, alwaysIncludeRunCount: true).compress(data: data, continuation: $0)
+            RunLengthEncoding(minRun: 3, alwaysIncludeRunCount: true).compress(data: data, continuation: $0)
             $0.finish()
         }
         var index:Int = 0
@@ -56,7 +56,7 @@ extension RunLengthEncodingTests {
 
         index = 0
         stream = AsyncStream {
-            CompressionTechnique.runLength(minRun: 5, alwaysIncludeRunCount: true).compress(data: data, continuation: $0)
+            RunLengthEncoding(minRun: 5, alwaysIncludeRunCount: true).compress(data: data, continuation: $0)
             $0.finish()
         }
         for await byte in stream {
@@ -66,7 +66,7 @@ extension RunLengthEncodingTests {
 
         index = 0
         stream = AsyncStream {
-            CompressionTechnique.runLength(minRun: 6, alwaysIncludeRunCount: true).compress(data: data, continuation: $0)
+            RunLengthEncoding(minRun: 6, alwaysIncludeRunCount: true).compress(data: data, continuation: $0)
             $0.finish()
         }
         for await byte in stream {
@@ -76,7 +76,7 @@ extension RunLengthEncodingTests {
 
         index = 0
         stream = AsyncStream {
-            CompressionTechnique.runLength(minRun: 6, alwaysIncludeRunCount: false).compress(data: data, continuation: $0)
+            RunLengthEncoding(minRun: 6, alwaysIncludeRunCount: false).compress(data: data, continuation: $0)
             $0.finish()
         }
         expected_result = data
@@ -88,7 +88,7 @@ extension RunLengthEncodingTests {
         index = 0
         data = [UInt8](String(repeating: "A", count: 66).utf8)
         stream = AsyncStream {
-            CompressionTechnique.runLength(minRun: 3, alwaysIncludeRunCount: true).compress(data: data, continuation: $0)
+            RunLengthEncoding(minRun: 3, alwaysIncludeRunCount: true).compress(data: data, continuation: $0)
             $0.finish()
         }
         expected_result = [255, 65, 193, 65]
@@ -100,7 +100,7 @@ extension RunLengthEncodingTests {
         index = 0
         data = [190, 191, 192]
         stream = AsyncStream {
-            CompressionTechnique.runLength(minRun: 3, alwaysIncludeRunCount: false).compress(data: data, continuation: $0)
+            RunLengthEncoding(minRun: 3, alwaysIncludeRunCount: false).compress(data: data, continuation: $0)
             $0.finish()
         }
         expected_result = [190, 191, 192, 192]
@@ -111,7 +111,7 @@ extension RunLengthEncodingTests {
 
         index = 0
         stream = AsyncStream {
-            CompressionTechnique.runLength(minRun: 3, alwaysIncludeRunCount: true).compress(data: data, continuation: $0)
+            RunLengthEncoding(minRun: 3, alwaysIncludeRunCount: true).compress(data: data, continuation: $0)
             $0.finish()
         }
         expected_result = [192, 190, 192, 191, 192, 192]

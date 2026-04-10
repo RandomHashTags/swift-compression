@@ -51,7 +51,7 @@ extension CompressionAlgorithm {
         case .snappy:
             return Snappy()
         case .snappyFramed:
-            //return CompressionTechnique.snappyFramed
+            //return SnappyFramed()
             return nil
         case .zstd: return nil
 

@@ -1,5 +1,5 @@
 
-#if canImport(FoundationEssentials)
+#if compiler(>=6.0) && canImport(FoundationEssentials)
 
 import FoundationEssentials
 import Testing

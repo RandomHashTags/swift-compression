@@ -120,27 +120,26 @@ public struct ByteBuilder {
 /*
 
 // MARK: StreamBuilder
-extension CompressionTechnique {
-    @available(macOS 10.15, iOS 13.0, watchOS 6.0, tvOS 13.0, *)
-    public struct StreamBuilder {
-        public var stream:AsyncStream<UInt8>.Continuation
-        public var builder:ByteBuilder
+@available(macOS 10.15, iOS 13.0, watchOS 6.0, tvOS 13.0, *)
+public struct StreamBuilder {
+    public var stream:AsyncStream<UInt8>.Continuation
+    public var builder:ByteBuilder
 
-        public init(stream: AsyncStream<UInt8>.Continuation, builder: ByteBuilder = ByteBuilder()) {
-            self.stream = stream
-            self.builder = builder
-        }
+    public init(stream: AsyncStream<UInt8>.Continuation, builder: ByteBuilder = ByteBuilder()) {
+        self.stream = stream
+        self.builder = builder
+    }
 
-        /// - Complexity: O(1).
-        public mutating func write(bit: Bool) {
-            if let wrote:UInt8 = builder.write(bit: bit) {
-                stream.yield(wrote)
-            }
-        }
-
-        /// - Complexity: O(1).
-        public mutating func finalize() {
-            builder.flush(into: stream)
+    /// - Complexity: O(1).
+    public mutating func write(bit: Bool) {
+        if let wrote:UInt8 = builder.write(bit: bit) {
+            stream.yield(wrote)
         }
     }
-}*/
+
+    /// - Complexity: O(1).
+    public mutating func finalize() {
+        builder.flush(into: stream)
+    }
+}
+*/
