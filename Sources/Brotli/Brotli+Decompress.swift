@@ -16,23 +16,27 @@ extension Brotli: Decompressor {
     ) -> ConcreteDecompressionResult {
         let compressedCount = data.count
         var decodedSize = configuration.estimatedSize
-        let outBuffer = UnsafeMutableBufferPointer<UInt8>.allocate(capacity: decodedSize)
-        outBuffer.initialize(repeating: 0)
-        defer { outBuffer.deallocate() }
-        let result = data.withContiguousStorageIfAvailable {
-            BrotliDecoderDecompress(
-                compressedCount,
-                $0.baseAddress,
-                &decodedSize,
-                outBuffer.baseAddress
-            )
-        } ?? BROTLI_DECODER_RESULT_ERROR
-        if result == BROTLI_DECODER_RESULT_SUCCESS {
-            return [UInt8](outBuffer.prefix(decodedSize))
-        } else if result == BROTLI_DECODER_RESULT_NEEDS_MORE_OUTPUT {
+        var needsMoreOutput = false
+        var out:[UInt8]? = nil
+        withUnsafeTemporaryAllocation(of: UInt8.self, capacity: decodedSize, { outBuffer in
+            let result = data.withContiguousStorageIfAvailable {
+                BrotliDecoderDecompress(
+                    compressedCount,
+                    $0.baseAddress,
+                    &decodedSize,
+                    outBuffer.baseAddress
+                )
+            } ?? BROTLI_DECODER_RESULT_ERROR
+            if result == BROTLI_DECODER_RESULT_SUCCESS {
+                out = [UInt8](outBuffer.prefix(decodedSize))
+            } else if result == BROTLI_DECODER_RESULT_NEEDS_MORE_OUTPUT {
+                needsMoreOutput = true
+            }
+        })
+        if needsMoreOutput {
             return decompress(data: data, configuration: .init(estimatedSize: configuration.estimatedSize * 2))
         }
-        return nil
+        return out
     }
 }
 

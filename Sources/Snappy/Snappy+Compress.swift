@@ -12,19 +12,18 @@ extension Snappy: Compressor {
     ) -> ConcreteCompressionResult {
         let inputSize = data.count
         var outputSize = snappy_max_compressed_length(inputSize)
-        let buffer = UnsafeMutableBufferPointer<UInt8>.allocate(capacity: outputSize)
-        buffer.initialize(repeating: 0)
-        defer { buffer.deallocate() }
-        let result = data.withContiguousStorageIfAvailable {
-            snappy_compress(
-                $0.baseAddress,
-                inputSize,
-                buffer.baseAddress,
-                &outputSize
-            )
-        }
-        guard result == SNAPPY_OK else { return nil }
-        return [UInt8](buffer.prefix(outputSize))
+        return withUnsafeTemporaryAllocation(of: UInt8.self, capacity: outputSize, { buffer in
+            let result = data.withContiguousStorageIfAvailable {
+                snappy_compress(
+                    $0.baseAddress,
+                    inputSize,
+                    buffer.baseAddress,
+                    &outputSize
+                )
+            }
+            guard result == SNAPPY_OK else { return nil }
+            return [UInt8](buffer.prefix(outputSize))
+        })
     }
 }
 
