@@ -1,7 +1,7 @@
 
 import SwiftCompressionUtilities
 
-extension IWA { // TODO: finish
+extension IWA: Compressor { // TODO: finish
     public typealias ConcreteCompressionConfiguration = Configuration
 
     /// - Parameters:
@@ -15,7 +15,7 @@ extension IWA { // TODO: finish
     }
 
     public func compress(
-        span: Span<UInt8>,
+        _ span: Span<UInt8>,
         configuration: Configuration
     ) throws(Never) -> [UInt8] {
         return .init()

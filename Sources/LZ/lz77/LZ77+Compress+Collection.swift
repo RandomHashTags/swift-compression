@@ -1,4 +1,6 @@
 
+#if LZ77CompressCollection
+
 import SwiftCompressionUtilities
 
 extension LZ77 {
@@ -9,14 +11,16 @@ extension LZ77 {
     ///   - closure: Logic to execute when a byte is compressed.
     /// - Complexity: O(_n_) where _n_ is the length of `data`.
     public func compress(
-        span: Span<UInt8>,
+        _ collection: some Collection<UInt8>,
         configuration: ConcreteCompressionConfiguration
     ) -> ConcreteCompressionResult {
         var result = ConcreteCompressionResult()
         result.reserveCapacity(configuration.reserveCapacity)
-        span.withUnsafeBufferPointer {
+        collection.withContiguousStorageIfAvailable {
             compress(buffer: $0, closure: { result.append($0) })
         }
         return result
     }
 }
+
+#endif

@@ -1,4 +1,6 @@
 
+#if SnappyCompress
+
 import SnappyShim
 import SwiftCompressionUtilities
 
@@ -7,13 +9,13 @@ extension Snappy: Compressor {
     public typealias ConcreteCompressionResult = [UInt8]?
 
     public func compress(
-        data: some Collection<UInt8>,
+        _ span: Span<UInt8>,
         configuration: ConcreteCompressionConfiguration
     ) -> ConcreteCompressionResult {
-        let inputSize = data.count
+        let inputSize = span.count
         var outputSize = snappy_max_compressed_length(inputSize)
         return withUnsafeTemporaryAllocation(of: UInt8.self, capacity: outputSize, { buffer in
-            let result = data.withContiguousStorageIfAvailable {
+            let result = span.withUnsafeBufferPointer {
                 snappy_compress(
                     $0.baseAddress,
                     inputSize,
@@ -29,10 +31,12 @@ extension Snappy: Compressor {
 
 // MARK: Configuration
 extension Snappy {
-    public struct CompressConfiguration: CompressionConfiguration, DecompressionConfiguration {
+    public struct CompressConfiguration: CompressionConfiguration {
         public static var `default`: Self { .init() }
 
         public init() {
         }
     }
 }
+
+#endif

@@ -1,5 +1,7 @@
 
-extension IWA { // TODO: finish
+import SwiftCompressionUtilities
+
+extension IWA: Decompressor { // TODO: finish
     public typealias ConcreteDecompressionConfiguration = Configuration
 
     /// - Parameters:

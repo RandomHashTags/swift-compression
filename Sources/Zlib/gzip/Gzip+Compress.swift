@@ -1,4 +1,6 @@
 
+#if ZlibGzipCompress
+
 import SwiftCompressionUtilities
 import ZlibShim
 
@@ -7,7 +9,7 @@ extension Gzip: Compressor {
     public typealias ConcreteCompressionResult = [UInt8]?
 
     public func compress(
-        data: some Collection<UInt8>,
+        _ span: Span<UInt8>,
         configuration: ConcreteCompressionConfiguration = .default
     ) -> ConcreteCompressionResult {
         var stream = z_stream()
@@ -23,7 +25,7 @@ extension Gzip: Compressor {
             Int32(MemoryLayout<z_stream>.size)
         )
         guard status == Z_OK else { return nil }
-        return data.withContiguousStorageIfAvailable {
+        return span.withUnsafeBufferPointer {
             return Deflate(
                 bufferSize: bufferSize,
                 level: level
@@ -51,3 +53,5 @@ extension Gzip {
         }
     }
 }
+
+#endif

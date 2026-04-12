@@ -5,18 +5,6 @@ public protocol Compressor: AnyCompressor, ~Copyable {
     associatedtype ConcreteCompressionResult = [UInt8]
     associatedtype ConcreteCompressionError:Error = CompressionError
 
-    /// Compresses a collection of bytes.
-    /// 
-    /// - Parameters:
-    ///   - data: The collection of bytes to compress.
-    ///   - configuration: Additional values necessary to compress the provided data.
-    /// 
-    /// - Returns: `ConcreteCompressionResult`; usually, but not guaranteed, an array of bytes (`[UInt8]`).
-    func compress(
-        data: some Collection<UInt8>,
-        configuration: ConcreteCompressionConfiguration
-    ) throws(ConcreteCompressionError) -> ConcreteCompressionResult
-
     /// Compresses a span of bytes.
     /// 
     /// - Parameters:
@@ -25,7 +13,41 @@ public protocol Compressor: AnyCompressor, ~Copyable {
     /// 
     /// - Returns: `ConcreteCompressionResult`; usually, but not guaranteed, an array of bytes (`[UInt8]`).
     func compress(
-        span: Span<UInt8>,
+        _ span: Span<UInt8>,
         configuration: ConcreteCompressionConfiguration
     ) throws(ConcreteCompressionError) -> ConcreteCompressionResult
+}
+
+// MARK: Array
+extension Compressor {
+    /// Compresses an array of bytes.
+    /// 
+    /// - Parameters:
+    ///   - array: The array of bytes to compress.
+    ///   - configuration: Additional values necessary to compress the provided data.
+    /// 
+    /// - Returns: `ConcreteCompressionResult`; usually, but not guaranteed, an array of bytes (`[UInt8]`).
+    public func compress(
+        _ array: [UInt8],
+        configuration: ConcreteCompressionConfiguration
+    ) throws(ConcreteCompressionError) -> ConcreteCompressionResult {
+        return try compress(array.span, configuration: configuration)
+    }
+}
+
+// MARK: ArraySlice
+extension Compressor {
+    /// Compresses an array slice of bytes.
+    /// 
+    /// - Parameters:
+    ///   - slice: The array slice of bytes to compress.
+    ///   - configuration: Additional values necessary to compress the provided data.
+    /// 
+    /// - Returns: `ConcreteCompressionResult`; usually, but not guaranteed, an array of bytes (`[UInt8]`).
+    public func compress(
+        _ slice: ArraySlice<UInt8>,
+        configuration: ConcreteCompressionConfiguration
+    ) throws(ConcreteCompressionError) -> ConcreteCompressionResult {
+        return try compress(slice.span, configuration: configuration)
+    }
 }

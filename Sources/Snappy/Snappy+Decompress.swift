@@ -1,9 +1,11 @@
 
+#if SnappyDecompress
+
 import ByteBuilder
 import SwiftCompressionUtilities
 
 extension Snappy: Decompressor {
-    public typealias ConcreteDecompressionConfiguration = CompressConfiguration
+    public typealias ConcreteDecompressionConfiguration = DecompressConfiguration
 
     /// - Parameters:
     ///   - data: Collection of bytes to decompress.
@@ -200,3 +202,15 @@ extension Snappy {
         try decompress(data: data, index: &index, amount: length) { continuation.yield($0) }
     }
 }
+
+// MARK: Configuration
+extension Snappy {
+    public struct DecompressConfiguration: DecompressionConfiguration {
+        public static var `default`: Self { .init() }
+
+        public init() {
+        }
+    }
+}
+
+#endif

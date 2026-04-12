@@ -4,7 +4,7 @@ import SwiftCompressionUtilities
 /// The Move-to-front transform compression technique.
 /// 
 /// https://en.wikipedia.org/wiki/Move-to-front_transform
-public enum MoveToFront { // TODO: finish
+enum MoveToFront { // TODO: finish
 }
 
 // MARK: Transform

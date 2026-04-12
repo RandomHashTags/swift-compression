@@ -1,4 +1,6 @@
 
+#if HuffmanCompress
+
 import ByteBuilder
 import SwiftCompressionUtilities
 
@@ -6,15 +8,11 @@ extension Huffman: Compressor {
     public typealias ConcreteCompressionConfiguration = CompressConfiguration
     public typealias ConcreteCompressionResult = CompressionResult<[UInt8]>?
 
-    /// Compress a sequence of bytes using the Huffman Coding technique.
-    /// 
-    /// - Parameters:
-    ///   - data: Sequence of bytes to compress.
     public func compress(
-        data: some Collection<UInt8>,
-        configuration: ConcreteCompressionConfiguration
-    ) -> ConcreteCompressionResult {
-        return data.withContiguousStorageIfAvailable { buffer in
+        _ span: Span<UInt8>,
+        configuration: CompressConfiguration
+    ) throws(Never) -> ConcreteCompressionResult {
+        return span.withUnsafeBufferPointer { buffer in
             return compress(buffer: buffer, closure: ({ frequencies, codes, root in
                 var compressed:[UInt8] = [8]
                 var vBitsInLastByte:UInt8 = 8
@@ -25,33 +23,7 @@ extension Huffman: Compressor {
                 }
                 return .init(data: compressed, rootNode: root, frequencyTable: frequencies, validBitsInLastByte: vBitsInLastByte)
             }))
-        } ?? nil
-    }
-
-    /// Compress a sequence of bytes to a stream using the Huffman Coding technique.
-    /// 
-    /// - Parameters:
-    ///   - data: Sequence of bytes to compress.
-    ///   - continuation: The `AsyncStream<UInt8>.Continuation`.
-    @available(macOS 10.15, iOS 13.0, watchOS 6.0, tvOS 13.0, *)
-    public func compress(
-        data: some Collection<UInt8>,
-        bufferingPolicy limit: AsyncStream<UInt8>.Continuation.BufferingPolicy = .unbounded
-    ) -> CompressionResult<AsyncStream<UInt8>>? {
-        // TODO: fix
-        return data.withContiguousStorageIfAvailable { buffer in
-            return compress(buffer: buffer) { frequencies, codes, root in
-                var vBitsInLastByte:UInt8 = 8
-                let stream = AsyncStream(bufferingPolicy: limit) { continuation in
-                    if let (lastByte, validBitsInLastByte) = translate(buffer: buffer, codes: codes, closure: { continuation.yield($0) }) {
-                        continuation.yield(lastByte)
-                        vBitsInLastByte = validBitsInLastByte
-                    }
-                    continuation.finish()
-                }
-                return CompressionResult(data: stream, rootNode: root, frequencyTable: frequencies, validBitsInLastByte: vBitsInLastByte)
-            }
-        } ?? nil
+        }
     }
 
     func compress<T>(
@@ -88,12 +60,43 @@ extension Huffman: Compressor {
     }
 }
 
+// MARK: Stream
+extension Huffman {
+    /// Compress a sequence of bytes to a stream using the Huffman Coding technique.
+    /// 
+    /// - Parameters:
+    ///   - data: Sequence of bytes to compress.
+    ///   - continuation: The `AsyncStream<UInt8>.Continuation`.
+    @available(macOS 10.15, iOS 13.0, watchOS 6.0, tvOS 13.0, *)
+    public func compress(
+        data: some Collection<UInt8>,
+        bufferingPolicy limit: AsyncStream<UInt8>.Continuation.BufferingPolicy = .unbounded
+    ) -> CompressionResult<AsyncStream<UInt8>>? {
+        // TODO: fix
+        return data.withContiguousStorageIfAvailable { buffer in
+            return compress(buffer: buffer) { frequencies, codes, root in
+                var vBitsInLastByte:UInt8 = 8
+                let stream = AsyncStream(bufferingPolicy: limit) { continuation in
+                    if let (lastByte, validBitsInLastByte) = translate(buffer: buffer, codes: codes, closure: { continuation.yield($0) }) {
+                        continuation.yield(lastByte)
+                        vBitsInLastByte = validBitsInLastByte
+                    }
+                    continuation.finish()
+                }
+                return CompressionResult(data: stream, rootNode: root, frequencyTable: frequencies, validBitsInLastByte: vBitsInLastByte)
+            }
+        } ?? nil
+    }
+}
+
 // MARK: Configuration
 extension Huffman {
-    public struct CompressConfiguration: CompressionConfiguration, DecompressionConfiguration {
+    public struct CompressConfiguration: CompressionConfiguration {
         public static var `default`: Self { .init() }
 
         public init() {
         }
     }
 }
+
+#endif

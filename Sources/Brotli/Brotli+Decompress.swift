@@ -1,4 +1,6 @@
 
+#if BrotliDecompress
+
 import BrotliShim
 import SwiftCompressionUtilities
 
@@ -54,3 +56,5 @@ extension Brotli {
         }
     }
 }
+
+#endif

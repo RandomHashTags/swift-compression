@@ -1,8 +1,10 @@
 
+#if RunLengthEncodingDecompress
+
 import SwiftCompressionUtilities
 
 extension RunLengthEncoding: Decompressor {
-    public typealias ConcreteDecompressionConfiguration = CompressConfiguration
+    public typealias ConcreteDecompressionConfiguration = DecompressConfiguration
 
     /// - Parameters:
     ///   - data: Sequence of bytes to decompress.
@@ -42,3 +44,15 @@ extension RunLengthEncoding: Decompressor {
         }
     }
 }
+
+// MARK: Configuration
+extension RunLengthEncoding {
+    public struct DecompressConfiguration: DecompressionConfiguration {
+        public static var `default`: Self { .init() }
+
+        public init() {
+        }
+    }
+}
+
+#endif

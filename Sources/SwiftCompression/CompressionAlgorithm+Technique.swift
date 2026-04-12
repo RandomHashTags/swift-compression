@@ -1,13 +1,4 @@
 
-@_exported import Brotli
-@_exported import CompressionDNA
-@_exported import CompressionLZ
-@_exported import Huffman
-@_exported import Snappy
-@_exported import Zlib
-@_exported import SwiftCompressionUtilities
-
-// MARK: Technique
 extension CompressionAlgorithm {
     /// Compressor technique used for this algorithm.
     public var technique: (any Compressor)? {

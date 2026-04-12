@@ -1,23 +1,26 @@
 
+#if LZ77Compress
+
 import ByteBuilder
 import SwiftCompressionUtilities
 
 extension LZ77: Compressor {
     public typealias ConcreteCompressionConfiguration = CompressConfiguration
+    public typealias ConcreteCompressionResult = [UInt8]
 
-    // Compress a collection of bytes using the LZ77 technique.
+    /// Compress a span of bytes using the LZ77 technique.
     /// 
     /// - Parameters:
-    ///   - data: Collection of bytes to compress.
+    ///   - data: Span of bytes to compress.
     ///   - closure: Logic to execute when a byte is compressed.
     /// - Complexity: O(_n_) where _n_ is the length of `data`.
     public func compress(
-        data: some Collection<UInt8>,
+        _ span: Span<UInt8>,
         configuration: ConcreteCompressionConfiguration
     ) -> ConcreteCompressionResult {
         var result = ConcreteCompressionResult()
         result.reserveCapacity(configuration.reserveCapacity)
-        data.withContiguousStorageIfAvailable {
+        span.withUnsafeBufferPointer {
             compress(buffer: $0, closure: { result.append($0) })
         }
         return result
@@ -89,3 +92,5 @@ extension LZ77 {
         }
     }
 }
+
+#endif

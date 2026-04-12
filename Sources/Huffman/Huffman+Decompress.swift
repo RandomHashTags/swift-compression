@@ -1,4 +1,6 @@
 
+#if HuffmanDecompress
+
 import ByteBuilder
 import SwiftCompressionUtilities
 
@@ -79,20 +81,6 @@ extension Huffman: Decompressor {
 }
 
 extension Huffman {
-    /// Decompress a sequence of bytes using the Huffman Coding technique.
-    /// 
-    /// - Parameters:
-    ///   - data: Sequence of bytes to decompress.
-    ///   - frequencyTable: A Huffman frequency table of characters.
-    // /// - Complexity: O(_n_ + _m_) where _n_ is the length of `data` and _m_ is the length of `frequencyTable`. // TODO: FIX
-    public func decompress(
-        data: some Collection<UInt8>,
-        frequencyTable: [Int]
-    ) -> [UInt8] {
-        guard let root = buildTree(frequencies: frequencyTable) else { return [UInt8](data) }
-        return decompress(data: data, configuration: .init(root: root))
-    }
-
     /// Decompress a sequence of bytes into a stream using the Huffman Coding technique.
     /// 
     /// - Parameters:
@@ -110,12 +98,20 @@ extension Huffman {
         decompress(data: data, root: root, continuation: continuation)
     }
     
-    public func decompress(data: [UInt8], frequencyTable: [Int], closure: (UInt8) -> Void) {
+    public func decompress(
+        data: [UInt8],
+        frequencyTable: [Int],
+        closure: (UInt8) -> Void
+    ) {
         guard let root = buildTree(frequencies: frequencyTable) else { return }
         decompress(data: data, root: root, closure: closure)
     }
 
-    public func decompress(data: [UInt8], codes: [[Bool]:UInt8], closure: (UInt8) -> Void) {
+    public func decompress(
+        data: [UInt8],
+        codes: [[Bool]:UInt8],
+        closure: (UInt8) -> Void
+    ) {
         var code = [Bool]()
         code.reserveCapacity(3)
         for bit in data {
@@ -142,3 +138,5 @@ extension Huffman {
         }
     }
 }
+
+#endif

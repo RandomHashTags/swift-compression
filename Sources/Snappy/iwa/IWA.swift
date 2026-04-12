@@ -4,7 +4,7 @@ import SwiftCompressionUtilities
 /// The iWork Archive (iwa) compression technique.
 /// 
 /// https://en.wikipedia.org/wiki/IWork
-public struct IWA: Compressor, Decompressor {        
+public struct IWA: Sendable {        
     /// Version of the iWork Archive to use.
     public let version:IWAVersion
 

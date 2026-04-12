@@ -1,4 +1,6 @@
 
+#if LZ77Decompress
+
 import SwiftCompressionUtilities
 
 extension LZ77: Decompressor {
@@ -74,3 +76,5 @@ extension LZ77: Decompressor {
         return byte
     }
 }
+
+#endif

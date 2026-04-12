@@ -1,4 +1,6 @@
 
+#if ZlibDeflateCompress
+
 import SwiftCompressionUtilities
 import ZlibShim
 
@@ -7,15 +9,15 @@ extension Deflate: Compressor {
     public typealias ConcreteCompressionResult = [UInt8]?
 
     public func compress(
-        data: some Collection<UInt8>,
+        _ span: Span<UInt8>,
         configuration: ConcreteCompressionConfiguration = .default
     ) -> ConcreteCompressionResult {
         var stream = z_stream()
         let status = deflateInit_(&stream, level, ZLIB_VERSION, Int32(MemoryLayout<z_stream>.size))
         guard status == Z_OK else { return nil }
-        return data.withContiguousStorageIfAvailable { rawBuffer in
-            return compress(baseAddress: rawBuffer.baseAddress, count: data.count, configuration: configuration, stream: &stream)
-        } ?? nil
+        return span.withUnsafeBufferPointer {
+            return compress(baseAddress: $0.baseAddress, count: $0.count, configuration: configuration, stream: &stream)
+        }
     }
 
     package func compress(
@@ -59,3 +61,5 @@ extension Deflate {
         }
     }
 }
+
+#endif

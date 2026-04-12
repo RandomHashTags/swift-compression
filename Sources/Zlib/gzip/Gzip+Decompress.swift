@@ -1,4 +1,6 @@
 
+#if ZlibGzipDecompress
+
 import SwiftCompressionUtilities
 import ZlibShim
 
@@ -7,8 +9,8 @@ extension Gzip: Decompressor {
     public typealias ConcreteDecompressionResult = [UInt8]?
 
     public func decompress(
-        data: some Collection<UInt8>,
-        configuration: ConcreteDecompressionConfiguration = .default
+        _ span: Span<UInt8>,
+        configuration: DecompressConfiguration = .default
     ) -> ConcreteDecompressionResult {
         var stream = z_stream()
         let windowBits:Int32 = 15 + 16
@@ -19,7 +21,7 @@ extension Gzip: Decompressor {
             Int32(MemoryLayout<z_stream>.size)
         )
         guard status == Z_OK else { return nil }
-        return data.withContiguousStorageIfAvailable {
+        return span.withUnsafeBufferPointer {
             return Deflate(
                 bufferSize: bufferSize,
                 level: level
@@ -47,3 +49,5 @@ extension Gzip {
         }
     }
 }
+
+#endif

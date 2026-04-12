@@ -1,4 +1,6 @@
 
+#if HuffmanCompress || HuffmanDecompress
+
 public struct CompressionResult<T: Sendable>: Sendable {
     public var data:T
     public var rootNode:Huffman.Node?
@@ -17,3 +19,5 @@ public struct CompressionResult<T: Sendable>: Sendable {
         self.validBitsInLastByte = validBitsInLastByte
     }
 }
+
+#endif

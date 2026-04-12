@@ -1,15 +1,19 @@
 
+#if RunLengthEncodingCompressCollection
+
 import SwiftCompressionUtilities
 
 extension RunLengthEncoding {
     public func compress(
-        span: Span<UInt8>,
-        configuration: CompressConfiguration
-    ) throws(Never) -> ConcreteCompressionResult {
+        _ collection: some Collection<UInt8>,
+        configuration: ConcreteCompressionConfiguration
+    ) -> ConcreteCompressionResult {
         var result = ConcreteCompressionResult()
-        span.withUnsafeBufferPointer {
+        collection.withContiguousStorageIfAvailable {
             compress(buffer: $0, closure: compressClosure(closure: { result.append($0) }))
         }
         return result
     }
 }
+
+#endif

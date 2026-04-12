@@ -1,29 +1,27 @@
 
+#if ZlibGzipDecompressCollection
+
 import ZlibShim
 
 extension Gzip {
-    public func compress(
-        span: Span<UInt8>,
-        configuration: ConcreteCompressionConfiguration = .default
-    ) -> ConcreteCompressionResult {
+    public func decompress(
+        data: some Collection<UInt8>,
+        configuration: ConcreteDecompressionConfiguration = .default
+    ) -> ConcreteDecompressionResult {
         var stream = z_stream()
         let windowBits:Int32 = 15 + 16
-        let status = deflateInit2_(
+        let status = inflateInit2_(
             &stream,
-            level,
-            Z_DEFLATED,
             windowBits,
-            memLevel,
-            strategy,
             ZLIB_VERSION,
             Int32(MemoryLayout<z_stream>.size)
         )
         guard status == Z_OK else { return nil }
-        return span.withUnsafeBufferPointer {
+        return data.withContiguousStorageIfAvailable {
             return Deflate(
                 bufferSize: bufferSize,
                 level: level
-            ).compress(
+            ).decompress(
                 baseAddress: $0.baseAddress,
                 count: $0.count,
                 configuration: .init(reserveCapacity: configuration.reserveCapacity),
@@ -32,3 +30,5 @@ extension Gzip {
         } ?? nil
     }
 }
+
+#endif

@@ -3,7 +3,7 @@ import SwiftCompressionUtilities
 
 extension DNABinaryEncoding {
     public func compress(
-        span: Span<UInt8>,
+        _ span: Span<UInt8>,
         configuration: ConcreteCompressionConfiguration
     ) -> ConcreteCompressionResult {
         var result = ConcreteCompressionResult()

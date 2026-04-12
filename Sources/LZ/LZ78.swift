@@ -4,7 +4,7 @@ import SwiftCompressionUtilities
 /// The LZ78 compression technique.
 /// 
 /// https://en.wikipedia.org/wiki/LZ77_and_LZ78
-public enum LZ78 {
+enum LZ78 {
     typealias Entry = (Int, UInt8)
 }
 

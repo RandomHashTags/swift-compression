@@ -1,4 +1,6 @@
 
+#if BrotliCompress
+
 import BrotliShim
 import SwiftCompressionUtilities
 
@@ -6,17 +8,14 @@ extension Brotli: Compressor {
     public typealias ConcreteCompressionConfiguration = CompressConfiguration
     public typealias ConcreteCompressionResult = [UInt8]?
 
-    /// - Parameters:
-    ///   - data: Sequence of bytes to compress.
-    /// - Complexity: O(_n_) where _n_ is the length of `data`.
     public func compress(
-        data: some Collection<UInt8>,
-        configuration: ConcreteCompressionConfiguration
+        _ span: Span<UInt8>,
+        configuration: CompressConfiguration
     ) -> ConcreteCompressionResult {
-        var outLength = data.count
+        var outLength = span.count
         let maxSize = BrotliEncoderMaxCompressedSize(outLength)
         return withUnsafeTemporaryAllocation(of: UInt8.self, capacity: maxSize, { outBuffer in
-            let success = data.withContiguousStorageIfAvailable {
+            let success = span.withUnsafeBytes {
                 return BrotliEncoderCompress(
                     quality,
                     windowSize,
@@ -26,7 +25,7 @@ extension Brotli: Compressor {
                     &outLength,
                     outBuffer.baseAddress
                 )
-            } ?? BROTLI_FALSE
+            }
             return success == BROTLI_TRUE ? [UInt8](outBuffer.prefix(outLength)) : nil
         })
     }
@@ -41,3 +40,5 @@ extension Brotli {
         }
     }
 }
+
+#endif
