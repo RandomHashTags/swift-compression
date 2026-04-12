@@ -3,7 +3,6 @@ import SwiftCompressionUtilities
 
 extension DNABinaryEncoding: Decompressor {
     public typealias ConcreteDecompressionConfiguration = CompressConfiguration
-    public typealias ConcreteDecompressionResult = [UInt8]
 
     /// Decompress a collection of bytes using the DNA binary encoding technique.
     /// 

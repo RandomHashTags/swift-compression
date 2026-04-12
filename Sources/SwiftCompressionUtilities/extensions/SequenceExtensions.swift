@@ -16,15 +16,3 @@ extension Collection {
         get { self[self.index(startIndex, offsetBy: Int(index))] }
     }
 }
-
-extension Collection where Element == UInt8 {
-    package func get(_ index: Int) -> Element? {
-        guard let i = self.index(startIndex, offsetBy: index, limitedBy: endIndex) else { return nil }
-        return self.get(i)
-    }
-
-    package func getPositive(_ index: Int) -> Element? {
-        guard let i = self.index(startIndex, offsetBy: index, limitedBy: endIndex) else { return nil }
-        return self[positive: i]
-    }
-}

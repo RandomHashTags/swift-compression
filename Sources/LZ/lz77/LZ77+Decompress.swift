@@ -3,7 +3,6 @@ import SwiftCompressionUtilities
 
 extension LZ77: Decompressor {
     public typealias ConcreteDecompressionConfiguration = CompressConfiguration
-    public typealias ConcreteDecompressionResult = [UInt8]
 
     /// Decompress a collection of bytes using the LZ77 technique.
     /// 

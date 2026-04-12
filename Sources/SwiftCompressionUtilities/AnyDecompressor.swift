@@ -1,5 +1,5 @@
 
-// MARK: AnyDecompressor
+/// A type-erased `Decompressor` value.
 public protocol AnyDecompressor: Sendable, ~Copyable {
     /// Decompression algorithm this decompressor uses.
     var algorithm: CompressionAlgorithm { get }

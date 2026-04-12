@@ -6,7 +6,7 @@ import SwiftCompressionUtilities
 /// https://en.wikipedia.org/wiki/Snappy_(compression)#Framing_format
 /// 
 /// https://github.com/google/snappy
-public struct SnappyFramed: Sendable {        
+struct SnappyFramed: Sendable {        
     public var algorithm: CompressionAlgorithm {
         .snappyFramed
     }

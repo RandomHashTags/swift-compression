@@ -4,7 +4,6 @@ import SwiftCompressionUtilities
 
 extension Huffman: Decompressor {
     public typealias ConcreteDecompressionConfiguration = DecompressConfiguration
-    public typealias ConcreteDecompressionResult = [UInt8]
 
     /// Decompress a sequence of bytes using the Huffman Coding technique.
     /// 

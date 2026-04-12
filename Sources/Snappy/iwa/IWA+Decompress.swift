@@ -1,7 +1,6 @@
 
 extension IWA { // TODO: finish
     public typealias ConcreteDecompressionConfiguration = Configuration
-    public typealias ConcreteDecompressionResult = [UInt8]
 
     /// - Parameters:
     ///   - data: Collection of bytes to decompress.

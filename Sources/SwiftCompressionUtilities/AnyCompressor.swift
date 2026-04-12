@@ -1,5 +1,5 @@
 
-// MARK: AnyCompressor
+/// A type-erased `Compressor` value.
 public protocol AnyCompressor: Sendable, ~Copyable {
     /// Compression algorithm this compressor uses.
     var algorithm: CompressionAlgorithm { get }

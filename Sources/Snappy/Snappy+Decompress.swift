@@ -4,7 +4,6 @@ import SwiftCompressionUtilities
 
 extension Snappy: Decompressor {
     public typealias ConcreteDecompressionConfiguration = CompressConfiguration
-    public typealias ConcreteDecompressionResult = [UInt8]
 
     /// - Parameters:
     ///   - data: Collection of bytes to decompress.

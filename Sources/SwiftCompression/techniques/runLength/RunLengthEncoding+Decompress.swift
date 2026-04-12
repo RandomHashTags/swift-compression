@@ -3,7 +3,6 @@ import SwiftCompressionUtilities
 
 extension RunLengthEncoding: Decompressor {
     public typealias ConcreteDecompressionConfiguration = CompressConfiguration
-    public typealias ConcreteDecompressionResult = [UInt8]
 
     /// - Parameters:
     ///   - data: Sequence of bytes to decompress.
