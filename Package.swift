@@ -190,7 +190,10 @@ let package = Package(
         ),
 
         .target(
-            name: "RunLengthEncoding"
+            name: "RunLengthEncoding",
+            dependencies: [
+                "SwiftCompressionUtilities"
+            ]
         ),
 
         .systemLibrary(name: "SnappyShim"),
