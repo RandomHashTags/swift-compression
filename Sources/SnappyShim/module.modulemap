@@ -1,4 +1,4 @@
 module SnappyShim [system] {
-    header "/usr/include/snappy-c.h"
+    header "shim.h"
     export *
 }
