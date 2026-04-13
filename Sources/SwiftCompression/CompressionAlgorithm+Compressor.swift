@@ -1,7 +1,9 @@
 
+#if AlgorithmAnyCompressor
+
 extension CompressionAlgorithm {
-    /// Compressor technique used for this algorithm.
-    public var technique: (any Compressor)? {
+    /// Compressor used for this algorithm.
+    public var compressor: (any Compressor)? {
         switch self {
         case .unknown: return nil
         case .aac: return nil
@@ -9,27 +11,27 @@ extension CompressionAlgorithm {
 
         case .arithmetic: return nil
         case .brotli(let quality, let windowSize, let mode):
-            #if Brotli
+            #if BrotliCompress
             return Brotli(quality: quality, windowSize: windowSize, mode: mode)
             #else
             return nil
             #endif
         case .bwt: return nil
         case .deflate(let bufferSize, let level):
-            #if ZlibDeflate
+            #if ZlibDeflateCompress
             return Deflate(bufferSize: bufferSize, level: level)
             #else
             return nil
             #endif
         case .huffmanCoding:
-            #if Huffman
+            #if HuffmanCompress
             return Huffman()
             #else
             return nil
             #endif
         case .lz4: return nil
         case .lz77(let windowSize, let bufferSize, let offsetBitWidth):
-            #if LZ77
+            #if LZ77Compress
             switch offsetBitWidth {
             case 8:
                 return LZ77<UInt8>(windowSize: windowSize, bufferSize: bufferSize)
@@ -55,13 +57,13 @@ extension CompressionAlgorithm {
         case .lzw: return nil
         case .mtf: return nil
         case .runLengthEncoding(let minRun, let alwaysIncludeRunCount):
-            #if RunLengthEncoding
+            #if RunLengthEncodingCompress
             return RunLengthEncoding(minRun: minRun, alwaysIncludeRunCount: alwaysIncludeRunCount)
             #else
             return nil
             #endif
         case .snappy:
-            #if Snappy
+            #if SnappyCompress
             return Snappy()
             #else
             return nil
@@ -74,7 +76,7 @@ extension CompressionAlgorithm {
         case ._7z: return nil
         case .bzip2: return nil
         case .gzip(let bufferSize, let level, let memLevel, let strategy):
-            #if ZlibGzip
+            #if ZlibGzipCompress
             return Gzip(bufferSize: bufferSize, level: level, memLevel: memLevel, strategy: strategy)
             #else
             return nil
@@ -103,7 +105,7 @@ extension CompressionAlgorithm {
         case .mpeg: return nil
 
         case .iwa(let version):
-            #if Snappy
+            #if SnappyCompress
             return IWA(version: version)
             #else
             return nil
@@ -113,3 +115,5 @@ extension CompressionAlgorithm {
         }
     }
 }
+
+#endif

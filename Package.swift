@@ -29,6 +29,9 @@ let package = Package(
             "ZlibDeflate",
             "ZlibGzip",
 
+            "AlgorithmAnyCompressor",
+            "AlgorithmAnyDecompressor",
+
             "CollectionCompress", "CollectionDecompress",
             "FoundationCompress", "FoundationDecompress",
             "BrotliCompress", "BrotliDecompress",
@@ -39,6 +42,9 @@ let package = Package(
             "ZlibDeflateCompress", "ZlibDeflateDecompress",
             "ZlibGzipCompress", "ZlibGzipDecompress",
         ]),
+
+        .trait(name: "AlgorithmAnyCompressor", description: "Enables the `compressor: (any Compressor)?` computed property for `CompressionAlgorithm`."),
+        .trait(name: "AlgorithmAnyDecompressor", description: "Enables the `decompressor: (any Decompressor)?` computed property for `CompressionAlgorithm`."),
 
         .trait(name: "CollectionCompress", enabledTraits: [
             "BrotliCompressCollection",
