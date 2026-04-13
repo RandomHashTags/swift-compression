@@ -103,7 +103,11 @@ extension CompressionAlgorithm {
         case .mpeg: return nil
 
         case .iwa(let version):
+            #if Snappy
             return IWA(version: version)
+            #else
+            return nil
+            #endif
 
         @unknown default: return nil
         }
