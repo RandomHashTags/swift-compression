@@ -8,6 +8,7 @@ extension Deflate: Decompressor {
     public typealias ConcreteDecompressionConfiguration = DecompressConfiguration
     public typealias ConcreteDecompressionResult = [UInt8]?
 
+    @available(macOS 10.14.4, iOS 12.2, watchOS 5.2, tvOS 12.2, visionOS 1.0, *)
     public func decompress(
         span: Span<UInt8>,
         configuration: ConcreteDecompressionConfiguration = .default

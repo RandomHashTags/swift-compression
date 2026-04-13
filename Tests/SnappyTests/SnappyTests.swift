@@ -13,7 +13,7 @@ struct SnappyTests {
     static let wikipediaCompressedData:[UInt8] = .init(wikipediaHexadecimal)
 
     @Test func compressSnappy() throws(CompressionError) {
-        guard let compressed:[UInt8] = Snappy().compress(span: Self.wikipedia.utf8Span.span, configuration: .init()) else {
+        guard let compressed:[UInt8] = Snappy().compress(Self.wikipedia.utf8Span.span, configuration: .init()) else {
             #expect(Bool(false))
             return
         }

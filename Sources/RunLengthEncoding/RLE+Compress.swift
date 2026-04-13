@@ -7,6 +7,7 @@ extension RunLengthEncoding: Compressor {
     public typealias ConcreteCompressionConfiguration = CompressConfiguration
     public typealias ConcreteCompressionResult = [UInt8]
 
+    @available(macOS 10.14.4, iOS 12.2, watchOS 5.2, tvOS 12.2, visionOS 1.0, *)
     public func compress(
         _ span: Span<UInt8>,
         configuration: CompressConfiguration
@@ -17,7 +18,9 @@ extension RunLengthEncoding: Compressor {
         }
         return result
     }
+}
 
+extension RunLengthEncoding {
     func compressClosure(closure: @escaping (UInt8) -> Void) -> (CompressClosureParameters) -> Void {
         if alwaysIncludeRunCount {
             return { (arg) in

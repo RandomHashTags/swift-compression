@@ -5,12 +5,13 @@ import SwiftCompressionUtilities
 extension DNABinaryEncoding: Compressor {
     public typealias ConcreteCompressionConfiguration = CompressConfiguration
 
+    @available(macOS 10.14.4, iOS 12.2, watchOS 5.2, tvOS 12.2, visionOS 1.0, *)
     public func compress(
-        data: some Collection<UInt8>,
+        _ span: Span<UInt8>,
         configuration: ConcreteCompressionConfiguration
     ) -> ConcreteCompressionResult {
         var result = ConcreteCompressionResult()
-        let validBitsInLastByte = data.withContiguousStorageIfAvailable {
+        let validBitsInLastByte = span.withUnsafeBufferPointer {
             compress(buffer: $0, closure: { result.append($0) })
         }
         return result

@@ -1,6 +1,5 @@
 
 /// Any type conforming to this protocol indicates it compresses data.
-@available(macOS 10.14.4, iOS 12.2, watchOS 5.2, tvOS 12.2, visionOS 1.0, *)
 public protocol Compressor: AnyCompressor, ~Copyable {
     associatedtype ConcreteCompressionConfiguration:CompressionConfiguration
     associatedtype ConcreteCompressionResult = [UInt8]
@@ -13,6 +12,7 @@ public protocol Compressor: AnyCompressor, ~Copyable {
     ///   - configuration: Additional values necessary to compress the provided data.
     /// 
     /// - Returns: `ConcreteCompressionResult`; usually, but not guaranteed, an array of bytes (`[UInt8]`).
+    @available(macOS 10.14.4, iOS 12.2, watchOS 5.2, tvOS 12.2, visionOS 1.0, *)
     func compress(
         _ span: Span<UInt8>,
         configuration: ConcreteCompressionConfiguration
@@ -28,6 +28,7 @@ extension Compressor {
     ///   - configuration: Additional values necessary to compress the provided data.
     /// 
     /// - Returns: `ConcreteCompressionResult`; usually, but not guaranteed, an array of bytes (`[UInt8]`).
+    @available(macOS 10.14.4, iOS 12.2, watchOS 5.2, tvOS 12.2, visionOS 1.0, *)
     public func compress(
         _ array: [UInt8],
         configuration: ConcreteCompressionConfiguration
@@ -45,6 +46,7 @@ extension Compressor {
     ///   - configuration: Additional values necessary to compress the provided data.
     /// 
     /// - Returns: `ConcreteCompressionResult`; usually, but not guaranteed, an array of bytes (`[UInt8]`).
+    @available(macOS 10.14.4, iOS 12.2, watchOS 5.2, tvOS 12.2, visionOS 1.0, *)
     public func compress(
         _ slice: ArraySlice<UInt8>,
         configuration: ConcreteCompressionConfiguration
