@@ -129,10 +129,10 @@ let package = Package(
         .trait(name: "ZlibDeflateDecompressFoundation", description: "Enables ZlibDeflate decompression for FoundationEssentials.Data.", enabledTraits: ["ZlibDeflateDecompress"]),
 
         .trait(name: "ZlibGzip", description: "Enables ZlibGzip"),
-        .trait(name: "ZlibGzipCompress", description: "Enables ZlibGzip compression for Span<UInt8>.", enabledTraits: ["ZlibGzip"]),
+        .trait(name: "ZlibGzipCompress", description: "Enables ZlibGzip compression for Span<UInt8>.", enabledTraits: ["ZlibGzip", "ZlibDeflateCompress"]),
         .trait(name: "ZlibGzipCompressCollection", description: "Enables ZlibGzip compression for some Collection<UInt8>.", enabledTraits: ["ZlibGzipCompress"]),
         .trait(name: "ZlibGzipCompressFoundation", description: "Enables ZlibGzip compression for FoundationEssentials.Data.", enabledTraits: ["ZlibGzipCompress"]),
-        .trait(name: "ZlibGzipDecompress", description: "Enables ZlibGzip decompression for Span<UInt8>.", enabledTraits: ["ZlibGzip"]),
+        .trait(name: "ZlibGzipDecompress", description: "Enables ZlibGzip decompression for Span<UInt8>.", enabledTraits: ["ZlibGzip", "ZlibDeflateDecompress"]),
         .trait(name: "ZlibGzipDecompressCollection", description: "Enables ZlibGzip decompression for some Collection<UInt8>.", enabledTraits: ["ZlibGzipDecompress"]),
         .trait(name: "ZlibGzipDecompressFoundation", description: "Enables ZlibGzip decompression for FoundationEssentials.Data.", enabledTraits: ["ZlibGzipDecompress"]),
     ],
