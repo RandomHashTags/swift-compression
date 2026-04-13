@@ -28,7 +28,7 @@ extension Compressor {
     ///   - configuration: Additional values necessary to compress the provided data.
     /// 
     /// - Returns: `ConcreteCompressionResult`; usually, but not guaranteed, an array of bytes (`[UInt8]`).
-    @available(macOS 10.14.4, iOS 12.2, watchOS 5.2, tvOS 12.2, visionOS 1.0, *)
+    @available(macOS 26.0, iOS 26.0, watchOS 26.0, tvOS 26.0, *)
     public func compress(
         _ array: [UInt8],
         configuration: ConcreteCompressionConfiguration
