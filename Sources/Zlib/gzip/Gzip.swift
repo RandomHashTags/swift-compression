@@ -1,4 +1,6 @@
 
+#if ZlibGzip
+
 import SwiftCompressionUtilities
 import ZlibShim
 
@@ -33,3 +35,5 @@ public struct Gzip: Sendable {
         .lossless
     }
 }
+
+#endif

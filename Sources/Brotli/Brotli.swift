@@ -1,4 +1,6 @@
 
+#if Brotli
+
 import BrotliShim
 import SwiftCompressionUtilities
 
@@ -33,3 +35,5 @@ public struct Brotli: Sendable {
         .lossless
     }
 }
+
+#endif

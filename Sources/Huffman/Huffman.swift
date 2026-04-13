@@ -1,4 +1,6 @@
 
+#if Huffman
+
 import SwiftCompressionUtilities
 
 /// The Huffman coding compression technique.
@@ -168,3 +170,5 @@ extension StringProtocol {
         return table
     }
 }
+
+#endif

@@ -1,4 +1,6 @@
 
+#if ZlibDeflate
+
 import SwiftCompressionUtilities
 import ZlibShim
 
@@ -27,3 +29,5 @@ public struct Deflate: Sendable {
         .lossless
     }
 }
+
+#endif

@@ -1,4 +1,6 @@
 
+#if RunLengthEncoding
+
 import SwiftCompressionUtilities
 
 /// The Run-length encoding compression technique.
@@ -26,3 +28,5 @@ public struct RunLengthEncoding: Sendable {
         .lossless
     }
 }
+
+#endif

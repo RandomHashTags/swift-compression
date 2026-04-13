@@ -1,4 +1,6 @@
 
+#if Snappy
+
 import SwiftCompressionUtilities
 
 /// The Snappy (Zippy) compression technique.
@@ -19,3 +21,5 @@ public struct Snappy: Sendable {
         .lossless
     }
 }
+
+#endif

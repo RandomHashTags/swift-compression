@@ -1,4 +1,6 @@
 
+#if LZ77
+
 import SwiftCompressionUtilities
 
 /// The LZ78 compression technique.
@@ -32,3 +34,5 @@ extension LZ78 {
         return compressed
     }
 }
+
+#endif
