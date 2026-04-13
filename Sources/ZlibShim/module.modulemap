@@ -1,5 +1,5 @@
 module ZlibShim [system] {
-    header "/usr/include/zlib.h"
+    header "shim.h"
     link "z"
     export *
 }

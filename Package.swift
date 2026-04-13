@@ -142,7 +142,6 @@ let package = Package(
             ]
         ),
 
-        // MARK: Techniques
         .systemLibrary(name: "BrotliShim"),
         .target(
             name: "Brotli",
