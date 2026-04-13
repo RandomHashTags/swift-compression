@@ -9,13 +9,27 @@ extension CompressionAlgorithm {
 
         case .arithmetic: return nil
         case .brotli(let quality, let windowSize, let mode):
+            #if Brotli
             return Brotli(quality: quality, windowSize: windowSize, mode: mode)
+            #else
+            return nil
+            #endif
         case .bwt: return nil
         case .deflate(let bufferSize, let level):
+            #if ZlibDeflate
             return Deflate(bufferSize: bufferSize, level: level)
-        case .huffmanCoding: return nil
+            #else
+            return nil
+            #endif
+        case .huffmanCoding:
+            #if Huffman
+            return Huffman()
+            #else
+            return nil
+            #endif
         case .lz4: return nil
         case .lz77(let windowSize, let bufferSize, let offsetBitWidth):
+            #if LZ77
             switch offsetBitWidth {
             case 8:
                 return LZ77<UInt8>(windowSize: windowSize, bufferSize: bufferSize)
@@ -34,13 +48,24 @@ extension CompressionAlgorithm {
             #endif
             default: return nil
             }
+            #else
+            return nil
+            #endif
         case .lz78: return nil
         case .lzw: return nil
         case .mtf: return nil
         case .runLengthEncoding(let minRun, let alwaysIncludeRunCount):
+            #if RunLengthEncoding
             return RunLengthEncoding(minRun: minRun, alwaysIncludeRunCount: alwaysIncludeRunCount)
+            #else
+            return nil
+            #endif
         case .snappy:
+            #if Snappy
             return Snappy()
+            #else
+            return nil
+            #endif
         case .snappyFramed:
             //return SnappyFramed()
             return nil
@@ -49,7 +74,11 @@ extension CompressionAlgorithm {
         case ._7z: return nil
         case .bzip2: return nil
         case .gzip(let bufferSize, let level, let memLevel, let strategy):
+            #if ZlibGzip
             return Gzip(bufferSize: bufferSize, level: level, memLevel: memLevel, strategy: strategy)
+            #else
+            return nil
+            #endif
         case .rar: return nil
 
         case .h264: return nil
