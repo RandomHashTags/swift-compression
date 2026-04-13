@@ -1,6 +1,8 @@
 #ifndef ZlibShim_h
 #define ZlibShim_h
 
-#include <zlib.h>
+#if __has_include(<zlib.h>)
+    #include <zlib.h>
+#endif
 
 #endif
