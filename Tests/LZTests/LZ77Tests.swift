@@ -8,7 +8,7 @@ import Testing
 struct LZ77Tests {
     static let string:String = "abracadabra abracadabra"
     static let lz77 = LZ77<UInt16>(windowSize: 10, bufferSize: 6)
-    static let compressed = lz77.compress(data: [UInt8](string.utf8), configuration: .init(reserveCapacity: 1024))
+    static let compressed = lz77.compress([UInt8](string.utf8), configuration: .init(reserveCapacity: 1024))
 
     @Test func compressLZ77() {
         #expect(Self.compressed == [

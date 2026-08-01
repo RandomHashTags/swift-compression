@@ -7,7 +7,7 @@ import Testing
 struct HuffmanTests {
     static let scoobyDooString = "ruh roh raggy!"
     static let scoobyDoo:[UInt8] = .init(scoobyDooString.utf8)
-    static let scoobyDooCompressed = Huffman().compress(data: scoobyDoo, configuration: .default)!
+    static let scoobyDooCompressed = Huffman().compress(scoobyDoo, configuration: .default)!
     
     @Test func compressHuffman() {
         let result = Self.scoobyDooCompressed
@@ -25,7 +25,7 @@ struct HuffmanTests {
     @Test func decompressHuffmanOnlyFrequencyTable() {
         let result = Self.scoobyDooCompressed
         let table = Self.scoobyDooString.huffmanFrequencyTable()
-        let decompressed = Huffman().decompress(data: result.data, frequencyTable: table)
+        let decompressed = Huffman().decompress(result.data, frequencyTable: table)
         #expect(decompressed == Self.scoobyDoo)
     }
 }
