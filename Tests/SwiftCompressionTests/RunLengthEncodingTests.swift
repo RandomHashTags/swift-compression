@@ -1,6 +1,4 @@
 
-#if compiler(>=6.0)
-
 import Testing
 @testable import SwiftCompression
 
@@ -132,5 +130,3 @@ extension RunLengthEncodingTests {
         #expect(decompressed == data)
     }
 }
-
-#endif

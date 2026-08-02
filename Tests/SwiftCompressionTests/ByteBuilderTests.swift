@@ -1,6 +1,4 @@
 
-#if compiler(>=6.0)
-
 import ByteBuilder
 import Testing
 @testable import SwiftCompressionUtilities
@@ -33,5 +31,3 @@ struct BytesBuilderTests {
         #expect(builder.data == expected)
     }
 }
-
-#endif

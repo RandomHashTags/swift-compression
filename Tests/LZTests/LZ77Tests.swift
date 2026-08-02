@@ -1,6 +1,4 @@
 
-#if compiler(>=6.0)
-
 @testable import CompressionLZ
 @testable import SwiftCompressionUtilities
 import Testing
@@ -65,5 +63,3 @@ extension LZ77Token: CustomStringConvertible {
         "(\(offset),\(length),\(char))"
     }
 }
-
-#endif

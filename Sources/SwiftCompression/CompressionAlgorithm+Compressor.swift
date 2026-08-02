@@ -41,13 +41,11 @@ extension CompressionAlgorithm {
                 return LZ77<UInt32>(searchBufferSize: searchBufferSize, lookaheadBufferSize: lookaheadBufferSize)
             case 64:
                 return LZ77<UInt64>(searchBufferSize: searchBufferSize, lookaheadBufferSize: lookaheadBufferSize)
-            #if compiler(>=6.0)
             case 128:
                 if #available(macOS 15.0, iOS 18.0, watchOS 11.0, tvOS 18.0, visionOS 2.0, *) {
                     return LZ77<UInt128>(searchBufferSize: searchBufferSize, lookaheadBufferSize: lookaheadBufferSize)
                 }
                 return nil
-            #endif
             default: return nil
             }
             #else

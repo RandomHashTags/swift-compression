@@ -1,6 +1,4 @@
 
-#if compiler(>=6.0)
-
 import Huffman
 import Testing
 
@@ -29,5 +27,3 @@ struct HuffmanTests {
         #expect(decompressed == Self.scoobyDoo)
     }
 }
-
-#endif

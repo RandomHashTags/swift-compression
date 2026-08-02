@@ -1,6 +1,4 @@
 
-#if compiler(>=6.0)
-
 import Testing
 @testable import CompressionDNA
 @testable import SwiftCompressionUtilities
@@ -19,5 +17,3 @@ struct DNABinaryEncodingTests {
         #expect(result == Self.data)
     }
 }
-
-#endif

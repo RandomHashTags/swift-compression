@@ -1,11 +1,3 @@
-//
-//  DNAC_SBETests.swift
-//
-//
-//  Created by Evan Anderson on 12/18/24.
-//
-
-#if compiler(>=6.0)
 
 import Testing
 @testable import CompressionDNA
@@ -35,5 +27,3 @@ struct DNASingleBlockEncodingTests {
         #expect(controlBits == [0])
     }
 }
-
-#endif

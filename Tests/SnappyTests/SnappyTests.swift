@@ -1,6 +1,4 @@
 
-#if compiler(>=6.0)
-
 import Testing
 @testable import Snappy
 @testable import SwiftCompressionUtilities
@@ -54,6 +52,3 @@ struct SnappyTests {
         #expect(decompressed == [UInt8](Self.wikipedia.utf8))
     }
 }
-
-
-#endif

@@ -1,6 +1,4 @@
 
-#if compiler(>=6.0)
-
 import Testing
 @testable import SwiftCompressionUtilities
 
@@ -130,5 +128,3 @@ struct BitTests {
         #expect(int.bits == expected_result)
     }
 }
-
-#endif
