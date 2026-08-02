@@ -5,6 +5,7 @@ import SwiftCompressionUtilities
 
 extension LZ77: Decompressor {
     public typealias ConcreteDecompressionConfiguration = CompressConfiguration
+    public typealias ConcreteDecompressionResult = [UInt8]?
 
     /// Decompress a collection of bytes using the LZ77 technique.
     /// 
@@ -16,10 +17,10 @@ extension LZ77: Decompressor {
         data: some Collection<UInt8>,
         configuration: ConcreteDecompressionConfiguration
     ) -> ConcreteDecompressionResult {
-        var result = ConcreteDecompressionResult()
+        var result = [UInt8]()
         decompress(data: data, closure: { result.append($0) })
         result.reserveCapacity(configuration.reserveCapacity)
-        return result
+        return result.isEmpty ? nil : result
     }
 
     /// Decompress a collection of bytes using the LZ77 technique.
@@ -32,6 +33,7 @@ extension LZ77: Decompressor {
         data: some Collection<UInt8>,
         closure: (UInt8) -> Void
     ) {
+        // TODO: refactor
         let count = data.count
         var history = [UInt8]()
         var window = [UInt8]()
@@ -58,8 +60,8 @@ extension LZ77: Decompressor {
                 history.append(byte)
             }
             window.append(contentsOf: history.suffix(length + 1))
-            if window.count > windowSize {
-                window.removeFirst(window.count - windowSize)
+            if window.count > searchBufferSize {
+                window.removeFirst(window.count - searchBufferSize)
             }
             index += bytesForOffset + 2
         }

@@ -6,7 +6,7 @@ import SwiftCompressionUtilities
 
 extension LZ77: Compressor {
     public typealias ConcreteCompressionConfiguration = CompressConfiguration
-    public typealias ConcreteCompressionResult = [UInt8]
+    public typealias ConcreteCompressionResult = [LZ77Token]
 
     /// Compress a span of bytes using the LZ77 technique.
     /// 
@@ -30,51 +30,61 @@ extension LZ77: Compressor {
     /// Compress a collection of bytes using the LZ77 technique.
     /// 
     /// - Parameters:
-    ///   - data: Collection of bytes to compress.
+    ///   - buffer: Byte buffer to compress.
     ///   - closure: Logic to execute when a byte is compressed.
-    /// - Complexity: O(_n_) where _n_ is the length of `data`.
-    func compress(
+    /// - Complexity: O(_n_) where _n_ is the length of `buffer`.
+    package func compress(
         buffer: UnsafeBufferPointer<UInt8>,
-        closure: (UInt8) -> Void
+        closure: (LZ77Token) -> Void
     ) {
         let count = buffer.count
-        var index = 0
+        guard count > 0 else { return }
+
+        closure(.init(offset: 0, length: 0, char: buffer[0]))
+
+        var index = 1
         while index < count {
-            let bufferEndIndex = min(index + bufferSize, count)
-            guard index < bufferEndIndex else { break }
-            let bufferCount = bufferEndIndex - index
-            let bufferRange = index..<bufferEndIndex
-            let buffer = buffer[bufferRange]
-            let windowRange = max(0, index - windowSize)..<index
-            let window = buffer[windowRange]
-            let windowCount = window.count
-            var offset = 0
+            let currentChar = buffer[index]
+
+            var bestOffset = 0
             var bestLength = 0
-            for i in 0..<windowSize {
-                var length = 0
-                while length < bufferCount && window[positive: window.index(window.startIndex, offsetBy: i + length)] == buffer[length] {
-                    length += 1
-                    if i + length >= windowCount {
-                        break
+            let maxLength = min(lookaheadBufferSize + 1, count - index)
+            var searchIndex = max(index - searchBufferSize, 0)
+            while searchIndex < index {
+                // TODO: use SIMD?
+                if buffer[searchIndex] == currentChar {
+                    var length = 0
+                    while length < maxLength, buffer[searchIndex + length] == buffer[index + length] {
+                        length += 1
+                    }
+                    if length >= bestLength {
+                        bestLength = length
+                        bestOffset = index - searchIndex
                     }
                 }
-                if length > bestLength {
-                    bestLength = length
-                    offset = windowCount - i
+                searchIndex += 1
+            }
+
+            let token:LZ77Token
+            if bestLength == 0 {
+                token = .init(offset: 0, length: 0, char: currentChar)
+                index += 1
+            } else {
+                let nextSearchIndex = index + bestLength
+                if nextSearchIndex < count {
+                    token = .init(offset: bestOffset, length: bestLength, char: buffer[nextSearchIndex])
+                    index = nextSearchIndex + 1
+                } else {
+                    let trimmedLength = bestLength - 1
+                    token = .init(
+                        offset: trimmedLength == 0 ? 0 : bestOffset,
+                        length: trimmedLength,
+                        char: buffer[nextSearchIndex - 1]
+                    )
+                    index = nextSearchIndex
                 }
             }
-            let byte:UInt8
-            if index + bestLength < count {
-                byte = buffer[index + bestLength]
-            } else {
-                byte = 0
-            }
-            for byte in T(offset).reversedBytes {
-                closure(byte)
-            }
-            closure(UInt8(bestLength))
-            closure(byte)
-            index += bestLength + 1
+            closure(token)
         }
     }
 }

@@ -13,8 +13,8 @@ public struct BytesBuilder {
             data.append(wrote)
         }
     }
-    public mutating func write(bits: [Bool]) {
-        builder.write(bits: bits, closure: { data.append($0) })
+    public mutating func write(amount: Int, bits: UInt8) {
+        builder.write(amount: amount, bits: bits, closure: { data.append($0) })
     }
     public mutating func finalize() {
         builder.flush(into: &data)

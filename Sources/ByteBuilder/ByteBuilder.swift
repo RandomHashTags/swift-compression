@@ -2,8 +2,8 @@
 // MARK: ByteBuilder
 /// Outputs a byte (`UInt8`) when 8 bits are written or upon flush.
 public struct ByteBuilder {
-    public var bits:Bits8 = (false, false, false, false, false, false, false, false)
-    public var index:UInt8 = 0
+    package var _bits:UInt8 = 0
+    package var index:UInt8 = 0
 
     public init() {
     }
@@ -11,30 +11,12 @@ public struct ByteBuilder {
     /// - Complexity: O(1)
     subscript(_ index: UInt8) -> Bool {
         get {
-            switch index {
-            case 0: return bits.0
-            case 1: return bits.1
-            case 2: return bits.2
-            case 3: return bits.3
-            case 4: return bits.4
-            case 5: return bits.5
-            case 6: return bits.6
-            case 7: return bits.7
-            default: return false
-            }
+            assert(index < 8)
+            return (_bits & (1 << index)) != 0
         }
         set {
-            switch index {
-            case 0: bits.0 = newValue
-            case 1: bits.1 = newValue
-            case 2: bits.2 = newValue
-            case 3: bits.3 = newValue
-            case 4: bits.4 = newValue
-            case 5: bits.5 = newValue
-            case 6: bits.6 = newValue
-            case 7: bits.7 = newValue
-            default: break
-            }
+            assert(index < 8)
+            _bits = newValue ? _bits | (1 << index) : _bits & ~(1 << index)
         }
     }
 
@@ -45,7 +27,7 @@ public struct ByteBuilder {
         index += 1
         let result:UInt8?
         if index == 8 {
-            result = UInt8(fromBits: self.bits)
+            result = _bits
             clear()
         } else {
             result = nil
@@ -53,39 +35,40 @@ public struct ByteBuilder {
         return result
     }
 
-    public mutating func write(bits: [Bool], closure: (UInt8) -> Void) {
-        let available_bits:UInt8 = UInt8(min(Int(8 - index), bits.count))
-        for i in 0..<available_bits {
-            self[index + i] = bits[Int(i)]
-        }
-        index += available_bits
-        guard index == 8 else { return }
-
-        closure(UInt8(fromBits: self.bits))
-        clear()
-
-        var remaining:Int = bits.count - Int(available_bits)
-        let blocks:Int = remaining / 8, offset:Int = blocks * 8
-        remaining -= offset
-        for block in 0..<blocks {
-            let blockIndex:Int = block * 8
-            closure(UInt8(fromBits: (
-                bits[blockIndex],
-                bits[blockIndex + 1],
-                bits[blockIndex + 2],
-                bits[blockIndex + 3],
-                bits[blockIndex + 4],
-                bits[blockIndex + 5],
-                bits[blockIndex + 6],
-                bits[blockIndex + 7]
-            )))
-        }
-        if remaining != 0 {
-            let last_bits:UInt8 = UInt8(remaining)
-            for i in 0..<last_bits {
-                self[index + i] = bits[offset + Int(i)]
+    /// - Warning: `amount` **MUST** be greater than 0 AND less than or equal to `8`!
+    public mutating func write(
+        amount: Int,
+        bits: UInt8,
+        closure: (UInt8) -> Void
+    ) {
+        assert(amount > 0)
+        assert(amount <= 8)
+        if index == 0 {
+            if amount == 8 {
+                closure(bits)
+            } else {
+                _bits = bits
+                index += UInt8(truncatingIfNeeded: amount)
             }
-            index += last_bits
+        } else {
+            let appendMask = ~(UInt8.max << amount)
+            let appendedBits = appendMask & bits
+
+            index += UInt8(truncatingIfNeeded: amount)
+            if index < 7 {
+                _bits |= (appendedBits << index)
+            } else if index == 7 {
+                let result = _bits | (appendedBits << index)
+                closure(result)
+                _bits = 0
+                index = 0
+            } else { // index > 7
+                let wrote = index - UInt8(truncatingIfNeeded: amount)
+                _bits |= (appendedBits >> (UInt8(truncatingIfNeeded: amount) - wrote)) << (8 - wrote)
+                closure(_bits)
+                _bits = appendedBits >> wrote
+                index -= 8
+            }
         }
     }
 
@@ -93,19 +76,19 @@ public struct ByteBuilder {
     public mutating func flush() -> (lastByte: UInt8, validBits: UInt8)? {
         guard index != 0 else { return nil }
         defer { clear() }
-        return (UInt8(fromBits: bits), index)
+        return (_bits, index)
     }
 
     /// - Complexity: O(1).
     public mutating func flush(into data: inout [UInt8]) {
-        guard let wrote:UInt8 = flush()?.lastByte else { return }
+        guard let wrote = flush()?.lastByte else { return }
         data.append(wrote)
     }
 
     /// - Complexity: O(1).
     @available(macOS 10.15, iOS 13.0, watchOS 6.0, tvOS 13.0, *)
     public mutating func flush(into stream: AsyncStream<UInt8>.Continuation) {
-        guard let wrote:UInt8 = flush()?.lastByte else { return }
+        guard let wrote = flush()?.lastByte else { return }
         stream.yield(wrote)
     }
     
@@ -114,7 +97,7 @@ public struct ByteBuilder {
     /// - Complexity: O(1).
     public mutating func clear() {
         index = 0
-        bits = (false, false, false, false, false, false, false, false)
+        _bits = 0
     }
 }
 /*
