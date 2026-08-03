@@ -5,7 +5,7 @@ extension FixedWidthInteger {
     /// - Complexity: O(_n_) where _n_ is `bitWidth`.
     public var bits: [Bool] {
         var int = self
-        var bits:[Bool] = .init(repeating: false, count: bitWidth)
+        var bits = [Bool](repeating: false, count: bitWidth)
         for i in stride(from: bitWidth-1, through: 0, by: -1) {
             bits[i] = int & 0x01 == 1
             int >>= 1

@@ -3,13 +3,13 @@ import SwiftCompressionUtilities
 
 /// The DNA binary encoding compression technique.
 public struct DNABinaryEncoding: Sendable {        
-    public let baseBits:[UInt8:[Bool]]
+    public let baseBits:[UInt8:UInt8]
 
-    public init(baseBits: [UInt8:[Bool]] = [
-        65: [false, false], // A
-        67: [false, true],  // C
-        71: [true, false],  // G
-        84: [true, true]    // T
+    public init(baseBits: [UInt8:UInt8] = [
+        65: 0, // A (0, 0)
+        67: 1, // C (0, 1)
+        71: 2, // G (1, 0)
+        84: 3  // T (1, 1)
     ]) {
         self.baseBits = baseBits
     }
@@ -22,8 +22,8 @@ public struct DNABinaryEncoding: Sendable {
         .lossless
     }
 
-    public var baseBitsReversed: [[Bool]:UInt8] {
-        var reversed = [[Bool]:UInt8]()
+    public var baseBitsReversed: [UInt8:UInt8] {
+        var reversed = [UInt8:UInt8]()
         reversed.reserveCapacity(baseBits.count)
         for (byte, bits) in baseBits {
             reversed[bits] = byte

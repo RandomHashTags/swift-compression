@@ -43,32 +43,23 @@ public struct ByteBuilder {
     ) {
         assert(amount > 0)
         assert(amount <= 8)
-        if index == 0 {
-            if amount == 8 {
-                closure(bits)
-            } else {
-                _bits = bits
-                index += UInt8(truncatingIfNeeded: amount)
-            }
-        } else {
-            let appendMask = ~(UInt8.max << amount)
-            let appendedBits = appendMask & bits
+        let appendMask = ~(UInt8.max << amount)
+        let appendableBits = appendMask & bits
 
-            index += UInt8(truncatingIfNeeded: amount)
-            if index < 7 {
-                _bits |= (appendedBits << index)
-            } else if index == 7 {
-                let result = _bits | (appendedBits << index)
-                closure(result)
-                _bits = 0
-                index = 0
-            } else { // index > 7
-                let wrote = index - UInt8(truncatingIfNeeded: amount)
-                _bits |= (appendedBits >> (UInt8(truncatingIfNeeded: amount) - wrote)) << (8 - wrote)
-                closure(_bits)
-                _bits = appendedBits >> wrote
-                index -= 8
-            }
+        let oldIndex = index
+        index += UInt8(truncatingIfNeeded: amount)
+        if index < 8 {
+            _bits |= (appendableBits << oldIndex)
+        } else if index == 8 {
+            let result = _bits | (appendableBits << oldIndex)
+            closure(result)
+            _bits = 0
+            index = 0
+        } else { // index > 8
+            _bits |= (appendableBits << oldIndex)
+            closure(_bits)
+            _bits = appendableBits >> (8 - oldIndex)
+            index -= 8
         }
     }
 

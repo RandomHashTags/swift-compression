@@ -47,7 +47,7 @@ public enum CompressionAlgorithm: Hashable, Sendable {
     case fibonacci
 
     // science
-    case dnaBinaryEncoding(baseBits: [UInt8:[Bool]])
+    case dnaBinaryEncoding(baseBits: [UInt8:UInt8])
     case dnaSingleBlockEncoding
 
     // SSL

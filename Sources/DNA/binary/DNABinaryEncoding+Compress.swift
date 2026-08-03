@@ -29,17 +29,13 @@ extension DNABinaryEncoding: Compressor {
         buffer: UnsafeBufferPointer<UInt8>,
         closure: (UInt8) -> Void
     ) -> UInt8? {
-        var bitWriter = ByteBuilder()
+        var byteBuilder = ByteBuilder()
         for base in buffer {
             if let bits = baseBits[base] {
-                for bit in bits {
-                    if let wrote = bitWriter.write(bit: bit) {
-                        closure(wrote)
-                    }
-                }
+                byteBuilder.write(amount: 2, bits: bits, closure: closure)
             }
         }
-        guard let (byte, validBits) = bitWriter.flush() else { return nil }
+        guard let (byte, validBits) = byteBuilder.flush() else { return nil }
         closure(byte)
         return validBits
     }

@@ -31,14 +31,17 @@ extension DNABinaryEncoding: Decompressor {
     ) {
         let reversed = baseBitsReversed
         for byte in data {
-            var bits = [Bool]()
-            bits.reserveCapacity(4)
-            for bit in byte.bits {
-                bits.append(bit)
-                if let base = reversed[bits] {
-                    closure(base)
-                    bits.removeAll(keepingCapacity: true)
-                }
+            if let base = reversed[byte & 3] {
+                closure(base)
+            }
+            if let base = reversed[(byte & 12) >> 2] {
+                closure(base)
+            }
+            if let base = reversed[(byte & 48) >> 4] {
+                closure(base)
+            }
+            if let base = reversed[(byte & 192) >> 6] {
+                closure(base)
             }
         }
     }
