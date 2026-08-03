@@ -17,7 +17,7 @@ extension LZ77 {
         var result = ConcreteCompressionResult()
         result.reserveCapacity(configuration.reserveCapacity)
         collection.withContiguousStorageIfAvailable {
-            compress(buffer: $0, closure: { result.append($0) })
+            compress(span: $0.span, closure: { result.append($0) })
         }
         return result
     }

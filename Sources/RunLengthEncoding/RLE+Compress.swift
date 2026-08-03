@@ -13,9 +13,7 @@ extension RunLengthEncoding: Compressor {
         configuration: CompressConfiguration
     ) -> ConcreteCompressionResult {
         var result = ConcreteCompressionResult()
-        span.withUnsafeBufferPointer {
-            compress(buffer: $0, closure: compressClosure(closure: { result.append($0) }))
-        }
+        compress(span: span, closure: compressClosure(closure: { result.append($0) }))
         return result
     }
 }
@@ -49,13 +47,13 @@ extension RunLengthEncoding {
     ///   - closure: Logic to execute for a run.
     /// - Complexity: O(_n_) where _n_ is the length of `data`.
     func compress(
-        buffer: UnsafeBufferPointer<UInt8>,
+        span: Span<UInt8>,
         closure: (CompressClosureParameters) -> Void
     ) {
         var run = 0
         var runByte:UInt8? = nil
-        for index in 0..<buffer.count {
-            let byte = buffer[index]
+        for i in 0..<span.count {
+            let byte = span[i]
             if runByte == byte {
                 if run == 64 {
                     closure((run, runByte!))

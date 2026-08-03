@@ -10,7 +10,7 @@ extension RunLengthEncoding {
     ) -> ConcreteCompressionResult {
         var result = ConcreteCompressionResult()
         collection.withContiguousStorageIfAvailable {
-            compress(buffer: $0, closure: compressClosure(closure: { result.append($0) }))
+            compress(span: $0.span, closure: compressClosure(closure: { result.append($0) }))
         }
         return result
     }

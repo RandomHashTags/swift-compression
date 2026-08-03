@@ -33,14 +33,10 @@ struct LZ77Tests {
         input: String,
         expectedOutput: [LZ77Token]
     ) {
-        let bytes = [UInt8](input.utf8)
-        let output = bytes.withUnsafeBufferPointer({
-            var compressedOutput = [LZ77Token]()
-            compressedOutput.reserveCapacity(1024)
-            Self.lz77.compress(buffer: $0, closure: {
-                compressedOutput.append($0)
-            })
-            return compressedOutput
+        var output = [LZ77Token]()
+        output.reserveCapacity(1024)
+        Self.lz77.compress(span: input.utf8Span.span, closure: {
+            output.append($0)
         })
         #expect(expectedOutput == output)
     }

@@ -11,27 +11,24 @@ extension DNABinaryEncoding: Compressor {
         configuration: ConcreteCompressionConfiguration
     ) -> ConcreteCompressionResult {
         var result = ConcreteCompressionResult()
-        let validBitsInLastByte = span.withUnsafeBufferPointer {
-            compress(buffer: $0, closure: { result.append($0) })
-        }
+        let validBitsInLastByte = compress(span: span, closure: { result.append($0) })
         return result
     }
 
     /// Compress a collection of bytes using the DNA binary encoding technique.
     /// 
     /// - Parameters:
-    ///   - data: Collection of bytes to compress.
-    ///   - baseBits: Bit codes for the unique base nucleotides.
+    ///   - span: Collection of bytes to compress.
     ///   - closure: Logic to execute when a byte was encoded.
     /// - Returns: Valid bits for the last byte, if necessary.
-    /// - Complexity: O(_n_) where _n_ is the length of `data`.
+    /// - Complexity: O(_n_) where _n_ is the length of `span`.
     func compress(
-        buffer: UnsafeBufferPointer<UInt8>,
+        span: Span<UInt8>,
         closure: (UInt8) -> Void
     ) -> UInt8? {
         var byteBuilder = ByteBuilder()
-        for base in buffer {
-            if let bits = baseBits[base] {
+        for i in span.indices {
+            if let bits = baseBits[span[i]] {
                 byteBuilder.write(amount: 2, bits: bits, closure: closure)
             }
         }

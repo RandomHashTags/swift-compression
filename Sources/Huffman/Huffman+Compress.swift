@@ -13,27 +13,25 @@ extension Huffman: Compressor {
         _ span: Span<UInt8>,
         configuration: CompressConfiguration
     ) throws(Never) -> ConcreteCompressionResult {
-        return span.withUnsafeBufferPointer { buffer in
-            return compress(buffer: buffer) { frequencies, codes, root in
-                var compressed:[UInt8] = [8]
-                var vBitsInLastByte:UInt8 = 8
-                if let (lastByte, validBitsInLastByte) = translate(buffer: buffer, codes: codes, closure: { compressed.append($0) }) {
-                    compressed[0] = validBitsInLastByte
-                    compressed.append(lastByte)
-                    vBitsInLastByte = validBitsInLastByte
-                }
-                return .init(data: compressed, rootNode: root, frequencyTable: frequencies, validBitsInLastByte: vBitsInLastByte)
+        return compress(span: span) { frequencies, codes, root in
+            var compressed:[UInt8] = [8]
+            var vBitsInLastByte:UInt8 = 8
+            if let (lastByte, validBitsInLastByte) = translate(span: span, codes: codes, closure: { compressed.append($0) }) {
+                compressed[0] = validBitsInLastByte
+                compressed.append(lastByte)
+                vBitsInLastByte = validBitsInLastByte
             }
+            return .init(data: compressed, rootNode: root, frequencyTable: frequencies, validBitsInLastByte: vBitsInLastByte)
         }
     }
 
     func compress<T>(
-        buffer: UnsafeBufferPointer<UInt8>,
+        span: Span<UInt8>,
         closure: ([Int], [UInt8:String], Node) -> T
     ) -> T? {
         var frequencies = Array(repeating: 0, count: Int(UInt8.max-1))
-        for byte in buffer {
-            frequencies[Int(byte)] += 1
+        for i in span.indices {
+            frequencies[Int(span[i])] += 1
         }
         guard let root = buildTree(frequencies: frequencies) else { return nil }
         var codes = [UInt8:String]()
@@ -43,13 +41,13 @@ extension Huffman: Compressor {
 
     /// - Complexity: O(_n_ + _m_) where _n_ is the length of `data` and _m_ is the sum of the code lengths.
     func translate(
-        buffer: UnsafeBufferPointer<UInt8>,
+        span: Span<UInt8>,
         codes: [UInt8:String],
         closure: (UInt8) -> Void
     ) -> (lastByte: UInt8, validBits: UInt8)? {
         var builder = ByteBuilder()
-        for byte in buffer {
-            guard let tree = codes[byte] else { continue }
+        for i in span.indices {
+            guard let tree = codes[span[i]] else { continue }
             for char in tree {
                 if let wrote = builder.write(bit: char == "1") {
                     closure(wrote)
@@ -73,11 +71,12 @@ extension Huffman {
         bufferingPolicy limit: AsyncStream<UInt8>.Continuation.BufferingPolicy = .unbounded
     ) -> CompressionResult<AsyncStream<UInt8>>? {
         // TODO: fix
-        return data.withContiguousStorageIfAvailable { buffer in
-            return compress(buffer: buffer) { frequencies, codes, root in
+        return data.withContiguousStorageIfAvailable {
+            let bufferSpan = $0.span
+            return compress(span: bufferSpan) { frequencies, codes, root in
                 var vBitsInLastByte:UInt8 = 8
                 let stream = AsyncStream(bufferingPolicy: limit) { continuation in
-                    if let (lastByte, validBitsInLastByte) = translate(buffer: buffer, codes: codes, closure: { continuation.yield($0) }) {
+                    if let (lastByte, validBitsInLastByte) = translate(span: bufferSpan, codes: codes, closure: { continuation.yield($0) }) {
                         continuation.yield(lastByte)
                         vBitsInLastByte = validBitsInLastByte
                     }

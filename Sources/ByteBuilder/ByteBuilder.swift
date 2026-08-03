@@ -35,6 +35,7 @@ public struct ByteBuilder {
         return result
     }
 
+    /// - Complexity: O(1).
     /// - Warning: `amount` **MUST** be greater than 0 AND less than or equal to `8`!
     public mutating func write(
         amount: Int,

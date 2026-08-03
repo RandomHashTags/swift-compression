@@ -8,7 +8,7 @@ extension DNABinaryEncoding {
     ) -> ConcreteCompressionResult {
         var result = ConcreteCompressionResult()
         let validBitsInLastByte = data.withContiguousStorageIfAvailable {
-            compress(buffer: $0, closure: { result.append($0) })
+            compress(span: $0.span, closure: { result.append($0) })
         }
         return result
     }

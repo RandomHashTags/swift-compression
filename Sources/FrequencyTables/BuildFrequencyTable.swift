@@ -30,13 +30,13 @@ public func buildFrequencyTable(data: some Sequence<UInt8>) -> [UInt8:Int] {
 /// Creates a lookup frequency table from a sequence of raw bytes.
 /// 
 /// - Parameters:
-///   - data: Sequence of raw bytes.
+///   - span: Sequence of raw bytes.
 /// - Returns: A lookup frequency table.
 /// - Complexity: O(_n_) where _n_ is the length of `data`.
-public func buildFrequencyTable(buffer: UnsafeBufferPointer<UInt8>)-> [UInt8:Int] {
+public func buildFrequencyTable(span: Span<UInt8>)-> [UInt8:Int] {
     var table = [UInt8:Int]()
-    for byte in buffer {
-        table[byte, default: 0] += 1
+    for i in span.indices {
+        table[span[i], default: 0] += 1
     }
     return table
 }

@@ -21,9 +21,7 @@ extension LZ77: Compressor {
     ) -> ConcreteCompressionResult {
         var result = ConcreteCompressionResult()
         result.reserveCapacity(configuration.reserveCapacity)
-        span.withUnsafeBufferPointer {
-            compress(buffer: $0, closure: { result.append($0) })
-        }
+        compress(span: span, closure: { result.append($0) })
         return result
     }
 
@@ -34,17 +32,17 @@ extension LZ77: Compressor {
     ///   - closure: Logic to execute when a byte is compressed.
     /// - Complexity: O(_n_) where _n_ is the length of `buffer`.
     package func compress(
-        buffer: UnsafeBufferPointer<UInt8>,
+        span: Span<UInt8>,
         closure: (LZ77Token) -> Void
     ) {
-        let count = buffer.count
+        let count = span.count
         guard count > 0 else { return }
 
-        closure(.init(offset: 0, length: 0, char: buffer[0]))
+        closure(.init(offset: 0, length: 0, char: span[0]))
 
         var index = 1
         while index < count {
-            let currentChar = buffer[index]
+            let currentChar = span[index]
 
             var bestOffset = 0
             var bestLength = 0
@@ -52,9 +50,9 @@ extension LZ77: Compressor {
             var searchIndex = max(index - searchBufferSize, 0)
             while searchIndex < index {
                 // TODO: use SIMD?
-                if buffer[searchIndex] == currentChar {
+                if span[searchIndex] == currentChar {
                     var length = 0
-                    while length < maxLength, buffer[searchIndex + length] == buffer[index + length] {
+                    while length < maxLength, span[searchIndex + length] == span[index + length] {
                         length += 1
                     }
                     if length >= bestLength {
@@ -72,14 +70,14 @@ extension LZ77: Compressor {
             } else {
                 let nextSearchIndex = index + bestLength
                 if nextSearchIndex < count {
-                    token = .init(offset: bestOffset, length: bestLength, char: buffer[nextSearchIndex])
+                    token = .init(offset: bestOffset, length: bestLength, char: span[nextSearchIndex])
                     index = nextSearchIndex + 1
                 } else {
                     let trimmedLength = bestLength - 1
                     token = .init(
                         offset: trimmedLength == 0 ? 0 : bestOffset,
                         length: trimmedLength,
-                        char: buffer[nextSearchIndex - 1]
+                        char: span[nextSearchIndex - 1]
                     )
                     index = nextSearchIndex
                 }
