@@ -7,20 +7,23 @@ struct HuffmanTests {
     static let scoobyDoo:[UInt8] = .init(scoobyDooString.utf8)
     static let scoobyDooCompressed = Huffman().compress(scoobyDoo, configuration: .default)!
     
-    @Test func compressHuffman() {
+    @Test
+    func compressHuffman() {
         let result = Self.scoobyDooCompressed
         #expect(result.data == [4, 31, 67, 180, 23, 253, 96])
         #expect(result.validBitsInLastByte == 4)
     }
 
-    @Test func decompressHuffman() {
+    @Test
+    func decompressHuffman() {
         let result = Self.scoobyDooCompressed
         let decompressed = Huffman().decompress(data: result.data, configuration: .init(root: result.rootNode))
         #expect(result.validBitsInLastByte == 4)
         #expect(decompressed == Self.scoobyDoo)
     }
 
-    @Test func decompressHuffmanOnlyFrequencyTable() {
+    @Test
+    func decompressHuffmanOnlyFrequencyTable() {
         let result = Self.scoobyDooCompressed
         let table = Self.scoobyDooString.huffmanFrequencyTable()
         let decompressed = Huffman().decompress(result.data, frequencyTable: table)

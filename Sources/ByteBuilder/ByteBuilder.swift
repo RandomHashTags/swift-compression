@@ -8,7 +8,7 @@ public struct ByteBuilder {
     public init() {
     }
 
-    /// - Complexity: O(1)
+    /// - Complexity: O(1).
     subscript(_ index: UInt8) -> Bool {
         get {
             assert(index < 8)
@@ -20,8 +20,8 @@ public struct ByteBuilder {
         }
     }
 
-    /// - Returns: The complete byte, if all 8 bits are filled.
-    /// - Complexity: O(1)
+    /// - Returns: The complete byte, if all 8 bits were filled.
+    /// - Complexity: O(1).
     public mutating func write(bit: Bool) -> UInt8? {
         self[index] = bit
         index += 1

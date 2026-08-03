@@ -14,7 +14,7 @@ extension Huffman: Compressor {
         configuration: CompressConfiguration
     ) throws(Never) -> ConcreteCompressionResult {
         return span.withUnsafeBufferPointer { buffer in
-            return compress(buffer: buffer, closure: ({ frequencies, codes, root in
+            return compress(buffer: buffer) { frequencies, codes, root in
                 var compressed:[UInt8] = [8]
                 var vBitsInLastByte:UInt8 = 8
                 if let (lastByte, validBitsInLastByte) = translate(buffer: buffer, codes: codes, closure: { compressed.append($0) }) {
@@ -23,7 +23,7 @@ extension Huffman: Compressor {
                     vBitsInLastByte = validBitsInLastByte
                 }
                 return .init(data: compressed, rootNode: root, frequencyTable: frequencies, validBitsInLastByte: vBitsInLastByte)
-            }))
+            }
         }
     }
 
@@ -49,11 +49,10 @@ extension Huffman: Compressor {
     ) -> (lastByte: UInt8, validBits: UInt8)? {
         var builder = ByteBuilder()
         for byte in buffer {
-            if let tree = codes[byte] {
-                for char in tree {
-                    if let wrote = builder.write(bit: char == "1") {
-                        closure(wrote)
-                    }
+            guard let tree = codes[byte] else { continue }
+            for char in tree {
+                if let wrote = builder.write(bit: char == "1") {
+                    closure(wrote)
                 }
             }
         }

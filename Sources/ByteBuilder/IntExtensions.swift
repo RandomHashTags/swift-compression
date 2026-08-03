@@ -6,8 +6,8 @@ extension FixedWidthInteger {
     public var bits: [Bool] {
         var int = self
         var bits = [Bool](repeating: false, count: bitWidth)
-        for i in stride(from: bitWidth-1, through: 0, by: -1) {
-            bits[i] = int & 0x01 == 1
+        for i in 0..<bitWidth {
+            bits[i] = int & 1 == 1
             int >>= 1
         }
         return bits
