@@ -50,9 +50,9 @@ extension Huffman: Decompressor {
         var node = root
         var index = 1
         while index < countMinusOne {
-            let bits = data[index].bits
+            let byte = data[index]
             for bit in 0..<8 {
-                if bits[bit] {
+                if byte & (1 << bit) != 0 {
                     node = node?.right
                 } else {
                     node = node?.left
@@ -65,9 +65,9 @@ extension Huffman: Decompressor {
             index += 1
         }
         let validBitsInLastByte = data[0]
-        let lastBits = data[countMinusOne].bits
+        let lastByte = data[countMinusOne]
         for bit in 0..<validBitsInLastByte {
-            if lastBits[Int(bit)] {
+            if lastByte & (1 << bit) != 0 {
                 node = node?.right
             } else {
                 node = node?.left
