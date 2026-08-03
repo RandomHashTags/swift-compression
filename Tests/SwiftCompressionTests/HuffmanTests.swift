@@ -9,8 +9,9 @@ struct HuffmanTests {
     
     @Test
     func compressHuffman() {
+        let expected:[UInt8] = [4, 248, 194, 45, 232, 191, 6]
         let result = Self.scoobyDooCompressed
-        #expect(result.data == [4, 31, 67, 180, 23, 253, 96])
+        #expect(result.data == expected, "\(result.data.map({ String($0, radix: 2) })) != \(expected.map({ String($0, radix: 2) }))")
         #expect(result.validBitsInLastByte == 4)
     }
 

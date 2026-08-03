@@ -145,7 +145,11 @@ extension Huffman {
     /// Generates the binary codes for a node.
     /// 
     /// - Complexity: O(1).
-    func generateCodes(node: Node?, code: String = "", codes: inout [UInt8:String]) {
+    func generateCodes(
+        node: Node?,
+        code: String = "",
+        codes: inout [UInt8:String]
+    ) {
         guard let node else { return }
         if let char = node.character {
             codes[char] = code
