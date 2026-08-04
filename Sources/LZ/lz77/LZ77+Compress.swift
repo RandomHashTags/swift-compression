@@ -25,6 +25,25 @@ extension LZ77: Compressor {
         return result
     }
 
+    @available(macOS 10.14.4, iOS 12.2, watchOS 5.2, tvOS 12.2, visionOS 1.0, *)
+    public func compress(
+        _ span: Span<UInt8>,
+        configuration: ConcreteCompressionConfiguration
+    ) -> [UInt8] {
+        var result = [UInt8]()
+        result.reserveCapacity(configuration.reserveCapacity)
+        let bitsForOffset = (searchBufferSize-1).minBitsRequiredToRepresent
+        let bitsForLength = (lookaheadBufferSize-1).minBitsRequiredToRepresent
+        var byteBuilder = ByteBuilder()
+        compress(span: span, closure: { token in
+            byteBuilder.write(amount: bitsForOffset, bits: token.offset, closure: { result.append($0) })
+            byteBuilder.write(amount: bitsForLength, bits: token.length, closure: { result.append($0) })
+            byteBuilder.write(amount: 8, bits: token.offset, closure: { result.append($0) })
+        })
+        byteBuilder.flush(into: &result)
+        return result
+    }
+
     /// Compress a collection of bytes using the LZ77 technique.
     /// 
     /// - Parameters:

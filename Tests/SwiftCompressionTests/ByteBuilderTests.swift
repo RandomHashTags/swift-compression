@@ -3,7 +3,7 @@ import ByteBuilder
 import Testing
 @testable import SwiftCompressionUtilities
 
-struct BytesBuilderTests {
+struct ByteBuilderTests {
     @Test
     func bytesBuilder() {
         var builder = BytesBuilder()
@@ -35,5 +35,40 @@ struct BytesBuilderTests {
         builder.finalize()
         expected = .init(repeating: .max, count: 8)
         #expect(builder.data == expected)
+    }
+}
+
+extension ByteBuilderTests {
+    @Test(arguments: [
+        (0, 1),
+        (1, 1),
+        (2, 2),
+        (3, 2),
+        (4, 3),
+        (5, 3),
+        (6, 3),
+        (7, 3),
+        (8, 4),
+        (16, 5),
+        (31, 5),
+        (32, 6),
+        (63, 6),
+        (64, 7),
+        (128, 8),
+        (254, 8),
+        (255, 8),
+        (256, 9),
+        (510, 9),
+        (511, 9),
+        (512, 10),
+        (513, 10),
+        (4095, 12),
+        (4096, 13)
+    ])
+    func minBitsRequiredToRepresent(
+        number: Int,
+        expected: Int
+    ) {
+        #expect(number.minBitsRequiredToRepresent == expected)
     }
 }

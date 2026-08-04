@@ -9,4 +9,11 @@ extension FixedWidthInteger {
         }
         self = value
     }
+
+    /// - Warning: `self` **MUST NOT** be negative!
+    package var minBitsRequiredToRepresent: Int {
+        assert(self >= 0)
+        let v = bitWidth - leadingZeroBitCount
+        return Swift.max(1, v)
+    }
 }
