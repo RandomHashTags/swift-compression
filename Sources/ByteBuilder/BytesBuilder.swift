@@ -9,11 +9,14 @@ public struct BytesBuilder {
     }
 
     public mutating func write(bit: Bool) {
-        if let wrote:UInt8 = builder.write(bit: bit) {
+        if let wrote = builder.write(bit: bit) {
             data.append(wrote)
         }
     }
     public mutating func write(amount: Int, bits: UInt8) {
+        builder.write(amount: amount, bits: bits, closure: { data.append($0) })
+    }
+    public mutating func write<T: FixedWidthInteger>(amount: Int, bits: T) {
         builder.write(amount: amount, bits: bits, closure: { data.append($0) })
     }
     public mutating func finalize() {

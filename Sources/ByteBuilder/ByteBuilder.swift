@@ -20,6 +20,17 @@ public struct ByteBuilder {
         }
     }
 
+    /// Assigns the `index` to zero and all bits to `false`.
+    /// 
+    /// - Complexity: O(1).
+    public mutating func clear() {
+        index = 0
+        _bits = 0
+    }
+}
+
+// MARK: write
+extension ByteBuilder {
     /// - Returns: The complete byte, if all 8 bits were filled.
     /// - Complexity: O(1).
     public mutating func write(bit: Bool) -> UInt8? {
@@ -64,6 +75,30 @@ public struct ByteBuilder {
         }
     }
 
+    /// - Complexity: O(1).
+    /// - Warning: `amount` **MUST** be greater than 0!
+    public mutating func write<T: FixedWidthInteger>(
+        amount: Int,
+        bits: T,
+        closure: (UInt8) -> Void
+    ) {
+        assert(amount > 0)
+        var remaining = amount
+        var appendableBits = bits
+        while remaining > 0 {
+            write(
+                amount: min(remaining, 8),
+                bits: UInt8(truncatingIfNeeded: appendableBits),
+                closure: closure
+            )
+            remaining -= 8
+            appendableBits >>= 8
+        }
+    }
+}
+
+// MARK: flush
+extension ByteBuilder {
     /// - Complexity: O(1). 
     public mutating func flush() -> (lastByte: UInt8, validBits: UInt8)? {
         guard index != 0 else { return nil }
@@ -83,15 +118,8 @@ public struct ByteBuilder {
         guard let wrote = flush()?.lastByte else { return }
         stream.yield(wrote)
     }
-    
-    /// Assigns the `index` to zero and all bits to `false`.
-    /// 
-    /// - Complexity: O(1).
-    public mutating func clear() {
-        index = 0
-        _bits = 0
-    }
 }
+
 /*
 
 // MARK: StreamBuilder

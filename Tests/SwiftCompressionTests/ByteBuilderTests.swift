@@ -29,5 +29,11 @@ struct BytesBuilderTests {
         builder.finalize()
         expected.append(1)
         #expect(builder.data == expected)
+
+        builder = .init()
+        builder.write(amount: 64, bits: UInt64.max)
+        builder.finalize()
+        expected = .init(repeating: .max, count: 8)
+        #expect(builder.data == expected)
     }
 }
