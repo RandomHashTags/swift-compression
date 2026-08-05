@@ -29,6 +29,7 @@ let package = Package(
             "ZlibDeflate",
             "ZlibGzip",
 
+            "AlgorithmCompress",
             "AlgorithmAnyCompressor",
             "AlgorithmAnyDecompressor",
 
@@ -42,6 +43,7 @@ let package = Package(
             "ZlibGzipCompress", "ZlibGzipDecompress",
         ]),
 
+        .trait(name: "AlgorithmCompress", description: "Enables the `compress(span:)` function for `CompressionAlgorithm`."),
         .trait(name: "AlgorithmAnyCompressor", description: "Enables the `compressor: (any Compressor)?` computed property for `CompressionAlgorithm`."),
         .trait(name: "AlgorithmAnyDecompressor", description: "Enables the `decompressor: (any Decompressor)?` computed property for `CompressionAlgorithm`."),
 
