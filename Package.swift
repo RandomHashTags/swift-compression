@@ -138,8 +138,8 @@ let package = Package(
                 "BrotliShim"
             ],
             linkerSettings: [
-                .unsafeFlags(["-lbrotlienc"], .when(traits: ["BrotliCompress"])),
-                .unsafeFlags(["-lbrotlidec"], .when(traits: ["BrotliDecompress"]))
+                .linkedLibrary("brotlienc", .when(traits: ["BrotliCompress"])),
+                .linkedLibrary("brotlidec", .when(traits: ["BrotliDecompress"]))
             ]
         ),
         .systemLibrary(name: "ZlibShim"),
@@ -193,7 +193,7 @@ let package = Package(
                 "SnappyShim"
             ],
             linkerSettings: [
-                .unsafeFlags(["-lsnappy"], .when(traits: ["Snappy"]))
+                .linkedLibrary("snappy", .when(traits: ["Snappy"]))
             ]
         ),
 
