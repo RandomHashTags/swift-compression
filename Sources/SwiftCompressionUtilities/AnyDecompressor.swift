@@ -1,9 +1,9 @@
 
-// MARK: AnyDecompressor
-public protocol AnyDecompressor: Sendable {
+/// A type-erased `Decompressor` value.
+public protocol AnyDecompressor: Sendable, ~Copyable {
     /// Decompression algorithm this decompressor uses.
     var algorithm: CompressionAlgorithm { get }
 
     /// Quality of the decompressed data.
-    var quality: CompressionQuality { get }
+    var compressionQuality: CompressionQuality { get }
 }

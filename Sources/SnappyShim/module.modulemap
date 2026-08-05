@@ -1,0 +1,4 @@
+module SnappyShim [system] {
+    header "shim.h"
+    export *
+}

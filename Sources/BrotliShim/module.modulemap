@@ -1,0 +1,4 @@
+module BrotliShim [system] {
+    header "shim.h"
+    export *
+}

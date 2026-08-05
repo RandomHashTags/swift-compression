@@ -1,23 +1,17 @@
-//
-//  LZ78.swift
-//
-//
-//  Created by Evan Anderson on 12/25/24.
-//
+
+#if LZ77
 
 import SwiftCompressionUtilities
 
-extension CompressionTechnique {
-    /// The LZ78 compression technique.
-    /// 
-    /// https://en.wikipedia.org/wiki/LZ77_and_LZ78
-    public enum LZ78 {
-        typealias Entry = (Int, UInt8)
-    }
+/// The LZ78 compression technique.
+/// 
+/// https://en.wikipedia.org/wiki/LZ77_and_LZ78
+enum LZ78 {
+    typealias Entry = (Int, UInt8)
 }
 
 // MARK: Compress
-extension CompressionTechnique.LZ78 {
+extension LZ78 {
     public static func compress(
         data: some Sequence<UInt8>,
         endOfFileMarker: UInt8?
@@ -40,3 +34,5 @@ extension CompressionTechnique.LZ78 {
         return compressed
     }
 }
+
+#endif

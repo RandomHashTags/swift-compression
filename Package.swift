@@ -1,4 +1,4 @@
-// swift-tools-version:5.9
+// swift-tools-version:6.1
 
 import PackageDescription
 
@@ -6,89 +6,195 @@ let package = Package(
     name: "swift-compression",
     // MARK: Products
     products: [
-        .library(
-            name: "SwiftCompression",
-            targets: ["SwiftCompression"]
-        ),
+        .library(name: "SwiftCompression", targets: ["SwiftCompression"]),
+        .library(name: "SwiftCompressionUtilities", targets: ["SwiftCompressionUtilities"]),
 
-        .library(
-            name: "SwiftCompressionCSS",
-            targets: ["CompressionCSS"]
-        ),
-
-        .library(
-            name: "SwiftCompressionDNA",
-            targets: ["CompressionDNA"]
-        ),
-
-        .library(
-            name: "SwiftCompressionJavaScript",
-            targets: ["CompressionJavaScript"]
-        ),
-
-        .library(
-            name: "SwiftCompressionLZ",
-            targets: ["CompressionLZ"]
-        ),
-
-        .library(
-            name: "SwiftCompressionSnappy",
-            targets: ["CompressionSnappy"]
-        ),
+        .library(name: "Brotli", targets: ["Brotli"]),
+        .library(name: "SwiftCompressionDNA", targets: ["CompressionDNA"]),
+        .library(name: "SwiftCompressionLZ", targets: ["CompressionLZ"]),
+        .library(name: "FrequencyTables", targets: ["FrequencyTables"]),
+        .library(name: "Huffman", targets: ["Huffman"]),
+        .library(name: "RunLengthEncoding", targets: ["RunLengthEncoding"]),
+        .library(name: "Snappy", targets: ["Snappy"]),
+        .library(name: "Zlib", targets: ["Zlib"])
     ],
+    // MARK: Traits
+    traits: [
+        .default(enabledTraits: [
+            "Brotli",
+            "Huffman",
+            "LZ77",
+            "RunLengthEncoding",
+            "Snappy",
+            "ZlibDeflate",
+            "ZlibGzip",
+
+            "AlgorithmCompress",
+            "AlgorithmAnyCompressor",
+            "AlgorithmAnyDecompressor",
+
+            "CollectionCompress", "CollectionDecompress",
+            "BrotliCompress", "BrotliDecompress",
+            "HuffmanCompress", "HuffmanDecompress",
+            "LZ77Compress", "LZ77Decompress",
+            "SnappyCompress", "SnappyDecompress",
+            "RunLengthEncodingCompress", "RunLengthEncodingDecompress",
+            "ZlibDeflateCompress", "ZlibDeflateDecompress",
+            "ZlibGzipCompress", "ZlibGzipDecompress",
+        ]),
+
+        .trait(name: "AlgorithmCompress", description: "Enables the `compress(span:)` function for `CompressionAlgorithm`."),
+        .trait(name: "AlgorithmAnyCompressor", description: "Enables the `compressor: (any Compressor)?` computed property for `CompressionAlgorithm`."),
+        .trait(name: "AlgorithmAnyDecompressor", description: "Enables the `decompressor: (any Decompressor)?` computed property for `CompressionAlgorithm`."),
+
+        .trait(name: "CollectionCompress", enabledTraits: [
+            "BrotliCompressCollection",
+            "HuffmanCompressCollection",
+            "LZ77CompressCollection",
+            "RunLengthEncodingCompressCollection",
+            "SnappyCompressCollection",
+            "ZlibDeflateCompressCollection",
+            "ZlibGzipCompressCollection",
+        ]),
+
+        .trait(name: "CollectionDecompress", enabledTraits: [
+            "BrotliDecompressCollection",
+            "HuffmanDecompressCollection",
+            "LZ77DecompressCollection",
+            "RunLengthEncodingDecompressCollection",
+            "SnappyDecompressCollection",
+            "ZlibDeflateDecompressCollection",
+            "ZlibGzipDecompressCollection",
+        ]),
+
+        .trait(name: "Brotli", description: "Enables Brotli."),
+        .trait(name: "BrotliCompress", description: "Enables Brotli compression for Span<UInt8>.", enabledTraits: ["Brotli"]),
+        .trait(name: "BrotliCompressCollection", description: "Enables Brotli compression for some Collection<UInt8>.", enabledTraits: ["BrotliCompress"]),
+        .trait(name: "BrotliDecompress", description: "Enables Brotli decompression for Span<UInt8>.", enabledTraits: ["Brotli"]),
+        .trait(name: "BrotliDecompressCollection", description: "Enables Brotli decompression for some Collection<UInt8>.", enabledTraits: ["BrotliDecompress"]),
+
+        .trait(name: "Huffman", description: "Enables Huffman."),
+        .trait(name: "HuffmanCompress", description: "Enables Huffman compression for Span<UInt8>.", enabledTraits: ["Huffman"]),
+        .trait(name: "HuffmanCompressCollection", description: "Enables Huffman compression for some Collection<UInt8>.", enabledTraits: ["HuffmanCompress"]),
+        .trait(name: "HuffmanDecompress", description: "Enables Huffman decompression for Span<UInt8>.", enabledTraits: ["Huffman"]),
+        .trait(name: "HuffmanDecompressCollection", description: "Enables Huffman decompression for some Collection<UInt8>.", enabledTraits: ["HuffmanDecompress"]),
+
+        .trait(name: "LZ77", description: "Enables LZ77."),
+        .trait(name: "LZ77Compress", description: "Enables LZ77 compression for Span<UInt8>.", enabledTraits: ["LZ77"]),
+        .trait(name: "LZ77CompressCollection", description: "Enables LZ77 compression for some Collection<UInt8>.", enabledTraits: ["LZ77Compress"]),
+        .trait(name: "LZ77Decompress", description: "Enables LZ77 decompression for Span<UInt8>.", enabledTraits: ["LZ77"]),
+        .trait(name: "LZ77DecompressCollection", description: "Enables LZ77 decompression for some Collection<UInt8>.", enabledTraits: ["LZ77Decompress"]),
+
+        .trait(name: "RunLengthEncoding", description: "Enables RunLengthEncoding."),
+        .trait(name: "RunLengthEncodingCompress", description: "Enables RunLengthEncoding compression for Span<UInt8>.", enabledTraits: ["RunLengthEncoding"]),
+        .trait(name: "RunLengthEncodingCompressCollection", description: "Enables RunLengthEncoding compression for some Collection<UInt8>.", enabledTraits: ["RunLengthEncodingCompress"]),
+        .trait(name: "RunLengthEncodingDecompress", description: "Enables RunLengthEncoding decompression for Span<UInt8>.", enabledTraits: ["RunLengthEncoding"]),
+        .trait(name: "RunLengthEncodingDecompressCollection", description: "Enables RunLengthEncoding decompression for some Collection<UInt8>.", enabledTraits: ["RunLengthEncodingDecompress"]),
+
+        .trait(name: "Snappy", description: "Enables Snappy."),
+        .trait(name: "SnappyCompress", description: "Enables Snappy compression for Span<UInt8>.", enabledTraits: ["Snappy"]),
+        .trait(name: "SnappyCompressCollection", description: "Enables Snappy compression for some Collection<UInt8>.", enabledTraits: ["SnappyCompress"]),
+        .trait(name: "SnappyDecompress", description: "Enables Snappy decompression for Span<UInt8>.", enabledTraits: ["Snappy"]),
+        .trait(name: "SnappyDecompressCollection", description: "Enables Snappy decompression for some Collection<UInt8>.", enabledTraits: ["SnappyDecompress"]),
+
+        .trait(name: "ZlibDeflate", description: "Enables ZlibDeflate."),
+        .trait(name: "ZlibDeflateCompress", description: "Enables ZlibDeflate compression for Span<UInt8>.", enabledTraits: ["ZlibDeflate"]),
+        .trait(name: "ZlibDeflateCompressCollection", description: "Enables ZlibDeflate compression for some Collection<UInt8>.", enabledTraits: ["ZlibDeflateCompress"]),
+        .trait(name: "ZlibDeflateDecompress", description: "Enables ZlibDeflate decompression for Span<UInt8>.", enabledTraits: ["ZlibDeflate"]),
+        .trait(name: "ZlibDeflateDecompressCollection", description: "Enables ZlibDeflate decompression for some Collection<UInt8>.", enabledTraits: ["ZlibDeflateDecompress"]),
+
+        .trait(name: "ZlibGzip", description: "Enables ZlibGzip"),
+        .trait(name: "ZlibGzipCompress", description: "Enables ZlibGzip compression for Span<UInt8>.", enabledTraits: ["ZlibGzip", "ZlibDeflateCompress"]),
+        .trait(name: "ZlibGzipCompressCollection", description: "Enables ZlibGzip compression for some Collection<UInt8>.", enabledTraits: ["ZlibGzipCompress"]),
+        .trait(name: "ZlibGzipDecompress", description: "Enables ZlibGzip decompression for Span<UInt8>.", enabledTraits: ["ZlibGzip", "ZlibDeflateDecompress"]),
+        .trait(name: "ZlibGzipDecompressCollection", description: "Enables ZlibGzip decompression for some Collection<UInt8>.", enabledTraits: ["ZlibGzipDecompress"]),
+    ],
+
     // MARK: Targets
     targets: [
-        .target(
-            name: "SwiftCompressionUtilities"
-        ),
+        .target(name: "ByteBuilder"),
+        .target(name: "FrequencyTables"),
+        .target(name: "SwiftCompressionUtilities"),
 
         .target(
             name: "SwiftCompression",
             dependencies: [
-                "SwiftCompressionUtilities",
-                "CompressionCSS",
+                "Brotli",
                 "CompressionDNA",
-                "CompressionJavaScript",
                 "CompressionLZ",
-                "CompressionSnappy"
+                "Huffman",
+                "RunLengthEncoding",
+                "Snappy",
+                "Zlib",
+                "SwiftCompressionUtilities",
             ]
         ),
 
-        // MARK: Techniques
+        .systemLibrary(name: "BrotliShim"),
         .target(
-            name: "CompressionCSS",
+            name: "Brotli",
             dependencies: [
-                "SwiftCompressionUtilities"
+                "SwiftCompressionUtilities",
+                "BrotliShim"
             ],
-            path: "Sources/CSS"
+            linkerSettings: [
+                .unsafeFlags(["-lbrotlienc"], .when(traits: ["BrotliCompress"])),
+                .unsafeFlags(["-lbrotlidec"], .when(traits: ["BrotliDecompress"]))
+            ]
         ),
+        .systemLibrary(name: "ZlibShim"),
+        .target(
+            name: "Zlib",
+            dependencies: [
+                "SwiftCompressionUtilities",
+                "ZlibShim"
+            ]
+        ),
+
         .target(
             name: "CompressionDNA",
             dependencies: [
+                "ByteBuilder",
+                "FrequencyTables",
                 "SwiftCompressionUtilities"
             ],
             path: "Sources/DNA"
         ),
         .target(
-            name: "CompressionJavaScript",
-            dependencies: [
-                "SwiftCompressionUtilities"
-            ],
-            path: "Sources/JavaScript"
-        ),
-        .target(
             name: "CompressionLZ",
             dependencies: [
+                "ByteBuilder",
                 "SwiftCompressionUtilities"
             ],
             path: "Sources/LZ"
         ),
+
         .target(
-            name: "CompressionSnappy",
+            name: "Huffman",
+            dependencies: [
+                "ByteBuilder",
+                "SwiftCompressionUtilities"
+            ]
+        ),
+
+        .target(
+            name: "RunLengthEncoding",
             dependencies: [
                 "SwiftCompressionUtilities"
+            ]
+        ),
+
+        .systemLibrary(name: "SnappyShim"),
+        .target(
+            name: "Snappy",
+            dependencies: [
+                "ByteBuilder",
+                "SwiftCompressionUtilities",
+                "SnappyShim"
             ],
-            path: "Sources/Snappy"
+            linkerSettings: [
+                .unsafeFlags(["-lsnappy"], .when(traits: ["Snappy"]))
+            ]
         ),
 
         // MARK: Run
@@ -100,30 +206,12 @@ let package = Package(
         ),
 
         // MARK: Unit tests
-        .testTarget(
-            name: "SwiftCompressionTests",
-            dependencies: ["SwiftCompression"]
-        ),
-        .testTarget(
-            name: "CSSTests",
-            dependencies: ["CompressionCSS"]
-        ),
-        .testTarget(
-            name: "DNATests",
-            dependencies: ["CompressionDNA"]
-        ),
-        .testTarget(
-            name: "JavaScriptTests",
-            dependencies: ["CompressionJavaScript"]
-        ),
-        .testTarget(
-            name: "LZTests",
-            dependencies: ["CompressionLZ"]
-        ),
-        .testTarget(
-            name: "SnappyTests",
-            dependencies: ["CompressionSnappy"]
-        )
+        .testTarget(name: "SwiftCompressionTests", dependencies: ["SwiftCompression"]),
+        .testTarget(name: "BrotliTests", dependencies: ["Brotli"]),
+        .testTarget(name: "DNATests", dependencies: ["CompressionDNA"]),
+        .testTarget(name: "LZTests", dependencies: ["CompressionLZ"]),
+        .testTarget(name: "SnappyTests", dependencies: ["Snappy"]),
+        .testTarget(name: "ZlibTests", dependencies: ["Zlib"])
     ]
 )
 

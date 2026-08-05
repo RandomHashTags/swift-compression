@@ -1,4 +1,7 @@
 
+
+/*
+
 // MARK: Collection
 extension Collection where Element == UInt8 {
     /// Compress a copy of this data using the specified technique(s).
@@ -134,3 +137,5 @@ extension String {
     }
 }
 #endif
+
+*/

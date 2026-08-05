@@ -1,71 +1,56 @@
 
-// MARK: Compressor
-public protocol Compressor: AnyCompressor {
-    associatedtype CompressClosureParameters
-    func compressClosure(closure: @escaping @Sendable (UInt8) -> Void) -> @Sendable (CompressClosureParameters) -> Void
+/// Any type conforming to this protocol indicates it compresses data.
+public protocol Compressor: AnyCompressor, ~Copyable {
+    associatedtype ConcreteCompressionConfiguration:CompressionConfiguration
+    associatedtype ConcreteCompressionResult = [UInt8]
+    associatedtype ConcreteCompressionError:Error = CompressionError
 
-    func compress(
-        data: some Collection<UInt8>,
-        reserveCapacity: Int
-    ) throws -> CompressionResult<[UInt8]>
-
-    /// Compress a collection of bytes using this technique.
+    /// Compresses a span of bytes.
     /// 
     /// - Parameters:
-    ///   - data: Collection of bytes to compress.
-    ///   - closure: Logic to execute when a byte is compressed.
-    /// - Returns: The number of valid bits in the last byte.
-    /// - Complexity: where _n_ is the length of `data`
-    ///   - DNA binary encoding: O(_n_)
-    ///   - LZ77: O(_n_)
-    ///   - Snappy: O(_n_)
+    ///   - data: The span of bytes to compress.
+    ///   - configuration: Additional values necessary to compress the provided data.
+    /// 
+    /// - Returns: `ConcreteCompressionResult`; usually, but not guaranteed, an array of bytes (`[UInt8]`).
+    @available(macOS 10.14.4, iOS 12.2, watchOS 5.2, tvOS 12.2, visionOS 1.0, *)
     func compress(
-        data: some Collection<UInt8>,
-        closure: (CompressClosureParameters) -> Void
-    ) throws(CompressionError) -> UInt8?
+        _ span: Span<UInt8>,
+        configuration: ConcreteCompressionConfiguration
+    ) throws(ConcreteCompressionError) -> ConcreteCompressionResult
 }
 
-// MARK: Compress
+// MARK: Array
 extension Compressor {
-    /// Compress a collection of bytes using this technique.
+    /// Compresses an array of bytes.
     /// 
     /// - Parameters:
-    ///   - data: Collection of bytes to compress.
-    ///   - reserveCapacity: Space to reserve for the compressed result.
-    /// - Complexity: where _n_ is the length of `data`
-    ///   - DNA binary encoding: O(_n_)
-    ///   - LZ77: O(_n_)
-    ///   - Snappy: O(_n_)
-    public func compress(
-        data: some Collection<UInt8>,
-        reserveCapacity: Int = 1024
-    ) throws(CompressionError) -> CompressionResult<[UInt8]> {
-        var compressed = [UInt8]()
-        compressed.reserveCapacity(reserveCapacity)
-        let validBitsInLastByte:UInt8 = try compress(data: data, closure: compressClosure { compressed.append($0) }) ?? 8 // TODO: fix Swift 6 error
-        return CompressionResult(data: compressed, validBitsInLastByte: validBitsInLastByte)
-    }
-
-    /// Compress a collection of bytes into a stream using this technique.
+    ///   - array: The array of bytes to compress.
+    ///   - configuration: Additional values necessary to compress the provided data.
     /// 
-    /// - Parameters:
-    ///   - data: Collection of bytes to compress.
-    ///   - continuation: The `AsyncStream<UInt8>.Continuation`.
-    /// - Complexity: where _n_ is the length of `data`
-    ///   - DNA binary encoding: O(_n_)
-    ///   - LZ77: O(_n_)
-    ///   - Snappy: O(_n_)
-    @available(macOS 10.15, iOS 13.0, watchOS 6.0, tvOS 13.0, *)
+    /// - Returns: `ConcreteCompressionResult`; usually, but not guaranteed, an array of bytes (`[UInt8]`).
+    @available(macOS 26.0, iOS 26.0, watchOS 26.0, tvOS 26.0, *)
     public func compress(
-        data: some Collection<UInt8>,
-        continuation: AsyncStream<UInt8>.Continuation
-    ) throws {
-        // TODO: finish
-        let _:UInt8 = try compress(data: data, closure: compressClosure { continuation.yield($0) }) ?? 8
+        _ array: [UInt8],
+        configuration: ConcreteCompressionConfiguration
+    ) throws(ConcreteCompressionError) -> ConcreteCompressionResult {
+        return try compress(array.span, configuration: configuration)
     }
 }
-extension Compressor where CompressClosureParameters == UInt8 {
-    public func compressClosure(closure: @escaping @Sendable (UInt8) -> Void) -> @Sendable (CompressClosureParameters) -> Void {
-        closure
+
+// MARK: ArraySlice
+extension Compressor {
+    /// Compresses an array slice of bytes.
+    /// 
+    /// - Parameters:
+    ///   - slice: The array slice of bytes to compress.
+    ///   - configuration: Additional values necessary to compress the provided data.
+    /// 
+    /// - Returns: `ConcreteCompressionResult`; usually, but not guaranteed, an array of bytes (`[UInt8]`).
+    @available(macOS 10.14.4, iOS 12.2, watchOS 5.2, tvOS 12.2, visionOS 1.0, *)
+    public func compress(
+        _ slice: ArraySlice<UInt8>,
+        configuration: ConcreteCompressionConfiguration
+    ) throws(ConcreteCompressionError) -> ConcreteCompressionResult {
+        return try compress(slice.span, configuration: configuration)
     }
 }

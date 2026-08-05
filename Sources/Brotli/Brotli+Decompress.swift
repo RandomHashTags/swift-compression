@@ -1,0 +1,60 @@
+
+#if BrotliDecompress
+
+import BrotliShim
+import SwiftCompressionUtilities
+
+extension Brotli: Decompressor {
+    public typealias ConcreteDecompressionConfiguration = DecompressConfiguration
+    public typealias ConcreteDecompressionResult = [UInt8]?
+
+    /// - Parameters:
+    ///   - data: Collection of bytes to decompress.
+    ///   - closure: Logic to execute when a byte is decompressed.
+    /// - Complexity: O(_n_) where _n_ is the length of `data`.
+    public func decompress(
+        data: some Collection<UInt8>,
+        configuration: ConcreteDecompressionConfiguration
+    ) -> ConcreteDecompressionResult {
+        let compressedCount = data.count
+        var decodedSize = configuration.estimatedSize
+        var needsMoreOutput = false
+        var out:[UInt8]? = nil
+        withUnsafeTemporaryAllocation(of: UInt8.self, capacity: decodedSize, { outBuffer in
+            let result = data.withContiguousStorageIfAvailable {
+                BrotliDecoderDecompress(
+                    compressedCount,
+                    $0.baseAddress,
+                    &decodedSize,
+                    outBuffer.baseAddress
+                )
+            } ?? BROTLI_DECODER_RESULT_ERROR
+            if result == BROTLI_DECODER_RESULT_SUCCESS {
+                out = [UInt8](outBuffer.prefix(decodedSize))
+            } else if result == BROTLI_DECODER_RESULT_NEEDS_MORE_OUTPUT {
+                needsMoreOutput = true
+            }
+        })
+        if needsMoreOutput {
+            return decompress(data: data, configuration: .init(estimatedSize: configuration.estimatedSize * 2))
+        }
+        return out
+    }
+}
+
+// MARK: Configuration
+extension Brotli {
+    public struct DecompressConfiguration: DecompressionConfiguration {
+        public static var `default`: Self { .init(estimatedSize: 32768) }
+
+        public let estimatedSize:Int
+
+        public init(
+            estimatedSize: Int
+        ) {
+            self.estimatedSize = estimatedSize
+        }
+    }
+}
+
+#endif

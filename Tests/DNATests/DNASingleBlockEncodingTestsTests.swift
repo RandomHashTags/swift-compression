@@ -1,20 +1,12 @@
-//
-//  DNAC_SBETests.swift
-//
-//
-//  Created by Evan Anderson on 12/18/24.
-//
-
-#if compiler(>=6.0)
 
 import Testing
 @testable import CompressionDNA
 @testable import SwiftCompressionUtilities
 
 struct DNASingleBlockEncodingTests {
-    static let sequence:String = "TACTTGNCTAAAAGTACNATTGNCTAAGANTACACCGGCA"
-    static let data:[UInt8] = [UInt8](sequence.utf8)
-    static let binary:[UInt8:[UInt8]] = CompressionTechnique.DNASingleBlockEncoding.compressBinary(data: data)
+    static let sequence = "TACTTGNCTAAAAGTACNATTGNCTAAGANTACACCGGCA"
+    static let data = [UInt8](sequence.utf8)
+    static let binary = DNASingleBlockEncoding().compress(data: data, configuration: .init())
 
     @Test func compressDNACSingleBlockEncodingPhase1() {
         #expect(Self.binary == [
@@ -30,10 +22,8 @@ struct DNASingleBlockEncodingTests {
     }
 
     @Test func compressDNACSingleBlockEncodingPhase2() {
-        let (result, controlBits):([UInt8], [UInt8]) = CompressionTechnique.DNASingleBlockEncoding.compressSBE(binaryData: Self.binary[65]!.prefix(7))
+        let (result, controlBits):([UInt8], [UInt8]) = DNASingleBlockEncoding.compressSBE(binaryData: Self.binary[65]!.prefix(7))
         #expect(result == [0, 1, 0])
         #expect(controlBits == [0])
     }
 }
-
-#endif

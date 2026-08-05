@@ -1,0 +1,93 @@
+
+/// Creates a universal frequency table from a sequence of raw bytes.
+/// 
+/// - Parameters:
+///   - data: Sequence of raw bytes.
+/// - Returns: A universal frequency table.
+/// - Complexity: O(_n_) where _n_ is the length of `data`.
+public func buildFrequencyTable(data: some Sequence<UInt8>) -> [Int] {
+    var table = Array(repeating: 0, count: 255)
+    for byte in data {
+        table[Int(byte)] += 1
+    }
+    return table
+}
+
+/// Creates a lookup frequency table from a sequence of raw bytes.
+/// 
+/// - Parameters:
+///   - data: Sequence of raw bytes.
+/// - Returns: A lookup frequency table.
+/// - Complexity: O(_n_) where _n_ is the length of `data`.
+public func buildFrequencyTable(data: some Sequence<UInt8>) -> [UInt8:Int] {
+    var table = [UInt8:Int]()
+    for byte in data {
+        table[byte, default: 0] += 1
+    }
+    return table
+}
+
+/// Creates a lookup frequency table from a sequence of raw bytes.
+/// 
+/// - Parameters:
+///   - span: Sequence of raw bytes.
+/// - Returns: A lookup frequency table.
+/// - Complexity: O(_n_) where _n_ is the length of `data`.
+public func buildFrequencyTable(span: Span<UInt8>)-> [UInt8:Int] {
+    var table = [UInt8:Int]()
+    for i in span.indices {
+        table[span[i], default: 0] += 1
+    }
+    return table
+}
+
+/// Creates a universal frequency table from a character frequency dictionary.
+/// 
+/// - Parameters:
+///   - chars: A frequency table that represents how many times a character is present.
+/// - Returns: A universal frequency table.
+/// - Complexity: O(_n_) where _n_ is the sum of the `Character` utf8 lengths in `chars`.
+public func buildFrequencyTable(chars: [Character:Int]) -> [Int] {
+    var table = Array(repeating: 0, count: 255)
+    for (char, freq) in chars {
+        for byte in char.utf8 {
+            table[Int(byte)] = freq
+        }
+    }
+    return table
+}
+
+#if compiler(>=6.2)
+// MARK: Inline Frequency tables
+/// Creates a universal frequency table from a sequence of raw bytes.
+/// 
+/// - Parameters:
+///   - data: Sequence of raw bytes.
+/// - Returns: A universal frequency table.
+/// - Complexity: O(_n_) where _n_ is the length of `data`.
+@available(macOS 26.0, iOS 26.0, watchOS 26.0, tvOS 26.0, *)
+public func buildInlineFrequencyTable(data: some Sequence<UInt8>) -> [255 of Int] {
+    var table = [255 of Int](repeating: 0)
+    for byte in data {
+        table[Int(byte)] += 1
+    }
+    return table
+}
+
+/// Creates a universal frequency table from a character frequency dictionary.
+/// 
+/// - Parameters:
+///   - chars: A frequency table that represents how many times a character is present.
+/// - Returns: A universal frequency table.
+/// - Complexity: O(_n_) where _n_ is the sum of the `Character` utf8 lengths in `chars`.
+@available(macOS 26.0, iOS 26.0, watchOS 26.0, tvOS 26.0, *)
+public func buildInlineFrequencyTable(chars: [Character:Int]) -> [255 of Int] {
+    var table = [255 of Int](repeating: 0)
+    for (char, freq) in chars {
+        for byte in char.utf8 {
+            table[Int(byte)] = freq
+        }
+    }
+    return table
+}
+#endif

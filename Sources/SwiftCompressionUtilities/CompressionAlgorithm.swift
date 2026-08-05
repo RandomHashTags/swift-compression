@@ -10,12 +10,11 @@ public enum CompressionAlgorithm: Hashable, Sendable {
 
     // data
     case arithmetic
-    case brotli(windowSize: Int)
+    case brotli(quality: Int32, windowSize: Int32, mode: UInt32)
     /// Burrows–Wheeler transform
     case bwt
-    case deflate
+    case deflate(bufferSize: Int, level: Int32)
     case huffmanCoding
-    case json
     case lz4
     case lz77(windowSize: Int, bufferSize: Int, offsetBitWidth: Int)
     case lz78
@@ -24,7 +23,7 @@ public enum CompressionAlgorithm: Hashable, Sendable {
     case mtf
     case runLengthEncoding(minRun: Int, alwaysIncludeRunCount: Bool)
     /// AKA Zippy
-    case snappy(windowSize: Int)
+    case snappy
     /// AKA Zippy Framed
     case snappyFramed
     case zstd
@@ -32,7 +31,7 @@ public enum CompressionAlgorithm: Hashable, Sendable {
     // files
     case _7z
     case bzip2
-    case gzip
+    case gzip(bufferSize: Int, level: Int32, memLevel: Int32, strategy: Int32)
     case rar
 
     // image
@@ -48,7 +47,7 @@ public enum CompressionAlgorithm: Hashable, Sendable {
     case fibonacci
 
     // science
-    case dnaBinaryEncoding(baseBits: [UInt8:[Bool]])
+    case dnaBinaryEncoding(baseBits: [UInt8:UInt8])
     case dnaSingleBlockEncoding
 
     // SSL
@@ -62,9 +61,6 @@ public enum CompressionAlgorithm: Hashable, Sendable {
     // Apple
     /// iWork Archive (Pages, Keynote, Numbers)
     case iwa(version: IWAVersion)
-
-    // Code
-    case programmingLanguage(ProgrammingLanguage)
 }
 
 // MARK: RawValue
@@ -72,57 +68,54 @@ extension CompressionAlgorithm {
     /// Case name of the algorithm.
     public var rawValue: String {
         switch self {
-        case .unknown: return "unknown"
+        case .unknown: "unknown"
         
-        case .aac: return "aac"
-        case .mp3: return "mp3"
+        case .aac: "aac"
+        case .mp3: "mp3"
 
-        case .arithmetic: return "arithmetic"
-        case .brotli: return "brotli"
+        case .arithmetic: "arithmetic"
+        case .brotli: "brotli"
 
-        case .bwt: return "bwt"
-        case .deflate: return "deflate"
-        case .huffmanCoding: return "huffmanCoding"
-        case .json: return "json"
-        case .lz4: return "lz4"
-        case .lz77: return "lz77"
-        case .lz78: return "lz78"
-        case .lzw: return "lzw"
-        case .mtf: return "mtf"
-        case .runLengthEncoding: return "runLengthEncoding"
-        case .snappy: return "snappy"
-        case .snappyFramed: return "snappyFramed"
-        case .zstd: return "zstd"
+        case .bwt: "bwt"
+        case .deflate: "deflate"
+        case .huffmanCoding: "huffmanCoding"
+        case .lz4: "lz4"
+        case .lz77: "lz77"
+        case .lz78: "lz78"
+        case .lzw: "lzw"
+        case .mtf: "mtf"
+        case .runLengthEncoding: "runLengthEncoding"
+        case .snappy: "snappy"
+        case .snappyFramed: "snappyFramed"
+        case .zstd: "zstd"
 
-        case ._7z: return "_7z"
-        case .bzip2: return "bzip2"
-        case .gzip: return "gzip"
-        case .rar: return "rar"
+        case ._7z: "_7z"
+        case .bzip2: "bzip2"
+        case .gzip: "gzip"
+        case .rar: "rar"
         
-        case .h264: return "h264"
-        case .h265: return "h265"
-        case .jpeg: return "jpeg"
-        case .jpeg2000: return "jpeg2000"
+        case .h264: "h264"
+        case .h265: "h265"
+        case .jpeg: "jpeg"
+        case .jpeg2000: "jpeg2000"
 
-        case .eliasDelta: return "eliasDelta"
-        case .eliasGamma: return "eliasGamma"
-        case .eliasOmega: return "eliasOmega"
-        case .fibonacci: return "fibonacci"
+        case .eliasDelta: "eliasDelta"
+        case .eliasGamma: "eliasGamma"
+        case .eliasOmega: "eliasOmega"
+        case .fibonacci: "fibonacci"
 
-        case .dnaBinaryEncoding: return "dnaBinaryEncoding"
-        case .dnaSingleBlockEncoding: return "dnaSingleBlockEncoding"
+        case .dnaBinaryEncoding: "dnaBinaryEncoding"
+        case .dnaSingleBlockEncoding: "dnaSingleBlockEncoding"
 
-        case .boringSSL: return "boringSSL"
+        case .boringSSL: "boringSSL"
 
-        case .av1: return "av1"
-        case .dirac: return "dirac"
-        case .mpeg: return "mpeg"
+        case .av1: "av1"
+        case .dirac: "dirac"
+        case .mpeg: "mpeg"
 
-        case .iwa: return "iwa"
+        case .iwa: "iwa"
 
-        case .programmingLanguage: return "programmingLanguage"
-
-        @unknown default: return "unknown"
+        @unknown default: "unknown"
         }
     }
 }

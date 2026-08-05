@@ -1,0 +1,111 @@
+
+import SwiftCompressionUtilities
+
+extension DNASingleBlockEncoding: Compressor {
+    public typealias ConcreteCompressionConfiguration = CompressConfiguration
+    public typealias ConcreteCompressionResult = [UInt8:[UInt8]]
+}
+
+extension DNASingleBlockEncoding {
+    /// Compress a sequence of bytes using phase one (compress data to binary) of the DNA single block encoding technique.
+    /// 
+    /// - Parameters:
+    ///   - data: Sequence of bytes to compress.
+    /// - Complexity: O(_n_ + (_m_ log _m_)) where _n_ is the length of `data` and _m_ is the number of unique bytes in `data`.
+    public func compress(
+        data: some Collection<UInt8>,
+        configuration: CompressConfiguration
+    ) -> ConcreteCompressionResult {
+        return data.withContiguousStorageIfAvailable {
+            compress($0.span, configuration: configuration)
+        } ?? .init()
+    }
+}
+
+extension DNASingleBlockEncoding {
+    /// Compress a collection of bits using phase two (compress bits to bit blocks) of the DNA single block encoding technique.
+    /// 
+    /// https://www.mdpi.com/algorithms/algorithms-13-00099/article_deploy/html/images/algorithms-13-00099-g002.png
+    /// https://www.mdpi.com/algorithms/algorithms-13-00099/article_deploy/html/images/algorithms-13-00099-g003.png
+    /// 
+    /// - Parameters:
+    ///   - binaryData: Collection of bits to compress.
+    /// - Returns: Compressed bit blocks and the control bits.
+    /// - Complexity: O(_n_) where _n_ is the length of `binaryData`.
+    static func compressSBE(
+        binaryData: some Collection<UInt8>
+    ) -> (data: [UInt8], controlBits: [UInt8]) {
+        var compressed = [UInt8]()
+        var controlBits = [UInt8]()
+
+        var previousBits = [UInt8]()
+        previousBits.reserveCapacity(6)
+        var positionBlock = [UInt8]()
+        positionBlock.reserveCapacity(6)
+
+        var index = 0
+        var bitIndex = 0
+        var controlBit:UInt8 = 0
+        while index < binaryData.count {
+            let bit = binaryData[index]
+            switch bitIndex {
+            case 0:
+                controlBit = bit
+                controlBits.append(bit)
+            default:
+                if let previousBit = previousBits.get(bitIndex-1) {
+                    if bitIndex == 1 && previousBit == 1 {
+                        positionBlock.append(0)
+                    } else {
+                        positionBlock.append(bit != previousBit ? 1 : 0)
+                    }
+                } else {
+                    positionBlock.append(0)
+                }
+                previousBits.append(bit)
+            }
+            index += 1
+            bitIndex += 1
+            if bitIndex == 7 {
+                compressed.append(controlBit)
+                var code0 = [UInt8]()
+                var code1 = [UInt8]()
+                var found0 = false
+                var found1 = false
+                for bit in positionBlock {
+                    if bit == 0 || found0 {
+                        found0 = true
+                        code0.append(bit)
+                        if found1 {
+                            found1 = false
+                            code1.append(0)
+                        }
+                    }
+                    if bit == 1 {
+                        if !found0 {
+                            code0.append(1)
+                        }
+                        found1 = true
+                        code1.append(bit)
+                    }
+                }
+                //print("positionBlock=\(positionBlock)\ncode0=\(code0)\ncode1=\(code1)")
+                compressed.append(contentsOf: code0.count < code1.count ? code0 : code1)
+                bitIndex = 0
+                previousBits.removeAll(keepingCapacity: true)
+                positionBlock.removeAll(keepingCapacity: true)
+            }
+        }
+        return (compressed, controlBits)
+    }
+}
+
+// MARK: Configuration
+extension DNASingleBlockEncoding {
+    public struct CompressConfiguration: CompressionConfiguration {
+        public static var `default`: Self { .init() }
+
+        public init() {
+        }
+    }
+}
